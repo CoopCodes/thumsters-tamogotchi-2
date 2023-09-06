@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { styled, css, ThemeProvider } from 'styled-components';
+import { styled, css, ThemeProvider } from 'styled-components/native';
 import { useReducer } from 'react';
 
 import Attribute from './components/Attribute';
@@ -36,7 +36,7 @@ const Media = css`
   }
 `
 
-const Attributes = styled.div`
+const Attributes = styled.View`
   margin-left: auto;
   margin-right: auto;
   gap: 0%;
@@ -47,7 +47,7 @@ const Attributes = styled.div`
   ${Media}
 `
 
-const View = styled.body`
+const View = styled.View`
   background-color: ${(props) => (props.theme.default.backgroundColor)};
   height: 100vh;
   width: 100vw;
@@ -64,42 +64,43 @@ export default function App() {
     [key: string]: number
   }
   
-  const attributesInitial: Attributes {
+  const attributesInitial: Attributes = {
     "health": 100,
     "hunger": 100,
     "happiness": 100,
     "energy": 100,
   }
 
-  const reducer = (state: any, action: action) => {
-      // const updatedAttribute = eval(`${attributesInitial[action.attribute] ${action.operation} ${action.perk}`) 
-      console.log(attributesInitial[action.attribute])
-
-      // The above adds/subtracts the initial value of the attribute,
-      // to the additor. For example, "100 - 1". This would be run every 
-      // so often, to slowly decrease the hunger attribute for example.
-      
-      if (action.attribute === 'health') {
-        // Here we can add checkpoints to change the monsters appearance
-        if (action.attribute <= 100 && action.attribute > 60) {
+  const reducer = (state: Attributes, action: action) => {
+    const updatedAttribute: number = eval(`${state[action.attribute]} ${action.operation} ${action.perk}`); 
+    console.log(state[action.attribute]);
+    
+    // The above adds/subtracts the initial value of the attribute,
+    // to the additor. For example, "100 - 1". This would be run every 
+    // so often, to slowly decrease the hunger attribute for example.
+    
+    if (action.attribute === 'health') {
+      // Here we can add checkpoints to change the monsters appearance
+      if (state[action.attribute] <= 100 && state[action.attribute] > 60) {
           // Do something
         }
       } // This can continue for all/any other attributes
       
-      return updatedAttribute;
-    }
+      const attribute = action.attribute;
+      return { ...state, [attribute]: updatedAttribute }; 
+      // Changes the 'attributes' to itself, but the wanted attribute is changed.
   }
   
-  const [attributes, attributesDispatch] = useReducer(reducer, attributesInitial)
-
-
+  const [attributes, attributesDispatch] = useReducer(reducer, attributesInitial);
+  
   return (
     <ThemeProvider theme={theme}>
       <View>
-        <Attributes className="attributes">
-          <Attribute attrName="health" imagePath='./resources/images/heart.png'  progress={attribute.health}/>
-          <Attribute attrName="hunger" imagePath='./resources/images/hunger.svg'  progress={attribute.hunger}/>
-          <Attribute attrName="happiness" imagePath={happinessState} progress={attribute.happiness}/>
+        <Attributes>
+          <Attribute attrName="health" imagePath='./assets/resources/images/heart.png' progress={attributes.health}/>
+          <Attribute attrName="hunger" imagePath='./assets/resources/images/hunger.svg' progress={attributes.hunger}/>
+          <Attribute attrName="happiness" imagePath='/assets/resources/images/happiness.svg' progress={attributes.happiness}/>
+          <Attribute attrName="energy" imagePath='./assets/resources/images/energy.svg' progress={attributes.energy}/>
         </Attributes>
       </View>
     </ThemeProvider>

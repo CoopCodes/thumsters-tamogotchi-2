@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { styled } from 'styled-components';
+import { styled } from 'styled-components/native';
 
 interface Props { 
     attrName: string; 
@@ -9,7 +9,7 @@ interface Props {
 }
 
 // Styled Components:
-const AttributeMain = styled.div`
+const AttributeMain = styled.View`
 transform: scale(0.7);
 display: flex;
 width: 420px;
@@ -20,7 +20,7 @@ flex-direction: column;
 align-items: center;
 `
 
-const CircularProgress = styled.div<{progress: number, attrName: string}>`
+const CircularProgress = styled.View<{progress: number, attrName: string}>`
 position: relative;
 height: 250px;
 width: 250px;
@@ -31,7 +31,7 @@ align-items: center;
 justify-content: center;
 `
 
-const ProgressImage = styled.img`
+const ProgressImage = styled.Image`
 position: relative;
 width: 50%;
 height: 50%;
@@ -43,8 +43,8 @@ const Attribute = ({ attrName, imagePath, progress }: Props) => {
 
     return (
         <AttributeMain>
-            <CircularProgress className="circular-progress" progress={progress} attrName={attrName}>
-                <ProgressImage src={imagePath} alt={attrName} />
+            <CircularProgress progress={progress} attrName={attrName}>
+                <ProgressImage source={require(imagePath)} alt={attrName} />
             </CircularProgress>
         </AttributeMain>
     );

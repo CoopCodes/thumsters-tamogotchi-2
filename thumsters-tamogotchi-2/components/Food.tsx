@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { styled, keyframes, css } from 'styled-components';
+import { styled, keyframes, css } from 'styled-components/native';
 import { MonsterClass, onFoodClickEvent, FoodClass } from '../global';
 
 interface MonsterObj {
@@ -19,20 +19,20 @@ interface Props {
 
 // Styled Components:
 
-const Button = styled.div<{enabled: boolean}>`
+const Button = styled.View<{enabled: boolean}>`
     position: relative;
     height: 9em;
     width: 9em;
     filter: ${(props) => props.enabled? 'saturate(100%)' : 'saturate(0%)'};
 `
 
-const Icon = styled.img`
+const Icon = styled.Image`
     width: 60%;
     height: 60%;
     z-index: 1;
 `
 
-const FoodPerkContainer = styled.div`
+const FoodPerkContainer = styled.View`
     width: 80%;
     height: 20px;
     border-radius: 30px;
@@ -40,7 +40,7 @@ const FoodPerkContainer = styled.div`
     background-color: ${(props) => props.theme.default.interactionShadow};
     `
 
-const FoodPerk = styled.div<{perk: number}>`
+const FoodPerk = styled.View<{perk: number}>`
     width: ${(props) => ((props.perk / 30) * 100)}%; // Making the bar as wide as proportional to 30
     background-color: #F3AD61;
     background-color: ${(props) => props.theme.default.hunger};
@@ -56,7 +56,7 @@ const onClickAnimation = keyframes<{setClickedState: React.Dispatch<React.SetSta
     }
 `
 
-const FoodPerkText = styled.h1<{clicked: boolean}>`
+const FoodPerkText = styled.Text<{clicked: boolean}>`
     position: absolute;
     z-index: 2;
     font-family: 'Poppins', sans-serif;
@@ -68,7 +68,7 @@ const FoodPerkText = styled.h1<{clicked: boolean}>`
 `
 
 
-const Container = styled.div`
+const Container = styled.View`
     display: flex;
     flex-direction: column;
     align-items: center;
