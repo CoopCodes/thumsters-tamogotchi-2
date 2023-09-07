@@ -1,7 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { styled, css, ThemeProvider } from 'styled-components/native';
 import { useReducer } from 'react';
-
+import heartIcon from './assets/resources/images/heart.png'
+import hungerIcon from './assets/resources/images/hunger.svg'
+import happinessIcon from './assets/resources/images/happiness.svg'
+import energyIcon from './assets/resources/images/energy.svg'
 import Attribute from './components/Attribute';
 
 const theme = {
@@ -97,10 +100,10 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <View>
         <Attributes>
-          <Attribute attrName="health" imagePath='./assets/resources/images/heart.png' progress={attributes.health}/>
-          <Attribute attrName="hunger" imagePath='./assets/resources/images/hunger.svg' progress={attributes.hunger}/>
-          <Attribute attrName="happiness" imagePath='/assets/resources/images/happiness.svg' progress={attributes.happiness}/>
-          <Attribute attrName="energy" imagePath='./assets/resources/images/energy.svg' progress={attributes.energy}/>
+          <Attribute attrName="health" image={heartIcon} progress={attributes.health}/>
+          <Attribute attrName="hunger" image={hungerIcon} progress={attributes.hunger}/>
+          <Attribute attrName="happiness" image={happinessIcon} progress={attributes.happiness}/>
+          <Attribute attrName="energy" image={energyIcon} progress={attributes.energy}/>
         </Attributes>
       </View>
     </ThemeProvider>

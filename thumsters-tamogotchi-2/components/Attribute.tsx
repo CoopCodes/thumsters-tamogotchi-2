@@ -1,10 +1,10 @@
-import React from 'react';
 import { useState } from 'react';
+import { Image, ImageSourcePropType } from 'react-native';
 import { styled } from 'styled-components/native';
 
 interface Props { 
     attrName: string; 
-    imagePath: string;
+    image: ImageSourcePropType;
     progress: number;
 }
 
@@ -31,20 +31,20 @@ align-items: center;
 justify-content: center;
 `
 
-const ProgressImage = styled.Image`
+const ProgressImage = styled(Image)`
 position: relative;
 width: 50%;
 height: 50%;
 `
 
-const Attribute = ({ attrName, imagePath, progress }: Props) => {
-    const [progressState, SetProgressState] = useState(progress);
-    
+const Attribute = ({ attrName, image, progress }: Props) => {
+    const [progressState, SetProgressState] = useState(progress);    
+    // const imageSource = require(imagePath);
 
     return (
         <AttributeMain>
             <CircularProgress progress={progress} attrName={attrName}>
-                <ProgressImage source={require(imagePath)} alt={attrName} />
+                <ProgressImage source={image} alt={attrName} />
             </CircularProgress>
         </AttributeMain>
     );
