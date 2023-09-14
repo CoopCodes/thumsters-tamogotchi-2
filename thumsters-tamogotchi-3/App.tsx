@@ -6,7 +6,10 @@ import hungerIcon from './assets/resources/images/hunger.png'
 import happinessIcon from './assets/resources/images/happiness.png'
 import energyIcon from './assets/resources/images/energy.png'
 import Attribute from './components/Attribute';
-import { theme } from './global';
+import Bedroom from './components/Rooms/Bedroom';
+import { AttributeContext } from './Contexts/AttributeContext';
+import { MonsterContext } from './Contexts/MonsterContext';
+import { theme, Body, BodyPart } from './global';
 
 // const breakpoints = {
 //   s: 700,
@@ -30,6 +33,7 @@ import { theme } from './global';
 // });
 
 export default function App() {
+  // Attribute Logic
   type action = {
     attribute: string;
     operation: string;
@@ -51,7 +55,6 @@ export default function App() {
     hunger: 1000,
     health: 1000,
   }
-
   
   const reducer = (state: Attributes, action: action) => {
     const updatedAttribute: number = eval(
@@ -81,16 +84,23 @@ export default function App() {
     }, attributeTicks.hunger);
   }, [])
 
-    return (
+  // Monster Logic
+  
+
+  return (
+    <AttributeContext.Provider value={[attributes, attributesDispatch]}>
       <View style={[styles.view, { backgroundColor: theme.default.backgroundColor }]}>
-      <View style={[styles.attributes]}>
-        {/* Render Attribute components here */}
-        <Attribute attrName="health" image={heartIcon} progress={attributes.health}/>
-        <Attribute attrName="hunger" image={hungerIcon} progress={attributes.hunger}/>
-        <Attribute attrName="happiness" image={happinessIcon} progress={attributes.happiness}/>
-        <Attribute attrName="energy" image={energyIcon} progress={attributes.energy}/>
+        <View style={[styles.attributes]}>
+          {/* Render Attribute components here */}
+          <Attribute attrName="health" image={heartIcon} progress={attributes.health}/>
+          <Attribute attrName="hunger" image={hungerIcon} progress={attributes.hunger}/>
+          <Attribute attrName="happiness" image={happinessIcon} progress={attributes.happiness}/>
+          <Attribute attrName="energy" image={energyIcon} progress={attributes.energy}/>
+        </View>
+        // Make a room system
+        <Bedroom/>
       </View>
-    </View>
+    </AttributeContext.Provider>
   );
 }
 
@@ -102,11 +112,13 @@ const styles = StyleSheet.create({
   attributes: {
     marginLeft: 'auto',
     marginRight: 'auto',
-    marginTop: 100,
+    marginTop: 50,
     gap: -10,
-    width: '90%',
+    width: '100%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: "center",
+    height: 100,
   },
 });

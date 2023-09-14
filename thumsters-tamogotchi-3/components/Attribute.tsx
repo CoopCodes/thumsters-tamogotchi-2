@@ -33,16 +33,16 @@ const Attribute = ({ attrName, image, progress }: Props) => {
 
 const styles = StyleSheet.create({
   attributeMain: {
-    transform: [{ scale: 0.75 }],
+    transform: [{ scale: 0.75 }, { rotate: "-90deg" }],
   },
   attrImage: {
-    transform: [{ scale: 0.35 }]
+    transform: [{ scale: 0.35 }, { rotate: "90deg" }]
   }
 });
 
 const energyStyles = StyleSheet.create({
   attrImage: {
-    transform: [{ scale: 0.04 }]
+    transform: [{ scale: 0.04 }, { rotate: "90deg" }]
   }
 })
 
