@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-import heartIcon from './assets/resources/images/heart.png'2
+import heartIcon from './assets/resources/images/heart.png'
 import hungerIcon from './assets/resources/images/hunger.png'
 import happinessIcon from './assets/resources/images/happiness.png'
 import energyIcon from './assets/resources/images/energy.png'

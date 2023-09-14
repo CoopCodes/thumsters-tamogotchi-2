@@ -23,7 +23,7 @@ const Attribute = ({ attrName, image, progress }: Props) => {
             backgroundColor={theme.default.interactionShadow}>
                 {
                     () => (
-                        <Image style={styles.attrImage} source={image}/>
+                        <Image style={(attrName === "energy")? energyStyles.attrImage : styles.attrImage} source={image}/>
                     )
                 }
             </AnimatedCircularProgress>
@@ -39,5 +39,11 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.35 }]
   }
 });
+
+const energyStyles = StyleSheet.create({
+  attrImage: {
+    transform: [{ scale: 0.04 }]
+  }
+})
 
 export default Attribute;
