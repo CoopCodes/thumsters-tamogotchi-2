@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 import heartIcon from './assets/resources/images/heart.png'
@@ -7,9 +7,8 @@ import happinessIcon from './assets/resources/images/happiness.png'
 import energyIcon from './assets/resources/images/energy.png'
 import Attribute from './components/Attribute';
 import Bedroom from './components/Rooms/Bedroom';
-import { AttributeContext } from './Contexts/AttributeContext';
-import { MonsterContext } from './Contexts/MonsterContext';
-import { theme, Body, BodyPart } from './global';
+import { GlobalContext } from './Contexts/GlobalContext';
+import { theme, Body, BodyPart, bodyImage, bodyParts, bodyPartInfo } from './global';
 
 // const breakpoints = {
 //   s: 700,
@@ -34,7 +33,7 @@ import { theme, Body, BodyPart } from './global';
 
 export default function App() {
   // Attribute Logic
-  type action = {
+  type attributesAction = {
     attribute: string;
     operation: string;
     perk: number;
@@ -56,7 +55,7 @@ export default function App() {
     health: 1000,
   }
   
-  const reducer = (state: Attributes, action: action) => {
+  const attributesReducer = (state: Attributes, action: attributesAction) => {
     const updatedAttribute: number = eval(
       `${state[action.attribute]} ${action.operation} ${action.perk}`
     );
@@ -71,7 +70,7 @@ export default function App() {
   };
   
   const [attributes, attributesDispatch] = useReducer(
-    reducer, attributesInitial
+    attributesReducer, attributesInitial
   );
     
   useEffect(() => {
@@ -83,12 +82,25 @@ export default function App() {
       }
     }, attributeTicks.hunger);
   }, [])
+ 
+  // Monster Logic TODO: change the way body is accessed
+  type monsterAction = {
+    bodyParts: {
+      leftarm: bodyPartInfo | undefined;
+      rightarm: bodyPartInfo | undefined;
+      leftleg: bodyPartInfo | undefined;
+      rightleg: bodyPartInfo | undefined;
+      eyes: bodyPartInfo | undefined;
+      mouth: bodyPartInfo | undefined;
+    },
+  }
 
-  // Monster Logic
-  
+  const monsterReducer = (state: Body, action: monsterAction) => {}
+
+  const [monster, monsterDispatch] = useReducer(monsterRedcuer, new Body(undefined, undefined));
 
   return (
-    <AttributeContext.Provider value={[attributes, attributesDispatch]}>
+    <GlobalContext.Provider value={[attributes, attributesDispatch, monster, setMonster]}>
       <View style={[styles.view, { backgroundColor: theme.default.backgroundColor }]}>
         <View style={[styles.attributes]}>
           {/* Render Attribute components here */}
@@ -100,7 +112,7 @@ export default function App() {
         // Make a room system
         <Bedroom/>
       </View>
-    </AttributeContext.Provider>
+    </GlobalContext.Provider>
   );
 }
 
