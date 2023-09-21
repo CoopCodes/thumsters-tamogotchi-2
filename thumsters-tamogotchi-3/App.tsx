@@ -1,5 +1,5 @@
 import React, { useReducer, useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ImageSourcePropType } from 'react-native';
 
 import heartIcon from './assets/resources/images/heart.png'
 import hungerIcon from './assets/resources/images/hunger.png'
@@ -8,7 +8,7 @@ import energyIcon from './assets/resources/images/energy.png'
 import Attribute from './components/Attribute';
 import Bedroom from './components/Rooms/Bedroom';
 import { GlobalContext } from './Contexts/GlobalContext';
-import { theme, Body, BodyPart, bodyImage, bodyParts, bodyPartInfo } from './global';
+import { theme, Body, BodyPart, bodyImage, bodyParts, bodyPartInfo, IBodyPartNodes } from './global';
 
 // const breakpoints = {
 //   s: 700,
@@ -85,22 +85,21 @@ export default function App() {
  
   // Monster Logic TODO: change the way body is accessed
   type monsterAction = {
-    bodyParts: {
-      leftarm: bodyPartInfo | undefined;
-      rightarm: bodyPartInfo | undefined;
-      leftleg: bodyPartInfo | undefined;
-      rightleg: bodyPartInfo | undefined;
-      eyes: bodyPartInfo | undefined;
-      mouth: bodyPartInfo | undefined;
-    },
+    bodyParts: IBodyPartNodes | undefined,
+    bodyImage: ImageSourcePropType | undefined,
   }
 
-  const monsterReducer = (state: Body, action: monsterAction) => {}
+  const monsterReducer = (state: Body, action: monsterAction) => {
+    if (action.bodyParts)
+      state.nodes = action.bodyParts;
+    state.bodyImage = action.bodyImage;
+    return state;
+  }
 
-  const [monster, monsterDispatch] = useReducer(monsterRedcuer, new Body(undefined, undefined));
+  const [monster, monsterDispatch] = useReducer(monsterReducer, new Body(undefined, undefined));
 
   return (
-    <GlobalContext.Provider value={[attributes, attributesDispatch, monster, setMonster]}>
+    <GlobalContext.Provider value={[attributes, attributesDispatch, monster, monsterDispatch]}>
       <View style={[styles.view, { backgroundColor: theme.default.backgroundColor }]}>
         <View style={[styles.attributes]}>
           {/* Render Attribute components here */}

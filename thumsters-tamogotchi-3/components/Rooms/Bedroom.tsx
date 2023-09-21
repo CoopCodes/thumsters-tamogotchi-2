@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Image, Text, ImageSourcePropType, StyleSheet,  } from 'react-native';
-// import { theme } from '../';
+import { GlobalContext } from '../../Contexts/GlobalContext';
+import { theme } from '../../global';
 import { bodyParts } from '../../global';
+import Monster from '../Monster';
 
 interface Props {
   
 }
 
 const Bedroom = ({  }: Props) => {
+    // const { monsterDispatch } = useContext(GlobalContext);
+
     return (
         <View>
-            <Image source={bodyParts[0].image}></Image>
+            {/* <Monster/> */}
         </View>
     )
 }

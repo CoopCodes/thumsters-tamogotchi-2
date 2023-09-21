@@ -9,6 +9,8 @@ import foot from "./assets/resources/Monsters/1/Foot.png";
 import horn from "./assets/resources/Monsters/1/Horn.png";
 import mouth from "./assets/resources/Monsters/1/Mouth.png";
 
+import ImageNotImplemented from "./assets/resources/images/ImageNotImplemented.png"
+
 export const bodyImage = body;
 
 interface ITheme {
@@ -42,10 +44,10 @@ export class BodyPart {
 
 export type bodyPartInfo = {
   bodyPart: BodyPart,
-  ref: Ref<Image> | undefined
+  ref: Ref<Image> | undefined // User defined
 }
 
-interface IBodyPartNodes {
+export interface IBodyPartNodes {
   leftarm: bodyPartInfo;
   rightarm: bodyPartInfo;
   leftleg: bodyPartInfo;
@@ -54,17 +56,32 @@ interface IBodyPartNodes {
   mouth: bodyPartInfo;
 }
 
+const emptyBodyPartInfo: bodyPartInfo = {
+  bodyPart: new BodyPart([0, 0], ImageNotImplemented),
+  ref: undefined,
+}
+
+const emptyBodyPartNodes: IBodyPartNodes = {
+  leftarm: emptyBodyPartInfo,
+  rightarm: emptyBodyPartInfo,
+  leftleg: emptyBodyPartInfo,
+  rightleg: emptyBodyPartInfo,
+  eyes: emptyBodyPartInfo,
+  mouth: emptyBodyPartInfo,
+}
+
+
 export class Body {
-  nodes: IBodyPartNodes | undefined;
+  nodes: IBodyPartNodes;
   bodyImage: ImageSourcePropType | undefined;
   
-  constructor(nodes: IBodyPartNodes | undefined, bodyImage: ImageSourcePropType | undefined) {
+  constructor(nodes: IBodyPartNodes = emptyBodyPartNodes, bodyImage: ImageSourcePropType | undefined) {
     this.nodes = nodes;
     this.bodyImage = bodyImage;
   }
 }
 
-// Assets
+// Assets: right now it is loading only the first monster, but this needs to be changed so it is dynamic.
 export const bodyParts: {[key: number]: {[key: string]: BodyPart}} = {
   1: {
     arm: new BodyPart([0, 0], arm),
