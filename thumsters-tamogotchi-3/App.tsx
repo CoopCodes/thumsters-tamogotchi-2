@@ -7,8 +7,10 @@ import happinessIcon from './assets/resources/images/happiness.png'
 import energyIcon from './assets/resources/images/energy.png'
 import Attribute from './components/Attribute';
 import Bedroom from './components/Rooms/Bedroom';
-import { GlobalContext } from './Contexts/GlobalContext';
+import { AttributesContext } from './Contexts/AttributeContext';
+import { MonsterContext } from './Contexts/MonsterContext';
 import { theme, Body, BodyPart, bodyImage, bodyParts, bodyPartInfo, IBodyPartNodes } from './global';
+import { monsterAction } from "./Contexts/MonsterContext"
 
 // const breakpoints = {
 //   s: 700,
@@ -84,22 +86,28 @@ export default function App() {
   }, [])
  
   // Monster Logic TODO: change the way body is accessed
-  type monsterAction = {
-    bodyParts: IBodyPartNodes | undefined,
-    bodyImage: ImageSourcePropType | undefined,
-  }
 
   const monsterReducer = (state: Body, action: monsterAction) => {
     if (action.bodyParts)
       state.nodes = action.bodyParts;
     state.bodyImage = action.bodyImage;
+
+    if (action.body)
+      state = action.body;
     return state;
   }
 
   const [monster, monsterDispatch] = useReducer(monsterReducer, new Body(undefined, undefined));
 
   return (
-    <GlobalContext.Provider value={[attributes, attributesDispatch, monster, monsterDispatch]}>
+    <MonsterContext.Provider value={{
+      monster: monster,
+      monsterDispatch: monsterDispatch,
+    }}>
+      <AttributesContext.Provider value={{
+        attributes: attributes,
+        attributesDispatch: attributesDispatch,
+      }}>
       <View style={[styles.view, { backgroundColor: theme.default.backgroundColor }]}>
         <View style={[styles.attributes]}>
           {/* Render Attribute components here */}
@@ -108,10 +116,10 @@ export default function App() {
           <Attribute attrName="happiness" image={happinessIcon} progress={attributes.happiness}/>
           <Attribute attrName="energy" image={energyIcon} progress={attributes.energy}/>
         </View>
-        // Make a room system
         <Bedroom/>
       </View>
-    </GlobalContext.Provider>
+      </AttributesContext.Provider>
+    </MonsterContext.Provider>
   );
 }
 
@@ -132,4 +140,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 100,
   },
+  // room: {
+  //   height: '100%',
+  //   width: '100%'
+  // }
 });

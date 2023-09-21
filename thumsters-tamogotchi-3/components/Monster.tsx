@@ -22,29 +22,45 @@ const Monster = ({ monsterBody, mood }: Props) => {
         monsterBody.nodes.leftleg.ref = leftLegRef;
         monsterBody.nodes.eyes.ref = eyesRef;
         monsterBody.nodes.mouth.ref = mouthRef;
+        console.log('not hoello')
+        
+        Object.values(monsterBody.nodes).map((bodypart) => {
+            if (bodypart.ref && bodypart.ref.coords) {
+                console.log('hello')
+                bodypart.ref.setNativeProps({
+                    style: {
+                        transform: [
+                            { translateX: bodypart.coords.x },
+                            { translateY: bodypart.coords.y },
+                        ],
+                    },
+                });
+            }
+        })
     }, [])
 
-    Object.values(monsterBody.nodes).map((bodypart) => {
-        bodypart.ref.setNativeProps({
-        style: {
-            transform: [
-                { translateX: bodypart.coords.x },
-                { translateY: bodypart.coords.y },
-            ],
-        },
-        });
-    })
 
     return (
-        <View>
-            <Image ref={leftArmRef} source={monsterBody.nodes.leftarm.bodyPart.image}/>
-            <Image ref={rightArmRef} source={monsterBody.nodes.rightarm.bodyPart.image}/>
-            <Image ref={leftLegRef} source={monsterBody.nodes.leftleg.bodyPart.image} />
-            <Image ref={rightLegRef} source={monsterBody.nodes.rightleg.bodyPart.image}/>
-            <Image ref={eyesRef} source={monsterBody.nodes.eyes.bodyPart.image}/>
-            <Image ref={mouthRef} source={monsterBody.nodes.mouth.bodyPart.image}/>
+        <View style={styles.room}>
+            <Image ref={leftArmRef} style={styles.bodyPart} source={monsterBody.nodes.leftarm.bodyPart.image}/>
+            <Image ref={rightArmRef} style={styles.bodyPart} source={monsterBody.nodes.rightarm.bodyPart.image}/>
+            <Image ref={leftLegRef} style={styles.bodyPart} source={monsterBody.nodes.leftleg.bodyPart.image} />
+            <Image ref={rightLegRef} style={styles.bodyPart} source={monsterBody.nodes.rightleg.bodyPart.image}/>
+            <Image ref={eyesRef} style={styles.bodyPart} source={monsterBody.nodes.eyes.bodyPart.image}/>
+            <Image ref={mouthRef} style={styles.bodyPart} source={monsterBody.nodes.mouth.bodyPart.image}/>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    bodyPart: {
+        width: '100%',
+        height: '100%',
+    },
+    room: {
+        height: '100%',
+        width: '100%'
+    }
+})
 
 export default Monster

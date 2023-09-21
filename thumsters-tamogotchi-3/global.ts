@@ -4,9 +4,9 @@ import { Image, ImageSourcePropType } from 'react-native'
 // Body parts
 import arm from "./assets/resources/Monsters/1/Arm.png";
 import body from "./assets/resources/Monsters/1/Body.png";
-import eye from "./assets/resources/Monsters/1/Eye.png";
+import eyes from "./assets/resources/Monsters/1/Eye.png";
 import foot from "./assets/resources/Monsters/1/Foot.png";
-import horn from "./assets/resources/Monsters/1/Horn.png";
+// import head from "./assets/resources/Monsters/1/Head.png"
 import mouth from "./assets/resources/Monsters/1/Mouth.png";
 
 import ImageNotImplemented from "./assets/resources/images/ImageNotImplemented.png"
@@ -53,6 +53,7 @@ export interface IBodyPartNodes {
   leftleg: bodyPartInfo;
   rightleg: bodyPartInfo;
   eyes: bodyPartInfo;
+  head: bodyPartInfo | undefined; // Some bodies do not have heads
   mouth: bodyPartInfo;
 }
 
@@ -67,6 +68,7 @@ const emptyBodyPartNodes: IBodyPartNodes = {
   leftleg: emptyBodyPartInfo,
   rightleg: emptyBodyPartInfo,
   eyes: emptyBodyPartInfo,
+  head: emptyBodyPartInfo,
   mouth: emptyBodyPartInfo,
 }
 
@@ -82,12 +84,14 @@ export class Body {
 }
 
 // Assets: right now it is loading only the first monster, but this needs to be changed so it is dynamic.
-export const bodyParts: {[key: number]: {[key: string]: BodyPart}} = {
+export const bodyParts: {[key: number]: IBodyPartNodes} = {
   1: {
-    arm: new BodyPart([0, 0], arm),
-    eye: new BodyPart([0, 0], eye),
-    foot: new BodyPart([0, 0], foot),
-    horn: new BodyPart([0, 0], horn),
-    mouth: new BodyPart([0, 0], mouth),
+    leftarm: { bodyPart: new BodyPart([0, 0], arm), ref: undefined},
+    rightarm: { bodyPart: new BodyPart([0, 0], arm), ref: undefined},
+    leftleg: { bodyPart: new BodyPart([0, 0], foot), ref: undefined},
+    rightleg: { bodyPart: new BodyPart([0, 0], foot), ref: undefined},
+    eyes: { bodyPart: new BodyPart([0, 0], eyes), ref: undefined},
+    head: undefined,
+    mouth: { bodyPart: new BodyPart([0, 0], mouth), ref: undefined},
   }
 }
