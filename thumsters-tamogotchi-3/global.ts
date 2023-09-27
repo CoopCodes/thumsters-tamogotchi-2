@@ -1,4 +1,4 @@
-import { Ref } from 'react';
+import { Ref, useRef } from 'react';
 import { Image, ImageSourcePropType } from 'react-native'
 
 // Body parts
@@ -34,17 +34,26 @@ export const theme: ITheme = {
 
 export class BodyPart {
   node: [number, number]; // The Nodes position, this is where the body part connects to the body.
+  reflected: boolean;
+  zIndex: number;
+
   image: ImageSourcePropType; // Image path
+  imagePath: string;
   
-  constructor(node: [number, number], image: ImageSourcePropType) {
+  constructor(node: [number, number], image: ImageSourcePropType, imagePath: string,
+    zIndex: number, reflected?: boolean | undefined) {
     this.node = node;
+    this.reflected = (reflected === undefined)? false : true;
+    this.zIndex = zIndex;
+
     this.image = image;
+    this.imagePath = imagePath;
   }
 }
 
 export type bodyPartInfo = {
   bodyPart: BodyPart,
-  ref: Ref<Image> | undefined // User defined
+  ref: Ref<any> | undefined //  User defined
 }
 
 export interface IBodyPartNodes {
@@ -58,7 +67,7 @@ export interface IBodyPartNodes {
 }
 
 const emptyBodyPartInfo: bodyPartInfo = {
-  bodyPart: new BodyPart([0, 0], ImageNotImplemented),
+  bodyPart: new BodyPart([0, 0], arm, '', 0),
   ref: undefined,
 }
 
@@ -86,12 +95,12 @@ export class Body {
 // Assets: right now it is loading only the first monster, but this needs to be changed so it is dynamic.
 export const bodyParts: {[key: number]: IBodyPartNodes} = {
   1: {
-    leftarm: { bodyPart: new BodyPart([0, 0], arm), ref: undefined},
-    rightarm: { bodyPart: new BodyPart([0, 0], arm), ref: undefined},
-    leftleg: { bodyPart: new BodyPart([0, 0], foot), ref: undefined},
-    rightleg: { bodyPart: new BodyPart([0, 0], foot), ref: undefined},
-    eyes: { bodyPart: new BodyPart([0, 0], eyes), ref: undefined},
+    leftarm: { bodyPart: new BodyPart([0, 0], arm, 'assets/resources/Monsters/1/Arm.png', 0), ref: undefined},
+    rightarm: { bodyPart: new BodyPart([0, 0], arm, 'assets/resources/Monsters/1/Arm.png', 0, true), ref: undefined},
+    leftleg: { bodyPart: new BodyPart([0, 0], foot, 'assets/resources/Monsters/1/Leg.png', 0), ref: undefined},
+    rightleg: { bodyPart: new BodyPart([0, 0], foot, 'assets/resources/Monsters/1/Leg.png', 0, true), ref: undefined},
+    eyes: { bodyPart: new BodyPart([0, 0], eyes, 'assets/resources/Monsters/1/Eyes.png', 2), ref: undefined},
     head: undefined,
-    mouth: { bodyPart: new BodyPart([0, 0], mouth), ref: undefined},
+    mouth: { bodyPart: new BodyPart([0, 0], mouth, 'assets/resources/Monsters/1/Mouth.png', 2), ref: undefined},
   }
 }
