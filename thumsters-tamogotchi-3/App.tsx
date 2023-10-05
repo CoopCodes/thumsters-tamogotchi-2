@@ -9,7 +9,7 @@ import Attribute from './components/Attribute';
 import Bedroom from './components/Rooms/Bedroom';
 import { AttributesContext } from './Contexts/AttributeContext';
 import { MonsterContext } from './Contexts/MonsterContext';
-import { theme, Body, BodyPart, bodyImage, bodyParts, bodyPartInfo, IBodyPartNodes } from './global';
+import { theme, Body, BodyPart, bodyImage, bodysInfo, bodyPartInfo, IBodyPartNodes } from './global';
 import { monsterAction } from "./Contexts/MonsterContext"
 
 // const breakpoints = {
@@ -89,7 +89,7 @@ export default function App() {
 
   const monsterReducer = (state: Body, action: monsterAction) => {
     if (action.bodyParts)
-      state.nodes = action.bodyParts;
+      state.bodypartnodes = action.bodyParts;
     state.bodyImage = action.bodyImage;
 
     if (action.body)
@@ -97,7 +97,19 @@ export default function App() {
     return state;
   }
 
-  const [monster, monsterDispatch] = useReducer(monsterReducer, new Body(undefined, undefined));
+  const [monster, monsterDispatch] = useReducer(monsterReducer, new Body({
+    leftarm: bodysInfo[1].bodyparts.leftarm,
+    rightarm: bodysInfo[1].bodyparts.rightarm,
+    leftleg: bodysInfo[1].bodyparts.leftleg,
+    rightleg: bodysInfo[1].bodyparts.rightleg,
+    eyes: bodysInfo[1].bodyparts.eyes,
+    head: undefined,
+    mouth: bodysInfo[1].bodyparts.mouth,
+  }, bodysInfo[1].body, [757, 1200], {
+    x: 0,
+    y: -100,
+    scale: 1.05,
+  }, bodyImage));
 
   return (
     <MonsterContext.Provider value={{
