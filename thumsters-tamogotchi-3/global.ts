@@ -13,6 +13,10 @@ import ImageNotImplemented from "./assets/resources/images/ImageNotImplemented.p
 
 export const bodyImage = body;
 
+export const categories = [
+  'Bodys', 'Heads', 'Eyes', 'Mouths', 'Faces', 'Arms', 'Legs'
+] as const;
+
 interface ITheme {
     default: { [key: string]: string };
 }
@@ -36,6 +40,7 @@ export class BodyPart {
   node: number[]; // The Nodes position, this is where the body part connects to the body.
   reflected: boolean;
   zIndex: number;
+  category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg';
 
   width: number;
   height: number;
@@ -43,10 +48,11 @@ export class BodyPart {
   image: ImageSourcePropType; // Image path
   
   constructor(node: number[], image: ImageSourcePropType,
-    zIndex: number, dimensions: Array<number>, reflected?: boolean | undefined) {
+    zIndex: number, category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg', dimensions: Array<number>, reflected?: boolean | undefined) {
     this.node = node;
     this.reflected = (reflected === undefined)? false : true;
     this.zIndex = zIndex;
+    this.category = category;
 
     this.width = dimensions[0];
     this.height = dimensions[1];
@@ -91,13 +97,13 @@ export interface IBodyNodes {
 export const bodysInfo: { [key: number]: { bodyparts: IBodyPartNodes; body: IBodyNodes } } = {
   1: {
     bodyparts: {
-      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, [546, 413], true), ref: undefined },
-      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, [546, 413]), ref: undefined},
-      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, [144, 47]), ref: undefined},
-      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, [144, 47], true), ref: undefined},
-      eyes: { bodyPart: new BodyPart([167.5, 167.5], eyes, 2, [335, 335]), ref: undefined},
+      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, 'Arm',[546, 413], true), ref: undefined },
+      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm',[546, 413]), ref: undefined},
+      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47]), ref: undefined},
+      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47], true), ref: undefined},
+      eyes: { bodyPart: new BodyPart([167.5, 167.5], eyes, 2, 'Eyes',[335, 335]), ref: undefined},
       head: undefined,
-      mouth: { bodyPart: new BodyPart([170, 138], mouth, 2, [375, 144]), ref: undefined},
+      mouth: { bodyPart: new BodyPart([170, 138], mouth, 2, 'Mouth',[375, 144]), ref: undefined},
     }, 
     body: {
       leftarm: [33, 600],
@@ -111,13 +117,13 @@ export const bodysInfo: { [key: number]: { bodyparts: IBodyPartNodes; body: IBod
   },
   2: {
     bodyparts: {
-      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, [546, 413], true), ref: undefined },
-      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, [546, 413]), ref: undefined},
-      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, [144, 47]), ref: undefined},
-      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, [144, 47], true), ref: undefined},
-      eyes: { bodyPart: new BodyPart([500, 500, 0.5], eyes2, 2, [1000, 1000]), ref: undefined},
+      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, 'Arm', [546, 413], true), ref: undefined },
+      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm', [546, 413]), ref: undefined},
+      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47]), ref: undefined},
+      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47], true), ref: undefined},
+      eyes: { bodyPart: new BodyPart([500, 500, 0.5], eyes2, 2, 'Eyes',[1000, 1000]), ref: undefined},
       head: undefined,
-      mouth: { bodyPart: new BodyPart([170, 138], mouth, 2, [375, 144]), ref: undefined},
+      mouth: { bodyPart: new BodyPart([170, 138], mouth, 2, 'Mouth', [375, 144]), ref: undefined},
     },
     body: {
       leftarm: [33, 600],
