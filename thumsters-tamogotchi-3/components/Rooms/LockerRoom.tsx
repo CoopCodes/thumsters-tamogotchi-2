@@ -55,16 +55,21 @@ const LockerRoom = ({  }: Props) => {
                     : null
                 }
             </View>
-            <View> // List of bodyparts
-                <View> // Category buttons
+            <View style={styles.customizationBar}> // List of bodyparts
+                <View style={styles.categoryButtons}> // Category buttons
                     {
                         categories.map((category: 'Bodys' | 'Heads' | 'Eyes' | 'Mouths' | 'Faces' | 'Arms' | 'Legs') => {
-                            return (<Button title={category} onPress={() => CategoryClick(category)}/>)
+                            return (
+                                <View style={styles.categoryButton}> // Should turn into component
+                                    <View style={styles.categoryButtonMain}>{category}</View> // Main button
+                                    <View style={styles.categoryButtonShadow}></View> // Shadow
+                                </View>
+                            )
 
                         })
                     }
                 </View>
-                <ScrollView> // List BodyParts
+                <ScrollView style={styles.bodyPartList}> // List BodyParts
                     {
                         displayBodyParts.map((bodyPart) => {
                             return (
@@ -90,6 +95,36 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '100%',
         zIndex: -1,
+    },
+    customizationBar: {
+        width: '100%',
+        height: 'auto',
+        backgroundColor: theme.default.interactionShadow,
+    },
+    categoryButtons: {
+        flex: 1,
+        flexDirection: 'row',
+        gap: 48,
+        justifyContent: 'center',
+    },
+    categoryButton: {
+        flex: 1,
+        gap: -59,
+        width: 123,
+        height: 70,
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    categoryButtonMain: {
+        backgroundColor: theme.default.interactionPrimary,
+        borderRadius: 100,
+    },
+    categoryButtonShadow: {
+        backgroundColor: theme.default.interactionShadow,
+        borderRadius: 100,
+    },
+    bodyPartList: {
+        
     }
 });
 
