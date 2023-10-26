@@ -1,5 +1,5 @@
 import React, { useReducer, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ImageSourcePropType } from 'react-native';
+import { View, Text, StyleSheet, ImageSourcePropType, Dimensions } from 'react-native';
 
 import heartIcon from './assets/resources/images/heart.png'
 import hungerIcon from './assets/resources/images/hunger.png'
@@ -11,6 +11,7 @@ import { AttributesContext } from './Contexts/AttributeContext';
 import { MonsterContext } from './Contexts/MonsterContext';
 import { theme, Body, BodyPart, bodyImage, bodysInfo, bodyPartInfo, IBodyPartNodes } from './global';
 import { monsterAction } from "./Contexts/MonsterContext"
+import LockerRoom from './components/Rooms/LockerRoom';
 
 // const breakpoints = {
 //   s: 700,
@@ -128,7 +129,7 @@ export default function App() {
           <Attribute attrName="happiness" image={happinessIcon} progress={attributes.happiness}/>
           <Attribute attrName="energy" image={energyIcon} progress={attributes.energy}/>
         </View>
-        <Bedroom/>
+        <LockerRoom/>
       </View>
       </AttributesContext.Provider>
     </MonsterContext.Provider>
@@ -137,13 +138,17 @@ export default function App() {
 
 const styles = StyleSheet.create({
   view: {
-    height: '100%',
+    height: Dimensions.get('window').height,
     width: '100%',
+    paddingTop: 0,
+    // borderColor: "black",
+    // borderWidth: 5,
+    // gap: -(Dimensions.get('window').height / 6),
   },
   attributes: {
     marginLeft: 'auto',
     marginRight: 'auto',
-    marginTop: 50,
+    marginTop: 10,
     gap: -10,
     width: '100%',
     display: 'flex',

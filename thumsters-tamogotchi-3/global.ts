@@ -14,7 +14,7 @@ import ImageNotImplemented from "./assets/resources/images/ImageNotImplemented.p
 export const bodyImage = body;
 
 export const categories = [
-  'Bodys', 'Heads', 'Eyes', 'Mouths', 'Faces', 'Arms', 'Legs'
+  'Body', 'Head', 'Eyes', 'Mouth', 'Arm', 'Leg'
 ] as const;
 
 interface ITheme {
@@ -26,6 +26,7 @@ export const theme: ITheme = {
     "backgroundColor": '#8053FF',
     "interactionPrimary": '#9F53FF',
     "interactionShadow": '#713BB2',
+    "customizationBar": '#734CE3',
     "health": "rgba(255, 72, 72, 1)",
     "hunger": "rgba(243, 173, 97, 1)",
     "happiness": "rgba(2, 217, 160, 1)",
@@ -44,6 +45,7 @@ export class BodyPart {
 
   width: number;
   height: number;
+  aspectRatio: number[];
 
   image: ImageSourcePropType; // Image path
   
@@ -56,6 +58,10 @@ export class BodyPart {
 
     this.width = dimensions[0];
     this.height = dimensions[1];
+    this.aspectRatio = [
+      this.width / this.height,
+      this.height / this.width
+    ]
 
     this.image = image;
   }
@@ -137,6 +143,48 @@ export const bodysInfo: { [key: number]: { bodyparts: IBodyPartNodes; body: IBod
   }
 }
 
+
+interface ListBodyPartType {
+  key: string;
+  bodyPart: BodyPart;
+}
+
+// let allbodyparts: ListBodyPartType[] = [];
+    
+// let i = 0;
+// for (let key in bodysInfo) {
+//   let bodyInfo = bodysInfo[key];
+//   let bodyParts = Object.values(bodyInfo.bodyparts);
+//   allbodyparts = allbodyparts.concat(bodyParts);
+//   i++;
+// }
+// allbodyparts.map((bodypart) => {
+//   console.log(bodypart);
+// })
+
+const allBodyParts: ListBodyPartType[] = [];
+
+// Traverse through each body 
+Object.values(bodysInfo).forEach((bodyInfo, index) => {
+  // Traverse through bodyparts of each body
+  for (const bodyPartKey in bodyInfo.bodyparts) {
+    const bodyPartInfo = bodyInfo.bodyparts[bodyPartKey as keyof IBodyPartNodes];
+    if (bodyPartInfo !== undefined) { // bodyPartInfo might be undefined
+      allBodyParts.push({
+        key: ``,
+        bodyPart: bodyPartInfo.bodyPart,
+      })
+    }
+  }
+});
+
+allBodyParts.map((part, index) => {
+  part.key =`${index}`
+  // console.log(part)
+})
+
+export const AllBodyParts = allBodyParts;
+
 const emptyBodyPartNodes: IBodyPartNodes = {
   leftarm: bodysInfo[1].bodyparts.leftarm,
   rightarm: bodysInfo[1].bodyparts.rightarm,
@@ -163,8 +211,12 @@ export interface ITransforms {
   scale: number
 }
 
+const roomDistanceFromVPTop = 150;
+export const nodeRangeThreshold = 0;
+
 export class Body {
   bodypartnodes: IBodyPartNodes;
+  bodypartnodesRelToVP: IBodyPartNodes;
   nodes: IBodyNodes;
   width: number;
   height: number;
@@ -173,10 +225,23 @@ export class Body {
   
   constructor(bodypartnodes: IBodyPartNodes = emptyBodyPartNodes, nodes: IBodyNodes = emptyNodes, dimensions: Array<number>, transforms: ITransforms, bodyImage: ImageSourcePropType | undefined) {
     this.bodypartnodes = bodypartnodes;
+    this.bodypartnodesRelToVP = this.translateNodes(this.bodypartnodes);
     this.nodes = nodes;
     this.bodyImage = bodyImage;
     this.width = dimensions[0];
     this.height = dimensions[1];
     this.transforms = transforms;
   }
+
+  translateNodes(nodes: IBodyPartNodes): IBodyPartNodes {
+    let newNodes: IBodyPartNodes = nodes;
+    if (nodes === undefined) {
+      Object.values(newNodes).map((bodypart: bodyPartInfo) => {
+        bodypart.bodyPart.node[1] += roomDistanceFromVPTop;
+      })
+    }
+    return newNodes;
+  }
 }
+
+export type OnRemoveType = (bodyPartToRemove: BodyPart) => void;

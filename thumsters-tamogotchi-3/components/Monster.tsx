@@ -40,8 +40,6 @@ const Monster = ({ monsterBody, mood }: Props) => {
                 
                 const node = bodysInfo[1].body[partTitle];
                 const bodyNodeCoord: Array<number> = (node !== undefined)? node : [0, 0];
-
-                console.log(bodypart.bodyPart.node);
             
                 bodypart.ref.current.setNativeProps({
                     style: {
@@ -58,7 +56,6 @@ const Monster = ({ monsterBody, mood }: Props) => {
                 });
                 }; i++;
             })
-            console.log()
     }, [monsterBody])
 
     return (
