@@ -98,14 +98,28 @@ export default function App() {
     return state;
   }
 
+  // const [monster, monsterDispatch] = useReducer(monsterReducer, new Body({
+  //   leftarm: bodysInfo[1].bodyparts.leftarm,
+  //   rightarm: bodysInfo[1].bodyparts.rightarm,
+  //   leftleg: bodysInfo[1].bodyparts.leftleg,
+  //   rightleg: bodysInfo[1].bodyparts.rightleg,
+  //   eyes: bodysInfo[1].bodyparts.eyes,
+  //   head: undefined,
+  //   mouth: bodysInfo[1].bodyparts.mouth,
+  // }, bodysInfo[1].body, [757, 1200], {
+  //   x: 0,
+  //   y: -100,
+  //   scale: 1.05,
+  // }, bodyImage));
+
   const [monster, monsterDispatch] = useReducer(monsterReducer, new Body({
-    leftarm: bodysInfo[1].bodyparts.leftarm,
-    rightarm: bodysInfo[1].bodyparts.rightarm,
-    leftleg: bodysInfo[1].bodyparts.leftleg,
-    rightleg: bodysInfo[1].bodyparts.rightleg,
-    eyes: bodysInfo[1].bodyparts.eyes,
+    leftarm: bodysInfo[0].bodyparts.leftarm,
+    rightarm: bodysInfo[0].bodyparts.rightarm,
+    leftleg: bodysInfo[0].bodyparts.leftleg,
+    rightleg: bodysInfo[0].bodyparts.rightleg,
+    eyes: bodysInfo[0].bodyparts.eyes,
     head: undefined,
-    mouth: bodysInfo[1].bodyparts.mouth,
+    mouth: bodysInfo[0].bodyparts.mouth,
   }, bodysInfo[1].body, [757, 1200], {
     x: 0,
     y: -100,

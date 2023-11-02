@@ -77,13 +77,13 @@ const LockerRoom = ({}: Props) => {
       i++;
     });
     setDisplayBodyParts(newBodyParts);
-    console.log(displayBodyParts);
+    // console.log(displayBodyParts);
   };
 
   useEffect(() => {
     CategoryClick("Eyes"); // Calling function to actually show the bodyparts
 
-    console.log(displayBodyParts.length);
+    // rdisplayBodyParts.length);
   }, []);
 
   return (

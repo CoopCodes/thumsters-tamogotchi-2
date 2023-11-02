@@ -6,8 +6,9 @@ import arm from "./assets/resources/Monsters/1/Arm.png";
 import body from "./assets/resources/Monsters/1/Body.png";
 import eyes from "./assets/resources/Monsters/1/Eye.png";
 import foot from "./assets/resources/Monsters/1/Foot.png";
-import eyes2 from "./assets/resources/Monsters/1/eye2.png"
+import eyes2 from "./assets/resources/Monsters/1/eye2.png";
 import mouth from "./assets/resources/Monsters/1/Mouth.png";
+import node from "./assets/resources/Monsters/1/Nodenode.png";  
 
 import ImageNotImplemented from "./assets/resources/images/ImageNotImplemented.png"
 
@@ -41,7 +42,7 @@ export class BodyPart {
   node: number[]; // The Nodes position, this is where the body part connects to the body.
   reflected: boolean;
   zIndex: number;
-  category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg';
+  category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg' | undefined;
 
   width: number;
   height: number;
@@ -50,7 +51,7 @@ export class BodyPart {
   image: ImageSourcePropType; // Image path
   
   constructor(node: number[], image: ImageSourcePropType,
-    zIndex: number, category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg', dimensions: Array<number>, reflected?: boolean | undefined) {
+    zIndex: number, category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg' | undefined, dimensions: Array<number>, reflected?: boolean | undefined) {
     this.node = node;
     this.reflected = (reflected === undefined)? false : true;
     this.zIndex = zIndex;
@@ -101,24 +102,44 @@ export interface IBodyNodes {
 
 // Assets: right now it is loading only the first monster, but this needs to be changed so it is dynamic.
 export const bodysInfo: { [key: number]: { bodyparts: IBodyPartNodes; body: IBodyNodes } } = {
-  1: {
+  0: {
     bodyparts: {
-      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, 'Arm',[546, 413], true), ref: undefined },
-      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm',[546, 413]), ref: undefined},
-      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47]), ref: undefined},
-      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47], true), ref: undefined},
-      eyes: { bodyPart: new BodyPart([167.5, 167.5], eyes, 2, 'Eyes',[335, 335]), ref: undefined},
+      leftarm: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50], true), ref: undefined },
+      rightarm: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
+      leftleg: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
+      rightleg: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], true), ref: undefined},
+      eyes: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
       head: undefined,
-      mouth: { bodyPart: new BodyPart([170, 138], mouth, 2, 'Mouth',[375, 144]), ref: undefined},
-    }, 
+      mouth: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
+    },
     body: {
-      leftarm: [33, 600],
+      leftarm: [45, 600],
       rightarm: [752, 600],
       leftleg: [300, 1200],
       rightleg: [490, 1200],
       eyes: [405, 390],
       head: undefined,
-      mouth: [405, 765],
+      mouth: [405, 765], 
+    }
+  },
+  1: {
+    bodyparts: {
+      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, 'Arm', [546, 413], true), ref: undefined },
+      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm', [546, 413]), ref: undefined},
+      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47]), ref: undefined},
+      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47], true), ref: undefined},
+      eyes: { bodyPart: new BodyPart([500, 500, 0.5], eyes, 2, 'Eyes',[1000, 1000]), ref: undefined},
+      head: undefined,
+      mouth: { bodyPart: new BodyPart([25, 25], mouth, 2, 'Mouth',[50, 50]), ref: undefined},
+    }, 
+    body: {
+      leftarm: [65, 600],
+      rightarm: [752, 600],
+      leftleg: [300, 1200],
+      rightleg: [490, 1200],
+      eyes: [405, 390],
+      head: undefined,
+      mouth: [405, 765], 
     }
   },
   2: {
@@ -140,7 +161,7 @@ export const bodysInfo: { [key: number]: { bodyparts: IBodyPartNodes; body: IBod
       head: undefined,
       mouth: [405, 765],
     }
-  }
+  },
 }
 
 
@@ -234,10 +255,16 @@ export class Body {
   }
 
   translateNodes(nodes: IBodyPartNodes): IBodyPartNodes {
-    let newNodes: IBodyPartNodes = nodes;
-    if (nodes === undefined) {
-      Object.values(newNodes).map((bodypart: bodyPartInfo) => {
-        bodypart.bodyPart.node[1] += roomDistanceFromVPTop;
+    // let newNodes: IBodyPartNodes = JSON.parse(JSON.stringify(nodes)); // Deep copy
+    let newNodes: IBodyPartNodes = Object.assign({}, nodes); // Shallow copy
+    if (nodes !== undefined && newNodes !== undefined) {
+      Object.values(newNodes).map((bodypart: bodyPartInfo, index: number) => {
+        if (bodypart !== undefined && bodypart.bodyPart !== undefined && Object.values(nodes)[index] !== undefined) {
+          bodypart.bodyPart.node[1] = bodypart.bodyPart.node[1] + 10;
+          Object.values(nodes)[index].bodyPart.node[1] += 2;
+          // console.log("New Node: " + bodypart.bodyPart.node[1]);
+          // console.log("Old Node: " + Object.values(nodes)[index].bodyPart.node[1])
+        }
       })
     }
     return newNodes;
