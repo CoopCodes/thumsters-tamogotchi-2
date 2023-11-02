@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { View, Image, Text, ImageSourcePropType, StyleSheet,  } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { theme } from '../global';
+import { SvgUri } from 'react-native-svg';
 
 interface Props {
   attrName: string;
-  image: ImageSourcePropType;
+  image: string;
   progress: number;
 }
 
@@ -23,7 +24,7 @@ const Attribute = ({ attrName, image, progress }: Props) => {
             backgroundColor={theme.default.interactionShadow}>
                 {
                     () => (
-                        <Image style={(attrName === "energy")? energyStyles.attrImage : styles.attrImage} source={image}/>
+                        <SvgUri style={(attrName === "energy")? energyStyles.attrImage : styles.attrImage} uri={image}/>
                     )
                 }
             </AnimatedCircularProgress>

@@ -1,5 +1,6 @@
 import { Ref, useRef } from 'react';
 import { Image, ImageSourcePropType } from 'react-native'
+import { useDynamicSVGImport, UseDynamicSVGImportOptions } from './customHooks/useDynamicSVGImport';
 
 // Body parts
 import arm from "./assets/resources/Monsters/1/Arm.png";
@@ -48,9 +49,9 @@ export class BodyPart {
   height: number;
   aspectRatio: number[];
 
-  image: ImageSourcePropType; // Image path
+  image: string; // Image path
   
-  constructor(node: number[], image: ImageSourcePropType,
+  constructor(node: number[], image: string,
     zIndex: number, category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg' | undefined, dimensions: Array<number>, reflected?: boolean | undefined) {
     this.node = node;
     this.reflected = (reflected === undefined)? false : true;
@@ -124,13 +125,13 @@ export const bodysInfo: { [key: number]: { bodyparts: IBodyPartNodes; body: IBod
   },
   1: {
     bodyparts: {
-      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, 'Arm', [546, 413], true), ref: undefined },
-      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm', [546, 413]), ref: undefined},
-      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47]), ref: undefined},
-      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47], true), ref: undefined},
-      eyes: { bodyPart: new BodyPart([500, 500, 0.5], eyes, 2, 'Eyes',[1000, 1000]), ref: undefined},
+      leftarm: { bodyPart: new BodyPart([110, 86], "./assets/resources/Monsters/1/Arm.svg", -1, 'Arm', [546, 413], true), ref: undefined },
+      rightarm: { bodyPart: new BodyPart([400, 86], "./assets/resources/Monsters/1/Arm.svg", -1, 'Arm', [546, 413]), ref: undefined},
+      leftleg: { bodyPart: new BodyPart([45, 34], "./assets/resources/Monsters/1/Foot.svg", 0, 'Leg', [144, 47]), ref: undefined},
+      rightleg: { bodyPart: new BodyPart([45, 34], "./assets/resources/Monsters/1/Foot.svg", 0, 'Leg',[144, 47], true), ref: undefined},
+      eyes: { bodyPart: new BodyPart([500, 500, 0.5], "./assets/resources/Monsters/1/Eyes.svg", 2, 'Eyes',[1000, 1000]), ref: undefined},
       head: undefined,
-      mouth: { bodyPart: new BodyPart([25, 25], mouth, 2, 'Mouth',[50, 50]), ref: undefined},
+      mouth: { bodyPart: new BodyPart([25, 25], "./assets/resources/Monsters/1/Mouth.svg", 2, 'Mouth',[50, 50]), ref: undefined},
     }, 
     body: {
       leftarm: [65, 600],
@@ -144,13 +145,13 @@ export const bodysInfo: { [key: number]: { bodyparts: IBodyPartNodes; body: IBod
   },
   2: {
     bodyparts: {
-      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, 'Arm', [546, 413], true), ref: undefined },
-      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm', [546, 413]), ref: undefined},
-      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47]), ref: undefined},
-      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47], true), ref: undefined},
-      eyes: { bodyPart: new BodyPart([500, 500, 0.5], eyes2, 2, 'Eyes',[1000, 1000]), ref: undefined},
+      leftarm: { bodyPart: new BodyPart([110, 86], "./assets/resources/Monsters/1/Arm.svg", -1, 'Arm', [546, 413], true), ref: undefined },
+      rightarm: { bodyPart: new BodyPart([400, 86], "./assets/resources/Monsters/1/Arm.svg", -1, 'Arm', [546, 413]), ref: undefined},
+      leftleg: { bodyPart: new BodyPart([45, 34], "./assets/resources/Monsters/1/Foot.svg", 0, 'Leg', [144, 47]), ref: undefined},
+      rightleg: { bodyPart: new BodyPart([45, 34], "./assets/resources/Monsters/1/Foot.svg", 0, 'Leg',[144, 47], true), ref: undefined},
+      eyes: { bodyPart: new BodyPart([500, 500, 0.5], "./assets/resources/Monsters/1/Eyes.svg", 2, 'Eyes',[1000, 1000]), ref: undefined},
       head: undefined,
-      mouth: { bodyPart: new BodyPart([170, 138], mouth, 2, 'Mouth', [375, 144]), ref: undefined},
+      mouth: { bodyPart: new BodyPart([25, 25], "./assets/resources/Monsters/1/Mouth.svg", 2, 'Mouth',[50, 50]), ref: undefined},
     },
     body: {
       leftarm: [33, 600],
@@ -241,10 +242,10 @@ export class Body {
   nodes: IBodyNodes;
   width: number;
   height: number;
-  bodyImage: ImageSourcePropType | undefined;
+  bodyImage: string | undefined;
   transforms: ITransforms;
   
-  constructor(bodypartnodes: IBodyPartNodes = emptyBodyPartNodes, nodes: IBodyNodes = emptyNodes, dimensions: Array<number>, transforms: ITransforms, bodyImage: ImageSourcePropType | undefined) {
+  constructor(bodypartnodes: IBodyPartNodes = emptyBodyPartNodes, nodes: IBodyNodes = emptyNodes, dimensions: Array<number>, transforms: ITransforms, bodyImage: string | undefined) {
     this.bodypartnodes = bodypartnodes;
     this.bodypartnodesRelToVP = this.translateNodes(this.bodypartnodes);
     this.nodes = nodes;
@@ -272,3 +273,4 @@ export class Body {
 }
 
 export type OnRemoveType = (bodyPartToRemove: BodyPart) => void;
+

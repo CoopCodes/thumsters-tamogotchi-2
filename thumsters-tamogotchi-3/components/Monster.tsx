@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, Ref, RefObject } from 'react';
 import { View, Image, Text, ImageSourcePropType, StyleSheet, findNodeHandle } from 'react-native';
 import { theme, Body, bodyPartInfo, bodysInfo } from '../global';
-import node from "../assets/resources/Monsters/1/Nodenode.png";
+import BodyPartSVG from './BodyPartSVG';
+import { SvgUri } from 'react-native-svg';
 
 interface Props {
     monsterBody: Body,
@@ -25,13 +26,14 @@ const Monster = ({ monsterBody, mood }: Props) => {
     monsterBody.bodypartnodes.eyes.ref = eyesRef;
     monsterBody.bodypartnodes.mouth.ref = mouthRef;
 
+    const refs = [leftArmRef, rightArmRef, leftLegRef, rightLegRef, eyesRef, mouthRef];
+
     function checkBodyPart(part: string): boolean {
         return part === "leftarm" || part === "rightarm" || part === "leftleg" || part === "rightleg" || part === "eyes" || part === "head" || part === "mouth";
     }
     
     useEffect(() => {
-        let i: number = 0;
-        Object.values(monsterBody.bodypartnodes).map((bodypart: bodyPartInfo) => {
+        Object.values(monsterBody.bodypartnodes).map((bodypart: bodyPartInfo, i: number) => {
             if (bodypart !== undefined && bodypart.ref !== undefined && bodypart.ref !== null && bodypart.bodyPart.node !== undefined && typeof(bodypart.ref) === 'object' && bodypart.ref.current !== undefined) {
                 // if (checkBodyPart(potentialTitle)) {
                 // }
@@ -54,38 +56,33 @@ const Monster = ({ monsterBody, mood }: Props) => {
                         zIndex: bodypart.bodyPart.zIndex,
                     }
                 });
-                }; i++;
+                };
             })
     }, [monsterBody])
 
     return (
         <View style={styles.room}>
             <View style={styles.body}>
-                {
+                {/* {
                     monsterBody.bodyImage?
-                        <Image style={[styles.bodyImage, { 
+                        <SvgUri style={[styles.bodyImage, { 
                             width: monsterBody.width, height: monsterBody.height,
                             transform: [
                                 { translateX: monsterBody.transforms.x },
                                 { translateY: monsterBody.transforms.y },
                                 { scale: monsterBody.transforms.scale }
                             ]
-                        }]} source={monsterBody.bodyImage}/> :
+                        }]} uri={monsterBody.bodyImage}/> :
                         null
+                } */}
+                {
+                    Object.values(monsterBody.bodypartnodes).filter((bodypart) => bodypart !== undefined).map((bodypart: bodyPartInfo, i: number) => {
+                        return (
+                            <BodyPartSVG svgPath={bodypart.bodyPart.image} ref={refs[i]}/>
+                            // <Image source></Image>
+                        );
+                    })
                 }
-                <Image ref={monsterBody.bodypartnodes.leftarm.ref} style={styles.bodyPart} source={monsterBody.bodypartnodes.leftarm.bodyPart.image}/>
-                <Image ref={monsterBody.bodypartnodes.rightarm.ref} style={styles.bodyPart} source={monsterBody.bodypartnodes.rightarm.bodyPart.image}/>
-                <Image ref={monsterBody.bodypartnodes.leftleg.ref} style={styles.bodyPart} source={monsterBody.bodypartnodes.leftleg.bodyPart.image} />
-                <Image ref={monsterBody.bodypartnodes.rightleg.ref} style={styles.bodyPart} source={monsterBody.bodypartnodes.rightleg.bodyPart.image}/>
-                <Image ref={monsterBody.bodypartnodes.eyes.ref} style={styles.bodyPart} source={monsterBody.bodypartnodes.eyes.bodyPart.image}/>
-                <Image ref={monsterBody.bodypartnodes.mouth.ref} style={styles.bodyPart} source={monsterBody.bodypartnodes.mouth.bodyPart.image}/>
-                {/* <Image ref={monsterBody.bodypartnodes.leftarm.ref} style={styles.bodyPart} source={node}/>
-                <Image ref={monsterBody.bodypartnodes.rightarm.ref} style={styles.bodyPart} source={node}/>
-                <Image ref={monsterBody.bodypartnodes.leftleg.ref} style={styles.bodyPart} source={node}/>
-                <Image ref={monsterBody.bodypartnodes.rightleg.ref} style={styles.bodyPart} source={node}/>
-                <Image ref={monsterBody.bodypartnodes.eyes.ref} style={styles.bodyPart} source={node}/>
-                <Image ref={monsterBody.bodypartnodes.mouth.ref} style={styles.bodyPart} source={node}/> */}
-
             </View>
         </View>
     )

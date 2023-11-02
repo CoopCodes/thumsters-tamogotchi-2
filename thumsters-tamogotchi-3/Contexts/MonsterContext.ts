@@ -4,7 +4,7 @@ import { IBodyPartNodes, Body } from '../global';
 
 export type monsterAction = {
     bodyParts: IBodyPartNodes | undefined,
-    bodyImage: ImageSourcePropType | undefined,
+    bodyImage: string | undefined,
     body: Body | undefined,
   }
 

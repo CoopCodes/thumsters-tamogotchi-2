@@ -2,6 +2,7 @@ import { useRef, useState, useContext } from "react";
 import { BodyPart, theme, OnRemoveType, nodeRangeThreshold } from "../global";
 import { Animated, PanResponder, View, Image, StyleSheet } from "react-native";
 import { MonsterContext } from "../Contexts/MonsterContext";
+import { SvgUri } from 'react-native-svg';
 
 // import Animated, {
 //   useAnimatedStyle,
@@ -103,10 +104,10 @@ const ListBodyPart = ({ bodypart }: Props) => {
           ]}
           {...panResponder.panHandlers}
         >
-          <Image style={[{
+          <SvgUri style={[{
             width: `${100 * bodypart.aspectRatio[0]}%`,
             height: `${100 * bodypart.aspectRatio[1]}%`
-            }, styles.image]} source={bodypart.image} />
+            }, styles.image]} uri={bodypart.image} />
         </Animated.View>
       </View>
       <View style={styles.shadow} />

@@ -13,27 +13,6 @@ import { theme, Body, BodyPart, bodyImage, bodysInfo, bodyPartInfo, IBodyPartNod
 import { monsterAction } from "./Contexts/MonsterContext"
 import LockerRoom from './components/Rooms/LockerRoom';
 
-// const breakpoints = {
-//   s: 700,
-//   xs: 580,
-// };
-
-// const devices = {
-//   s: `max-width: ${breakpoints.s}px`,
-//   xs: `max-width: ${breakpoints.xs}px`,
-// };
-
-// const Media = StyleSheet.create({
-//   media: {
-//     '@media only screen and (max-width: 700px)': {
-//       transform: [{ scale: 0.9 }],
-//     },
-//     '@media only screen and (max-width: 580px)': {
-//       transform: [{ scale: 0.6 }],
-//     },
-//   },
-// });
-
 export default function App() {
   // Attribute Logic
   type attributesAction = {
@@ -124,7 +103,7 @@ export default function App() {
     x: 0,
     y: -100,
     scale: 1.05,
-  }, bodyImage));
+  }, "./assets/resources/Monsters/1/Body.svg"));
 
   return (
     <MonsterContext.Provider value={{
@@ -143,7 +122,8 @@ export default function App() {
           <Attribute attrName="happiness" image={happinessIcon} progress={attributes.happiness}/>
           <Attribute attrName="energy" image={energyIcon} progress={attributes.energy}/>
         </View>
-        <LockerRoom/>
+        {/* <LockerRoom/> */}
+        <Bedroom/>
       </View>
       </AttributesContext.Provider>
     </MonsterContext.Provider>
