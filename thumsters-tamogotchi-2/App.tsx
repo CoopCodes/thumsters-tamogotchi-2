@@ -76,7 +76,6 @@ export default function App() {
 
   const reducer = (state: Attributes, action: action) => {
     const updatedAttribute: number = eval(`${state[action.attribute]} ${action.operation} ${action.perk}`); 
-    console.log(state[action.attribute]);
     
     // The above adds/subtracts the initial value of the attribute,
     // to the additor. For example, "100 - 1". This would be run every 
