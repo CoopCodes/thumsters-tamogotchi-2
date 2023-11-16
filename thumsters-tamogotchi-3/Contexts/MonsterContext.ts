@@ -1,20 +1,23 @@
 import { createContext, Reducer, Ref, Dispatch } from 'react';
 import { Image, ImageSourcePropType } from 'react-native'
-import { IBodyPartNodes, Body } from '../global';
+import { IBodyPartNodes, Body, OnNodePress, bodyPartInfo, emptyBody } from '../global';
+import Monster from '../components/Monster';
 
 export type monsterAction = {
-    bodyParts: IBodyPartNodes | undefined,
-    bodyImage: ImageSourcePropType | undefined,
-    body: Body | undefined,
+    bodyParts?: IBodyPartNodes | undefined,
+    bodyPartToChange?: { bodyPartName: string, newValue: bodyPartInfo },
+    bodyImage?: ImageSourcePropType | undefined,
+    body?: Body | undefined,
+    OnNodePress?: OnNodePress
   }
 
 type monsterInformation = {
-    monster: Body | undefined,
+    monster: Body,
     monsterDispatch: Dispatch<monsterAction> | undefined
 }
 
 const initial: monsterInformation = {
-    monster: undefined, 
+    monster: emptyBody, 
     monsterDispatch: undefined
 }
 

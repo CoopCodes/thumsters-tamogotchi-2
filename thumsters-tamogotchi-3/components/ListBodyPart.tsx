@@ -2,31 +2,34 @@ import { useRef, useState, useContext } from "react";
 import { BodyPart, theme, OnRemoveType, nodeRangeThreshold } from "../global";
 import { Animated, PanResponder, View, Image, StyleSheet } from "react-native";
 import { MonsterContext } from "../Contexts/MonsterContext";
+import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
 interface Props {
   bodypart: BodyPart;
   OnRemove: OnRemoveType;
+  OnPress: React.Dispatch<React.SetStateAction<BodyPart | undefined>>;
 }
 
-const ListBodyPart = ({ bodypart }: Props) => {
-  
+const ListBodyPart = ({ bodypart, OnPress }: Props) => {
 
   return (
-    <View style={styles.parent}>
-      <View style={styles.main}>
-        <Image
-          style={[
-            {
-              width: `${100 * bodypart.aspectRatio[0]}%`,
-              height: `${100 * bodypart.aspectRatio[1]}%`,
-            },
-            styles.image,
-          ]}
-          source={bodypart.image}
-        />
-      </View>
-      <View style={styles.shadow} />
-    </View>
+    <GestureHandlerRootView>
+      <TouchableOpacity style={styles.parent} onPress={() => { OnPress(bodypart); console.log(bodypart + " listbodypart was pressed") }}>
+        <View style={styles.main}>
+          <Image
+            style={[
+              {
+                width: `${100 * bodypart.aspectRatio[0]}%`,
+                height: `${100 * bodypart.aspectRatio[1]}%`,
+              },
+              styles.image,
+            ]}
+            source={bodypart.image}
+          />
+        </View>
+        <View style={styles.shadow} />
+      </TouchableOpacity>
+    </GestureHandlerRootView>
   );
 };
 

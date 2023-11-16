@@ -28,53 +28,76 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 interface Props {}
 
 const LockerRoom = ({}: Props) => {
+  
   // Monster Initialization
   const { monster, monsterDispatch } = useContext(MonsterContext);
   useEffect(() => {
     if (monsterDispatch) {
       const action: monsterAction = {
-        bodyParts: monster?.bodypartnodes,
+        bodyParts: bodysInfo[0].bodyparts,
         bodyImage: bodyImage,
         body: monster,
+        OnNodePress: OnNodePress
       };
       monsterDispatch(action);
     }
   }, []);
-
+  
   interface ListBodyPartType {
     key: string;
     bodyPart: BodyPart;
   }
-
+  
   const [displayBodyParts, setDisplayBodyParts] = useState<ListBodyPartType[]>(
     []
-  );
-
-  function removeBodyPart(bodyPartToRemove: ListBodyPartType) {
-    setDisplayBodyParts(
-      displayBodyParts.filter((bodyPart) => bodyPart !== bodyPartToRemove)
     );
-    console.log("removed self");
-  }
+    
+    // ListBodyPart functionality:
+    const [pressedBodyPart, setPressedBodyPart] = useState<BodyPart>();
+    
+    function OnNodePress(bodyPart: BodyPart) {
+      console.log(bodyPart.category + " node was pressed");
+      if (pressedBodyPart != null) {
+        const bodyPartNameIndex = Object.values(monster.bodypartnodes).indexOf(bodyPart); // Getting index of bodypart node pressed
+        const action: monsterAction = {
+          bodyPartToChange: { 
+            bodyPartName: Object.keys(monster.bodypartnodes)[bodyPartNameIndex], // Getting the bodypart name
+            newValue: { // Setting the bodypart to the selected bodypart
+              bodyPart: pressedBodyPart,
+              ref: Object.values(monster.bodypartnodes)[bodyPartNameIndex].ref,
+             }
+          }
+        }
+        if (monsterDispatch)
+          monsterDispatch(action)
+      }
+    }
 
-  type Categories = (typeof categories)[number];
-
-  // Function when conditions are pressed
-  const CategoryClick = (category: Categories) => {
-    // Clearing the current array
-    let newBodyParts: ListBodyPartType[] = [];
-    // Getting all bodyparts, given the category,
-    // and updating the displayBodyParts array.
-    let i = 0;
+    function removeBodyPart(bodyPartToRemove: ListBodyPartType) {
+      setDisplayBodyParts(
+        displayBodyParts.filter((bodyPart) => bodyPart !== bodyPartToRemove)
+        );
+        console.log("removed self");
+      }
+      
+      type Categories = (typeof categories)[number];
+      
+      // Function when conditions are pressed
+      const CategoryClick = (category: Categories) => {
+        // Clearing the current array
+        let newBodyParts: ListBodyPartType[] = [];
+        // Getting all bodyparts, given the category,
+        // and updating the displayBodyParts array.
+        let i = 0;
 
     AllBodyParts.filter(
       (bodyPartToTest: ListBodyPartType) =>
-        bodyPartToTest.bodyPart.category === category
-    ).map((bodyPart: ListBodyPartType) => {
-      let modBodyPart = bodyPart;
-      modBodyPart.key = `${i}`;
-      newBodyParts.push(bodyPart);
-      i++;
+      bodyPartToTest.bodyPart.category === category
+      ).map((bodyPart: ListBodyPartType) => {
+        let modBodyPart = bodyPart;
+        modBodyPart.key = `${i}`;
+        newBodyParts.push(bodyPart);
+        i++;
     });
     setDisplayBodyParts(newBodyParts);
     // console.log(displayBodyParts);
@@ -124,6 +147,7 @@ const LockerRoom = ({}: Props) => {
             <ListBodyPart
               bodypart={item.bodyPart}
               OnRemove={() => removeBodyPart(item)}
+              OnPress={setPressedBodyPart}
             />
           )}
         />

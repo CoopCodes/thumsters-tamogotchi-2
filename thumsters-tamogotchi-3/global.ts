@@ -68,10 +68,14 @@ export class BodyPart {
   }
 }
 
+export type OnNodePress = (bodypart: BodyPart) => void;
+
 export type bodyPartInfo = {
   bodyPart: BodyPart,
+  onPress?: OnNodePress,
   ref: Ref<any> | undefined //  User defined
 }
+
 
 export interface IBodyPartNodes {
   leftarm: bodyPartInfo;
@@ -94,27 +98,27 @@ export interface IBodyNodes {
 }
 
 // const emptyBodyPartInfo: bodyPartInfo = {
-//   bodyPart: new BodyPart([0, 0], arm, 0, [0, 0]),
-//   ref: undefined,
-// }
-
-
-
-// Assets: right now it is loading only the first monster, but this needs to be changed so it is dynamic.
-export const bodysInfo: { [key: number]: { bodyparts: IBodyPartNodes; body: IBodyNodes } } = {
-  0: {
-    bodyparts: {
-      leftarm: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50], true), ref: undefined },
-      rightarm: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
-      leftleg: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
-      rightleg: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], true), ref: undefined},
-      eyes: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
-      head: undefined,
-      mouth: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
-    },
-    body: {
-      leftarm: [45, 600],
-      rightarm: [752, 600],
+  //   bodyPart: new BodyPart([0, 0], arm, 0, [0, 0]),
+  //   ref: undefined,
+  // }
+  
+  
+  
+  // Assets: right now it is loading only the first monster, but this needs to be changed so it is dynamic.
+  export const bodysInfo: { [key: number]: { bodyparts: IBodyPartNodes; body: IBodyNodes } } = {
+    0: {
+      bodyparts: {
+        leftarm: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50], true), ref: undefined },
+        rightarm: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
+        leftleg: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
+        rightleg: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], true), ref: undefined},
+        eyes: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
+        head: undefined,
+        mouth: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
+      },
+      body: {
+        leftarm: [45, 600],
+        rightarm: [752, 600],
       leftleg: [300, 1200],
       rightleg: [490, 1200],
       eyes: [405, 390],
@@ -171,20 +175,20 @@ interface ListBodyPartType {
 }
 
 // let allbodyparts: ListBodyPartType[] = [];
-    
+
 // let i = 0;
 // for (let key in bodysInfo) {
-//   let bodyInfo = bodysInfo[key];
-//   let bodyParts = Object.values(bodyInfo.bodyparts);
-//   allbodyparts = allbodyparts.concat(bodyParts);
-//   i++;
-// }
-// allbodyparts.map((bodypart) => {
-//   console.log(bodypart);
-// })
+  //   let bodyInfo = bodysInfo[key];
+  //   let bodyParts = Object.values(bodyInfo.bodyparts);
+  //   allbodyparts = allbodyparts.concat(bodyParts);
+  //   i++;
+  // }
+  // allbodyparts.map((bodypart) => {
+    //   console.log(bodypart);
+    // })
 
-const allBodyParts: ListBodyPartType[] = [];
-
+    const allBodyParts: ListBodyPartType[] = [];
+    
 // Traverse through each body 
 Object.values(bodysInfo).forEach((bodyInfo, index) => {
   // Traverse through bodyparts of each body
@@ -253,7 +257,7 @@ export class Body {
     this.height = dimensions[1];
     this.transforms = transforms;
   }
-
+  
   translateNodes(nodes: IBodyPartNodes): IBodyPartNodes {
     // let newNodes: IBodyPartNodes = JSON.parse(JSON.stringify(nodes)); // Deep copy
     let newNodes: IBodyPartNodes = Object.assign({}, nodes); // Shallow copy
@@ -272,3 +276,5 @@ export class Body {
 }
 
 export type OnRemoveType = (bodyPartToRemove: BodyPart) => void;
+
+export const emptyBody: Body = new Body(undefined, undefined, [0, 0], {x: 0, y: 0, scale: 1}, undefined)
