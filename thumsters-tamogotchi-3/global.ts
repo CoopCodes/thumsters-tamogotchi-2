@@ -24,10 +24,11 @@ interface ITheme {
 
 export const theme: ITheme = {
   default: {
-    "backgroundColor": '#8053FF',
+    "backgroundColor": '#FFFFFF',
     "interactionPrimary": '#9F53FF',
     "interactionShadow": '#713BB2',
-    "customizationBar": '#734CE3',
+    "customizationBar": '#F3F4F6',
+    "customizationBarStroke": '#E5E7EB',
     "health": "rgba(255, 72, 72, 1)",
     "hunger": "rgba(243, 173, 97, 1)",
     "happiness": "rgba(2, 217, 160, 1)",
