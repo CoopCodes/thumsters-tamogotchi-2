@@ -1,5 +1,5 @@
 import { useRef, useState, useContext } from "react";
-import { BodyPart, theme, OnRemoveType, nodeRangeThreshold } from "../global";
+import { BodyPart, theme, OnRemoveType, nodeRangeThreshold, vw } from "../global";
 import { Animated, PanResponder, View, Image, StyleSheet } from "react-native";
 import { MonsterContext } from "../Contexts/MonsterContext";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
@@ -11,23 +11,31 @@ interface Props {
 }
 
 const ListBodyPart = ({ bodypart, OnPress }: Props) => {
-
+  // console.log([
+  //   100 * bodypart.aspectRatio[0],
+  //   100 * bodypart.aspectRatio[1],
+  // ])
   return (
     <GestureHandlerRootView>
-      <TouchableOpacity style={styles.parent} onPress={() => { OnPress(bodypart); console.log(bodypart + " listbodypart was pressed") }}>
-        <View style={styles.main}>
+      <TouchableOpacity style={[styles.parent, {
+        height: 100 * bodypart.aspectRatio[1],
+        // backgroundColor: 'black'
+      }]} onPress={() => { OnPress(bodypart); console.log(bodypart + " listbodypart was pressed") }}>
           <Image
             style={[
               {
-                width: `${100 * bodypart.aspectRatio[0]}%`,
-                height: `${100 * bodypart.aspectRatio[1]}%`,
+                width: vw(33),
+                height: '100%',
               },
               styles.image,
             ]}
-            source={bodypart.image}
+            source={
+              (!bodypart.badContrast)? 
+                bodypart.image : 
+                (bodypart.imageBadContrast !== undefined)?
+                  bodypart.imageBadContrast : bodypart.image
+            }
           />
-        </View>
-        <View style={styles.shadow} />
       </TouchableOpacity>
     </GestureHandlerRootView>
   );
@@ -35,34 +43,16 @@ const ListBodyPart = ({ bodypart, OnPress }: Props) => {
 
 const styles = StyleSheet.create({
   parent: {
-    height: 105,
-    width: 105,
-    marginRight: 10,
-    zIndex: 10,
-    overflow: "visible",
-  },
-  main: {
-    position: "relative",
-    zIndex: 9,
-    backgroundColor: theme.default.interactionPrimary,
-    borderRadius: 20,
-    overflow: "visible",
-  },
-  shadow: {
-    position: "absolute",
-    height: "100%",
-    width: "100%",
-    backgroundColor: theme.default.interactionShadow,
-    borderRadius: 20,
-    transform: [{ translateX: 5 }, { translateY: 5 }],
+    marginRight: 20,
     overflow: "visible",
   },
   image: {
-    // position: 'absolute',
-
-    transform: [{ scale: 0.8 }],
+    position: 'relative',
     zIndex: 10,
     overflow: "visible",
+    top: 'auto',
+    bottom: 0,
+    objectFit: 'contain'
   },
 });
 

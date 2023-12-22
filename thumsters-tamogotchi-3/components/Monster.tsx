@@ -17,11 +17,10 @@ import {
 interface Props {
   monsterBody: Body;
   mood: string;
+  scaleFactor: number;
 }
 
-const Monster = ({ monsterBody, mood }: Props) => {
-  const scaleFactor: number = 0.3;
-
+const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
   const leftArmRef = useRef();
   const rightArmRef = useRef();
   const leftLegRef = useRef();
@@ -112,11 +111,11 @@ const Monster = ({ monsterBody, mood }: Props) => {
               style={[
                 styles.bodyImage,
                 {
-                  width: monsterBody.width,
-                  height: monsterBody.height,
+                  width: monsterBody.width * scaleFactor,
+                  height: monsterBody.height * scaleFactor,
                   transform: [
-                    { translateX: monsterBody.transforms.x },
-                    { translateY: monsterBody.transforms.y },
+                    { translateX: monsterBody.transforms.x * scaleFactor },
+                    { translateY: monsterBody.transforms.y * scaleFactor },
                     { scale: monsterBody.transforms.scale },
                   ],
                 },
@@ -224,27 +223,26 @@ const styles = StyleSheet.create({
   bodyPart: {
     backgroundColor: "transparent",
     position: "absolute",
-    // top: "-50%",
-    // left: "-50%",
   },
   room: {
     height: "100%",
-    width: "100%",
+    flex: 1,
+    justifyContent: 'center',
+    alignContent: 'center',
+    marginTop: 'auto',
   },
   body: {
-    transform: [{ scale: 0.3 }],
-    marginTop: -30,
+    width: "100%",
+    height: "100%",
     flex: 1,
   },
   bodyImage: {
-    left: "-50%",
-    top: "-50%",
     height: "100%",
     width: "100%",
   },
   gestureHandler: {
-    height: "auto",
-    width: "auto",
+    height: "100%",
+    width: "100%",
   },
   touchable: {
     backgroundColor: "black",

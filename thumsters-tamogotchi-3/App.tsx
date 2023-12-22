@@ -23,6 +23,7 @@ import {
   bodysInfo,
   bodyPartInfo,
   IBodyPartNodes,
+  emptyFunction,
 } from "./global";
 import { monsterAction } from "./Contexts/MonsterContext";
 import LockerRoom from "./components/Rooms/LockerRoom";
@@ -110,22 +111,21 @@ export default function App() {
 
     if (action.bodyPartToChange) {
       let i;
-      Object.keys(state.bodypartnodes).filter(
-        (x: string, index: number) => { 
-          x === action.bodyPartToChange?.bodyPartName;
-          i = index;
-      })
-      
+      Object.keys(state.bodypartnodes).filter((x: string, index: number) => {
+        x === action.bodyPartToChange?.bodyPartName;
+        i = index;
+      });
+
       if (i)
-        Object.values(state.bodypartnodes)[i] = action.bodyPartToChange.newValue;
+        Object.values(state.bodypartnodes)[i] =
+          action.bodyPartToChange.newValue;
     }
 
     if (action.body) state = action.body;
 
     if (action.OnNodePress) {
       Object.values(state.bodypartnodes).map((bodypart: bodyPartInfo) => {
-        if (bodypart)
-          bodypart.onPress = action.OnNodePress;
+        if (bodypart) bodypart.onPress = action.OnNodePress;
       });
     }
     return state;
@@ -168,6 +168,12 @@ export default function App() {
     )
   );
 
+  const [showAttributesBar, setShowAttributeBar] = useState(true);
+
+  const removeAttributesBar: emptyFunction = () => {
+    setShowAttributeBar(false);
+  };
+
   return (
     <MonsterContext.Provider
       value={{
@@ -187,30 +193,35 @@ export default function App() {
             { backgroundColor: theme.default.backgroundColor },
           ]}
         >
-          <View style={[styles.attributes]}>
-            {/* Render Attribute components here */}
-            <Attribute
-              attrName="health"
-              image={heartIcon}
-              progress={attributes.health}
-            />
-            <Attribute
-              attrName="hunger"
-              image={hungerIcon}
-              progress={attributes.hunger}
-            />
-            <Attribute
-              attrName="happiness"
-              image={happinessIcon}
-              progress={attributes.happiness}
-            />
-            <Attribute
-              attrName="energy"
-              image={energyIcon}
-              progress={attributes.energy}
-            />
-          </View>
-          <LockerRoom />
+          {/* If showAttributesBar is true, then show it, else show nothing */}
+          {showAttributesBar ? (
+            <View style={[styles.attributes]}>
+              {/* Render Attribute components here */}
+              <Attribute
+                attrName="health"
+                image={heartIcon}
+                progress={attributes.health}
+              />
+              <Attribute
+                attrName="hunger"
+                image={hungerIcon}
+                progress={attributes.hunger}
+              />
+              <Attribute
+                attrName="happiness"
+                image={happinessIcon}
+                progress={attributes.happiness}
+              />
+              <Attribute
+                attrName="energy"
+                image={energyIcon}
+                progress={attributes.energy}
+              />
+            </View>
+          ) : (
+            <></>
+          )}
+          <LockerRoom removeAttributesBar={removeAttributesBar} />
         </View>
       </AttributesContext.Provider>
     </MonsterContext.Provider>
@@ -222,9 +233,6 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
     width: "100%",
     paddingTop: 0,
-    // borderColor: "black",
-    // borderWidth: 5,
-    // gap: -(Dimensions.get('window').height / 6),
   },
   attributes: {
     marginLeft: "auto",

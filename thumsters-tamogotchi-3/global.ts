@@ -1,10 +1,11 @@
 import { Ref, useRef } from 'react';
-import { Image, ImageSourcePropType } from 'react-native'
+import { Dimensions, Image, ImageSourcePropType } from 'react-native'
 
 // Body parts
 import arm from "./assets/resources/Monsters/1/Arm.png";
 import body from "./assets/resources/Monsters/1/Body.png";
 import eyes from "./assets/resources/Monsters/1/Eye.png";
+import eyesBadContrast from "./assets/resources/Monsters/1/Eye_BadContrast.png";
 import foot from "./assets/resources/Monsters/1/Foot.png";
 import eyes2 from "./assets/resources/Monsters/1/eye2.png";
 import mouth from "./assets/resources/Monsters/1/Mouth.png";
@@ -33,8 +34,10 @@ export const theme: ITheme = {
     "hunger": "rgba(243, 173, 97, 1)",
     "happiness": "rgba(2, 217, 160, 1)",
     "energy": "rgba(245, 216, 0, 1)",
+    "font": "Poppins-ExtraBold"
   },
 };
+
 
 
 // Types:
@@ -48,11 +51,14 @@ export class BodyPart {
   width: number;
   height: number;
   aspectRatio: number[];
+  badContrast: boolean;
 
   image: ImageSourcePropType; // Image path
+  imageBadContrast: ImageSourcePropType | undefined;
   
   constructor(node: number[], image: ImageSourcePropType,
-    zIndex: number, category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg' | undefined, dimensions: Array<number>, reflected?: boolean | undefined) {
+    zIndex: number, category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg' | undefined, dimensions: Array<number>, reflected?: boolean | undefined, 
+    badContrast: boolean = false, imageBadContrast: ImageSourcePropType | undefined = undefined) {
     this.node = node;
     this.reflected = (reflected === undefined)? false : true;
     this.zIndex = zIndex;
@@ -63,9 +69,10 @@ export class BodyPart {
     this.aspectRatio = [
       this.width / this.height,
       this.height / this.width
-    ]
+    ]; this.badContrast = badContrast;
 
     this.image = image;
+    this.imageBadContrast = imageBadContrast;
   }
 }
 
@@ -133,9 +140,9 @@ export interface IBodyNodes {
       rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm', [546, 413]), ref: undefined},
       leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47]), ref: undefined},
       rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47], true), ref: undefined},
-      eyes: { bodyPart: new BodyPart([500, 500, 0.5], eyes, 2, 'Eyes',[1000, 1000]), ref: undefined},
+      eyes: { bodyPart: new BodyPart([500, 500, 0.5], eyes, 2, 'Eyes',[1000, 1000], true, true, eyesBadContrast), ref: undefined},
       head: undefined,
-      mouth: { bodyPart: new BodyPart([25, 25], mouth, 2, 'Mouth',[50, 50]), ref: undefined},
+      mouth: { bodyPart: new BodyPart([25, 25], mouth, 2, 'Mouth',[375, 144]), ref: undefined},
     }, 
     body: {
       leftarm: [65, 600],
@@ -279,3 +286,9 @@ export class Body {
 export type OnRemoveType = (bodyPartToRemove: BodyPart) => void;
 
 export const emptyBody: Body = new Body(undefined, undefined, [0, 0], {x: 0, y: 0, scale: 1}, undefined)
+
+export type emptyFunction = () => void;
+
+
+export const vw = (vw: number) => Dimensions.get('window').width * (vw / 100);
+export const vh = (vh: number) => Dimensions.get('window').height * (vh / 100);
