@@ -149,13 +149,13 @@ export default function App() {
     monsterReducer,
     new Body(
       {
-        leftarm: bodysInfo[0].bodyparts.leftarm,
-        rightarm: bodysInfo[0].bodyparts.rightarm,
-        leftleg: bodysInfo[0].bodyparts.leftleg,
-        rightleg: bodysInfo[0].bodyparts.rightleg,
-        eyes: bodysInfo[0].bodyparts.eyes,
+        leftarm: bodysInfo[1].bodyparts.leftarm,
+        rightarm: bodysInfo[1].bodyparts.rightarm,
+        leftleg: bodysInfo[1].bodyparts.leftleg,
+        rightleg: bodysInfo[1].bodyparts.rightleg,
+        eyes: bodysInfo[1].bodyparts.eyes,
         head: undefined,
-        mouth: bodysInfo[0].bodyparts.mouth,
+        mouth: bodysInfo[1].bodyparts.mouth,
       },
       bodysInfo[1].body,
       [757, 1200],
@@ -221,6 +221,7 @@ export default function App() {
           ) : (
             <></>
           )}
+          {/* <Bedroom /> */}
           <LockerRoom removeAttributesBar={removeAttributesBar} />
         </View>
       </AttributesContext.Provider>
@@ -233,6 +234,7 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
     width: "100%",
     paddingTop: 0,
+    fontFamily: theme.default.fontBold,
   },
   attributes: {
     marginLeft: "auto",

@@ -34,7 +34,6 @@ export const theme: ITheme = {
     "hunger": "rgba(243, 173, 97, 1)",
     "happiness": "rgba(2, 217, 160, 1)",
     "energy": "rgba(245, 216, 0, 1)",
-    "font": "Poppins-ExtraBold"
   },
 };
 

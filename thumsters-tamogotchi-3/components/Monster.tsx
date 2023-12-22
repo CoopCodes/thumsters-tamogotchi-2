@@ -72,31 +72,35 @@ const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
 
         const node = bodysInfo[1].body[partTitle];
         const bodyNodeCoord: Array<number> = node !== undefined ? node : [0, 0];
+        console.log(bodyNodeCoord[1] * 1 - bodypart.bodyPart.node[1] * scaleFactor)
 
-        // bodypart.ref.current.setNativeProps({
-        //   style: {
-        //     transform: [
-        //       {
-        //         translateX:
-        //           bodyNodeCoord[0] - 35 - bodypart.bodyPart.node[0] * 1,
-        //       },
-        //       {
-        //         translateY:
-        //           bodyNodeCoord[1] * 1 - bodypart.bodyPart.node[1] * 1,
-        //       },
-        //       { scaleX: bodypart.bodyPart.reflected ? -1 : 1 },
-        //       {
-        //         scale:
-        //           bodypart.bodyPart.node[2] !== undefined
-        //             ? bodypart.bodyPart.node[2]
-        //             : 1,
-        //       },
-        //     ],
-        //     width: bodypart.bodyPart.width,
-        //     height: bodypart.bodyPart.height,
-        //     zIndex: bodypart.bodyPart.zIndex,
-        //   },
-        // });
+
+        bodypart.ref.current.setNativeProps({
+          style: {
+            transform: [
+              // {
+              //   translateX:
+              //     bodyNodeCoord[0] - bodypart.bodyPart.node[0] * scaleFactor,
+              // },
+              // {
+              //   translateY:
+              //     bodyNodeCoord[1] * 1 - bodypart.bodyPart.node[1] * scaleFactor,
+              // },
+              { scaleX: bodypart.bodyPart.reflected ? -1 : 1 },
+              {
+                scale:
+                  bodypart.bodyPart.node[2] !== undefined
+                    ? bodypart.bodyPart.node[2]
+                    : 1,
+              },
+            ],
+            left: Math.abs(bodyNodeCoord[0] - bodypart.bodyPart.node[0] * scaleFactor),
+            top: Math.abs(bodyNodeCoord[1] * 1 - bodypart.bodyPart.node[1] * scaleFactor),
+            width: bodypart.bodyPart.width * scaleFactor,
+            height: bodypart.bodyPart.height * scaleFactor,
+            zIndex: bodypart.bodyPart.zIndex,
+          },
+        });
       }
       i++;
     });
@@ -104,117 +108,51 @@ const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
 
   return (
     <View style={styles.room}>
-      <GestureHandlerRootView style={styles.gestureHandler}>
-        <View style={styles.body}>
-          {monsterBody.bodyImage ? (
-            <Image
-              style={[
-                styles.bodyImage,
-                {
-                  width: monsterBody.width * scaleFactor,
-                  height: monsterBody.height * scaleFactor,
-                  transform: [
-                    { translateX: monsterBody.transforms.x * scaleFactor },
-                    { translateY: monsterBody.transforms.y * scaleFactor },
-                    { scale: monsterBody.transforms.scale },
-                  ],
-                },
-              ]}
-              source={monsterBody.bodyImage}
-            />
-          ) : null}
-          {Object.values(monsterBody.bodypartnodes).map(
-            (bodypart: bodyPartInfo, i: number) => {
-              const partTitle = Object.keys(bodysInfo[1].bodyparts)[i] as
-                | "leftarm"
-                | "rightarm"
-                | "leftleg"
-                | "rightleg"
-                | "eyes"
-                | "head"
-                | "mouth";
-              const node = bodysInfo[1].body[partTitle];
-              const bodyNodeCoord: Array<number> =
-                node !== undefined ? node : [0, 0];
-              if (bodypart)
-                return (
-                  <TouchableOpacity
-                    style={[
-                      styles.gestureHandler,
-                      {
-                        transform: [
-                          {
-                            translateX:
-                              bodyNodeCoord[0] -
-                              35 -
-                              bodypart.bodyPart.node[0] * 1,
-                          },
-                          {
-                            translateY:
-                              bodyNodeCoord[1] * 1 -
-                              bodypart.bodyPart.node[1] * 1,
-                          },
-                          { scaleX: bodypart.bodyPart.reflected ? -1 : 1 },
-                          {
-                            scale:
-                              bodypart.bodyPart.node[2] !== undefined
-                                ? bodypart.bodyPart.node[2]
-                                : 1,
-                          },
-                        ],
-                        width: bodypart.bodyPart.width,
-                        height: bodypart.bodyPart.height,
-                        zIndex: bodypart.bodyPart.zIndex,
-                      },
-                    ]}
-                    onPress={() => {
-                      // Executes the onPress function if it exists
-                      if (bodypart.onPress != null)
-                        bodypart.onPress(bodypart.bodyPart);
-                      else {
-                        return;
-                      }
-                    }}
-                  >
-                    <Image
-                      ref={bodypart.ref}
-                      style={styles.bodyPart}
-                      source={bodypart.bodyPart.image}
-                    />
-                  </TouchableOpacity>
-                );
-              else return;
-            }
-          )}
-          {/* <TouchableOpacity style={styles.touchable}>
-            <Image
-              ref={monsterBody.bodypartnodes.leftarm.ref}
-              style={styles.bodyPart}
-              source={monsterBody.bodypartnodes.leftarm.bodyPart.image}
-            />
-          </TouchableOpacity>
+      <View style={styles.body}>
+        {monsterBody.bodyImage ? (
           <Image
-            ref={monsterBody.bodypartnodes.rightarm.ref}
-            style={styles.bodyPart}
-            source={monsterBody.bodypartnodes.rightarm.bodyPart.image}
+            style={[
+              styles.bodyImage,
+              {
+                width: monsterBody.width * scaleFactor,
+                height: monsterBody.height * scaleFactor,
+                transform: [
+                  { translateX: monsterBody.transforms.x * scaleFactor },
+                  { translateY: monsterBody.transforms.y * scaleFactor },
+                  { scale: monsterBody.transforms.scale },
+                ],
+              },
+            ]}
+            source={monsterBody.bodyImage}
           />
-          <Image
-            ref={monsterBody.bodypartnodes.leftleg.ref}
-            style={styles.bodyPart}
-            source={monsterBody.bodypartnodes.leftleg.bodyPart.image}
-          />
-          <Image
-            ref={monsterBody.bodypartnodes.rightleg.ref}
-            style={styles.bodyPart}
-            source={monsterBody.bodypartnodes.rightleg.bodyPart.image}
-          />
-          <Image
-            ref={monsterBody.bodypartnodes.eyes.ref}
-            style={styles.bodyPart}
-            source={monsterBody.bodypartnodes.eyes.bodyPart.image}
-          /> */}
-        </View>
-      </GestureHandlerRootView>
+        ) : null}
+        {Object.values(monsterBody.bodypartnodes).map(
+          (bodypart: bodyPartInfo, i: number) => {
+            const partTitle = Object.keys(bodysInfo[1].bodyparts)[i] as
+              | "leftarm"
+              | "rightarm"
+              | "leftleg"
+              | "rightleg"
+              | "eyes"
+              | "head"
+              | "mouth";
+            const node = bodysInfo[1].body[partTitle];
+            const bodyNodeCoord: Array<number> =
+              node !== undefined ? node : [0, 0];
+            if (bodypart)
+              return (
+                <Image
+                  ref={bodypart.ref}
+                  style={[
+                    styles.bodyPart,
+                  ]}
+                  source={bodypart.bodyPart.image}
+                />
+              );
+            else return;
+          }
+        )}
+      </View>
     </View>
   );
 };
@@ -227,9 +165,9 @@ const styles = StyleSheet.create({
   room: {
     height: "100%",
     flex: 1,
-    justifyContent: 'center',
-    alignContent: 'center',
-    marginTop: 'auto',
+    justifyContent: "center",
+    alignContent: "center",
+    marginTop: "auto",
   },
   body: {
     width: "100%",

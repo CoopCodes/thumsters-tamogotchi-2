@@ -38,7 +38,7 @@ const Bedroom = ({  }: Props) => {
             <View style={styles.monster}>
                 { 
                     monster
-                    ? <Monster monsterBody={monster} mood={""}/>
+                    ? <Monster scaleFactor={.3} monsterBody={monster} mood={""}/>
                     : null
                 }
             </View>
