@@ -63,25 +63,38 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
   // ListBodyPart functionality:
   const [pressedBodyPart, setPressedBodyPart] = useState<BodyPart>();
 
-  // function OnNodePress(bodyPart: BodyPart) {
-  //   console.log(bodyPart.category + " node was pressed");
-  //   if (pressedBodyPart != null) {
-  //     const bodyPartNameIndex = Object.values(monster.bodypartnodes).indexOf(
-  //       bodyPart
-  //     ); // Getting index of bodypart node pressed
-  //     const action: monsterAction = {
-  //       bodyPartToChange: {
-  //         bodyPartName: Object.keys(monster.bodypartnodes)[bodyPartNameIndex], // Getting the bodypart name
-  //         newValue: {
-  //           // Setting the bodypart to the selected bodypart
-  //           bodyPart: pressedBodyPart,
-  //           ref: Object.values(monster.bodypartnodes)[bodyPartNameIndex].ref,
-  //         },
-  //       },
-  //     };
-  //     if (monsterDispatch) monsterDispatch(action);
-  //   }
-  // }
+  function changeBodyPart(bodyPart: BodyPart, side: "left" | "right" | "") {
+    setPressedBodyPart(bodyPart);
+
+    if (pressedBodyPart != null && bodyPart.category) {
+      type bodyPartCategories = "eyes" | "head" | "leftarm" | "leftleg" | "mouth" | "rightarm" | "rightleg";
+      const bodyPartNameTemp: string = side + bodyPart.category;
+
+      function isBodyPartCategory(value: string): value is bodyPartCategories {
+        return ["eyes", "head", "leftarm", "leftleg", "mouth", "rightarm", "rightleg"].includes(value);
+      }
+
+      if (isBodyPartCategory(bodyPartNameTemp)) { // Checking if it is of type bodyPartCatogiersseafasdfafd
+        const bodyPartName: bodyPartCategories = bodyPartNameTemp;
+        
+        if (monster.bodypartnodes[bodyPartName] === undefined) 
+          return
+
+
+        const action: monsterAction = {
+          bodyPartToChange: {
+            bodyPartName: bodyPartName, // Getting the bodypart name and side
+            newValue: {
+              bodyPart: pressedBodyPart,
+              ref: monster.bodypartnodes[bodyPartName]!.ref,
+            },
+          },
+        };
+        if (monsterDispatch) monsterDispatch(action);
+      }
+
+    }
+  }
 
   function removeBodyPart(bodyPartToRemove: ListBodyPartType) {
     setDisplayBodyParts(
@@ -158,7 +171,7 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
             <ListBodyPart
               bodypart={item.bodyPart}
               OnRemove={() => removeBodyPart(item)}
-              OnPress={setPressedBodyPart}
+              OnPress={changeBodyPart}
             />
           )}
         />
@@ -197,7 +210,7 @@ const styles = StyleSheet.create({
   categoryBar: {
     flex: 1,
     flexGrow: 1,
-    // height: 100, 
+    // height: 100,
     borderBottomWidth: 3,
     borderTopWidth: 3,
     borderColor: "#E5E7EB",
@@ -242,7 +255,7 @@ const styles = StyleSheet.create({
   },
 
   bodyPartList: {
-    height: '40%',
+    height: "40%",
     // flex: 1,
     paddingLeft: 20,
     paddingBottom: 20,

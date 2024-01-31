@@ -288,6 +288,7 @@ export const emptyBody: Body = new Body(undefined, undefined, [0, 0], {x: 0, y: 
 
 export type emptyFunction = () => void;
 
+export type ChangeBodyPart = (bodyPart: BodyPart, side: "left" | "right") => void;
 
 export const vw = (vw: number) => Dimensions.get('window').width * (vw / 100);
 export const vh = (vh: number) => Dimensions.get('window').height * (vh / 100);

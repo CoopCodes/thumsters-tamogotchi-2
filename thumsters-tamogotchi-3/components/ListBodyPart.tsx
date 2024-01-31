@@ -1,5 +1,5 @@
 import { useRef, useState, useContext } from "react";
-import { BodyPart, theme, OnRemoveType, nodeRangeThreshold, vw } from "../global";
+import { BodyPart, theme, OnRemoveType, nodeRangeThreshold, vw, ChangeBodyPart } from "../global";
 import { Animated, PanResponder, View, Image, StyleSheet } from "react-native";
 import { MonsterContext } from "../Contexts/MonsterContext";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
@@ -7,7 +7,8 @@ import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-h
 interface Props {
   bodypart: BodyPart;
   OnRemove: OnRemoveType;
-  OnPress: React.Dispatch<React.SetStateAction<BodyPart | undefined>>;
+  OnPress: ChangeBodyPart;
+  // OnPress: React.Dispatch<React.SetStateAction<BodyPart | undefined>>;
 }
 
 const ListBodyPart = ({ bodypart, OnPress }: Props) => {
@@ -20,7 +21,7 @@ const ListBodyPart = ({ bodypart, OnPress }: Props) => {
       <TouchableOpacity style={[styles.parent, {
         height: 100 * bodypart.aspectRatio[1],
         // backgroundColor: 'black'
-      }]} onPress={() => { OnPress(bodypart); console.log(bodypart + " listbodypart was pressed") }}>
+      }]} onPress={() => { OnPress(bodypart, (!bodypart.reflected)? "left" : "right"); console.log(bodypart + " listbodypart was pressed") }}> // Checks whether it is on the left or right
           <Image
             style={[
               {
