@@ -1,4 +1,4 @@
-import { Ref, useRef } from 'react';
+import { Ref, RefObject, useRef } from 'react';
 import { Dimensions, Image, ImageSourcePropType } from 'react-native'
 
 // Body parts
@@ -54,10 +54,11 @@ export class BodyPart {
 
   image: ImageSourcePropType; // Image path
   imageBadContrast: ImageSourcePropType | undefined;
+
+  bodySet: number;
   
   constructor(node: number[], image: ImageSourcePropType,
-    zIndex: number, category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg' | undefined, dimensions: Array<number>, reflected?: boolean | undefined, 
-    badContrast: boolean = false, imageBadContrast: ImageSourcePropType | undefined = undefined) {
+    zIndex: number, category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg' | undefined, dimensions: Array<number>, bodySet: number, reflected?: boolean | undefined, badContrast: boolean = false, imageBadContrast: ImageSourcePropType | undefined = undefined) {
     this.node = node;
     this.reflected = (reflected === undefined)? false : true;
     this.zIndex = zIndex;
@@ -72,6 +73,17 @@ export class BodyPart {
 
     this.image = image;
     this.imageBadContrast = imageBadContrast;
+
+    this.bodySet = bodySet;
+    
+    // Object.values(bodysInfo).map((body, index) => {
+    //   // Object.values(body.bodyparts).filter((bodypart) => { bodypart ===  })
+    //   const bodyparts = Object.values(body.bodyparts);
+    //   if (bodyparts.includes(this)) {
+    //     console.log(index)
+    //     this.bodySet = index;
+    //   }
+    // })
   }
 }
 
@@ -80,7 +92,7 @@ export type OnNodePress = (bodypart: BodyPart) => void;
 export type bodyPartInfo = {
   bodyPart: BodyPart,
   onPress?: OnNodePress,
-  ref: Ref<any> | undefined //  User defined
+  ref: RefObject<any> | undefined //  User defined
 }
 
 
@@ -109,59 +121,59 @@ export interface IBodyNodes {
   //   ref: undefined,
   // }
   
-  
+  const offsetX = -35;
   
   // Assets: right now it is loading only the first monster, but this needs to be changed so it is dynamic.
   export const bodysInfo: { [key: number]: { bodyparts: IBodyPartNodes; body: IBodyNodes } } = {
     0: {
       bodyparts: {
-        leftarm: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50], true), ref: undefined },
-        rightarm: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
-        leftleg: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
-        rightleg: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], true), ref: undefined},
-        eyes: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
+        leftarm: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50], 0, true), ref: undefined },
+        rightarm: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50],0), ref: undefined},
+        leftleg: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50],0), ref: undefined},
+        rightleg: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], 0, true), ref: undefined},
+        eyes: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50],0,), ref: undefined},
         head: undefined,
-        mouth: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50]), ref: undefined},
+        mouth: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50],0,), ref: undefined},
       },
       body: {
         leftarm: [45, 600],
         rightarm: [752, 600],
-      leftleg: [300, 1200],
-      rightleg: [490, 1200],
-      eyes: [405, 390],
-      head: undefined,
-      mouth: [405, 765], 
+        leftleg: [300, 1200],
+        rightleg: [490, 1200],
+        eyes: [405, 390],
+        head: undefined,
+        mouth: [405, 765],  
     }
   },
   1: {
     bodyparts: {
-      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, 'Arm', [546, 413], true), ref: undefined },
-      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm', [546, 413]), ref: undefined},
-      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47]), ref: undefined},
-      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47], true), ref: undefined},
-      eyes: { bodyPart: new BodyPart([500, 500, 0.5], eyes, 2, 'Eyes',[1000, 1000], true, true, eyesBadContrast), ref: undefined},
+      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, 'Arm', [546, 413],1, true), ref: undefined },
+      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm', [546, 413],1,), ref: undefined},
+      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47],1,), ref: undefined},
+      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47],1, true), ref: undefined},
+      eyes: { bodyPart: new BodyPart([500, 500, 0.35], eyes, 2, 'Eyes',[1000, 1000],1, true, true, eyesBadContrast), ref: undefined},
       head: undefined,
-      mouth: { bodyPart: new BodyPart([25, 25], mouth, 2, 'Mouth',[375, 144]), ref: undefined},
+      mouth: { bodyPart: new BodyPart([25, 25, .85], mouth, 2, 'Mouth',[375, 144],1,), ref: undefined},
     }, 
     body: {
-      leftarm: [65, 600],
-      rightarm: [752, 600],
-      leftleg: [300, 1200],
-      rightleg: [490, 1200],
-      eyes: [405, 390],
+      leftarm: [65 + offsetX, 600],
+      rightarm: [752 + offsetX, 600],
+      leftleg: [300 + offsetX, 1150],
+      rightleg: [490 + offsetX, 1150],
+      eyes: [365, 340],
       head: undefined,
-      mouth: [405, 765], 
+      mouth: [215, 600], 
     }
   },
   2: {
     bodyparts: {
-      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, 'Arm', [546, 413], true), ref: undefined },
-      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm', [546, 413]), ref: undefined},
-      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47]), ref: undefined},
-      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47], true), ref: undefined},
-      eyes: { bodyPart: new BodyPart([500, 500, 0.5], eyes2, 2, 'Eyes',[1000, 1000]), ref: undefined},
+      leftarm: { bodyPart: new BodyPart([110, 86], arm, -1, 'Arm', [546, 413],2, true), ref: undefined },
+      rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm', [546, 413],2,), ref: undefined},
+      leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47],2,), ref: undefined},
+      rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47],2, true), ref: undefined},
+      eyes: { bodyPart: new BodyPart([500, 500, 0.5], eyes2, 2, 'Eyes',[1000, 1000],2,), ref: undefined},
       head: undefined,
-      mouth: { bodyPart: new BodyPart([170, 138], mouth, 2, 'Mouth', [375, 144]), ref: undefined},
+      mouth: { bodyPart: new BodyPart([170, 138], mouth, 2, 'Mouth', [375, 144],2,), ref: undefined},
     },
     body: {
       leftarm: [33, 600],
@@ -288,7 +300,7 @@ export const emptyBody: Body = new Body(undefined, undefined, [0, 0], {x: 0, y: 
 
 export type emptyFunction = () => void;
 
-export type ChangeBodyPart = (bodyPart: BodyPart, side: "left" | "right") => void;
+export type ChangeBodyPart = (bodyPart: BodyPart, side: "left" | "right" | "") => void;
 
 export const vw = (vw: number) => Dimensions.get('window').width * (vw / 100);
 export const vh = (vh: number) => Dimensions.get('window').height * (vh / 100);

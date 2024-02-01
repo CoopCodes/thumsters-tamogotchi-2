@@ -16,17 +16,22 @@ const ListBodyPart = ({ bodypart, OnPress }: Props) => {
   //   100 * bodypart.aspectRatio[0],
   //   100 * bodypart.aspectRatio[1],
   // ])
+
+  let bodyPartReflected: "left" | "right" | "" = (bodypart.category === undefined || ["Eyes", "Mouth", "Head", "Body"].includes(bodypart.category))? "" : (!bodypart.reflected)? "left" : "right";
+  // console.log(bodyPartReflected)
+
   return (
     <GestureHandlerRootView>
       <TouchableOpacity style={[styles.parent, {
         height: 100 * bodypart.aspectRatio[1],
         // backgroundColor: 'black'
-      }]} onPress={() => { OnPress(bodypart, (!bodypart.reflected)? "left" : "right"); console.log(bodypart + " listbodypart was pressed") }}> // Checks whether it is on the left or right
+      }]} onPress={() => { OnPress(bodypart, bodyPartReflected); console.log(bodypart) }}>{/* Checks whether it is on the left or right */}
           <Image
             style={[
               {
                 width: vw(33),
                 height: '100%',
+                transform: [{ scaleX: (bodypart.reflected)? -1 : 1 }],
               },
               styles.image,
             ]}

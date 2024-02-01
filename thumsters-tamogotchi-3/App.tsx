@@ -14,7 +14,7 @@ import energyIcon from "./assets/resources/images/energy.png";
 import Attribute from "./components/Attribute";
 import Bedroom from "./components/Rooms/Bedroom";
 import { AttributesContext } from "./Contexts/AttributeContext";
-import { MonsterContext } from "./Contexts/MonsterContext";
+import { MonsterContext, MonsterProvider } from "./Contexts/MonsterContext";
 import {
   theme,
   Body,
@@ -105,68 +105,7 @@ export default function App() {
 
   // Monster Logic TODO: change the way body is accessed
 
-  const monsterReducer = (state: Body, action: monsterAction) => {
-    if (action.bodyParts) state.bodypartnodes = action.bodyParts;
-    state.bodyImage = action.bodyImage;
-
-    if (action.bodyPartToChange) {
-      let i;
-      Object.keys(state.bodypartnodes).filter((x: string, index: number) => {
-        x === action.bodyPartToChange?.bodyPartName;
-        i = index;
-      });
-
-      if (i)
-        Object.values(state.bodypartnodes)[i] =
-          action.bodyPartToChange.newValue;
-    }
-
-    if (action.body) state = action.body;
-
-    if (action.OnNodePress) {
-      Object.values(state.bodypartnodes).map((bodypart: bodyPartInfo) => {
-        if (bodypart) bodypart.onPress = action.OnNodePress;
-      });
-    }
-    return state;
-  };
-
-  // const [monster, monsterDispatch] = useReducer(monsterReducer, new Body({
-  //   leftarm: bodysInfo[1].bodyparts.leftarm,
-  //   rightarm: bodysInfo[1].bodyparts.rightarm,
-  //   leftleg: bodysInfo[1].bodyparts.leftleg,
-  //   rightleg: bodysInfo[1].bodyparts.rightleg,
-  //   eyes: bodysInfo[1].bodyparts.eyes,
-  //   head: undefined,
-  //   mouth: bodysInfo[1].bodyparts.mouth,
-  // }, bodysInfo[1].body, [757, 1200], {
-  //   x: 0,
-  //   y: -100,
-  //   scale: 1.05,
-  // }, bodyImage));
-
-  const [monster, monsterDispatch] = useReducer(
-    monsterReducer,
-    new Body(
-      {
-        leftarm: bodysInfo[1].bodyparts.leftarm,
-        rightarm: bodysInfo[1].bodyparts.rightarm,
-        leftleg: bodysInfo[1].bodyparts.leftleg,
-        rightleg: bodysInfo[1].bodyparts.rightleg,
-        eyes: bodysInfo[1].bodyparts.eyes,
-        head: undefined,
-        mouth: bodysInfo[1].bodyparts.mouth,
-      },
-      bodysInfo[1].body,
-      [757, 1200],
-      {
-        x: 0,
-        y: -200,
-        scale: 1.05,
-      },
-      bodyImage
-    )
-  );
+  
 
   const [showAttributesBar, setShowAttributeBar] = useState(true);
 
@@ -175,12 +114,7 @@ export default function App() {
   };
 
   return (
-    <MonsterContext.Provider
-      value={{
-        monster: monster,
-        monsterDispatch: monsterDispatch,
-      }}
-    >
+    <MonsterProvider>
       <AttributesContext.Provider
         value={{
           attributes: attributes,
@@ -225,7 +159,7 @@ export default function App() {
           <LockerRoom removeAttributesBar={removeAttributesBar} />
         </View>
       </AttributesContext.Provider>
-    </MonsterContext.Provider>
+    </MonsterProvider>
   );
 }
 

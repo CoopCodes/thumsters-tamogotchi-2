@@ -22,7 +22,7 @@ interface Props {
   buttonInnerStyles: StyleProp<ViewStyle>;
 }
 
-const PrimaryButton = ({ title, image, onPress, width, height, key, buttonInnerStyles }: Props) => {
+const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles }: Props) => {
   const styles = StyleSheet.create({
     button: {
       minWidth: width,
@@ -57,7 +57,6 @@ const PrimaryButton = ({ title, image, onPress, width, height, key, buttonInnerS
 
   return (
     <TouchableOpacity
-      key={key}
       style={[styles.button, buttonInnerStyles]}
       onPress={onPress ? onPress : () => {}}
     >

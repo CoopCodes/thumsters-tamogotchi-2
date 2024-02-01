@@ -23,7 +23,7 @@ const Bedroom = ({}: Props) => {
   useEffect(() => {
     if (monsterDispatch) {
       const action: monsterAction = {
-        bodyParts: monster?.bodypartnodes,
+        bodyParts: bodysInfo[1].bodyparts, 
         bodyImage: bodyImage,
         body: monster,
       };
@@ -82,6 +82,11 @@ const Bedroom = ({}: Props) => {
               />
         </View>
       </View> */}
+      <View style={styles.monster}>
+          {monster ? (
+            <Monster scaleFactor={0.3} monsterBody={monster} mood={""} />
+          ) : null}
+        </View>
     </View>
   );
 }; 

@@ -20,6 +20,39 @@ interface Props {
   scaleFactor: number;
 }
 
+export function updateNativeProps(bodypart: bodyPartInfo, ref: React.RefObject<any>, bodyNodeCoord: number[], scaleFactor: number) {
+  // ref.current.setNativeProps({
+  //   style:
+  return {
+      transform: [
+        // {
+        //   translateX:
+        //     // bodyNodeCoord[0] - bodypart.bodyPart.node[0] * scaleFactor,
+        // },
+        // {
+        //   translateY:
+        //     // bodyNodeCoord[1] - bodypart.bodyPart.node[1] * scaleFactor,
+        // },
+        { scaleX: bodypart.bodyPart.reflected ? -1 : 1 },
+        {
+          scale:
+            (bodypart.bodyPart.node[2])
+              ? bodypart.bodyPart.node[2]
+              : 1,
+        },
+      ],
+      // left: Math.abs((bodyNodeCoord[0] * combinedScaleFactor) - bodypart.bodyPart.node[0] * scaleFactor),
+      // top: Math.abs((bodyNodeCoord[1] * combinedScaleFactor) - bodypart.bodyPart.node[1] * scaleFactor),
+      left: (bodyNodeCoord[0] * scaleFactor) - (bodypart.bodyPart.node[0] * scaleFactor),
+      top: (bodyNodeCoord[1] * scaleFactor) - (bodypart.bodyPart.node[1] * scaleFactor),
+      width: bodypart.bodyPart.width * (scaleFactor),
+      height: bodypart.bodyPart.height * (scaleFactor),
+      zIndex: bodypart.bodyPart.zIndex,
+    }
+  // }
+  // );
+}
+
 const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
   const leftArmRef = useRef();
   const rightArmRef = useRef();
@@ -58,6 +91,8 @@ const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
         typeof bodypart.ref === "object" &&
         bodypart.ref.current !== undefined
       ) {
+          const combinedScaleFactor = (bodypart.bodyPart.node[2])? scaleFactor * bodypart.bodyPart.node[2] : scaleFactor
+
         // if (checkBodyPart(potentialTitle)) {
         // }
         // Returning an array of the all the bodypart titles, as to match it with the current bodypart, and then finds the corresponding node that it should attach to on the body.
@@ -74,33 +109,8 @@ const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
         const bodyNodeCoord: Array<number> = node !== undefined ? node : [0, 0];
         console.log(bodyNodeCoord[1] * 1 - bodypart.bodyPart.node[1] * scaleFactor)
 
-
-        bodypart.ref.current.setNativeProps({
-          style: {
-            transform: [
-              // {
-              //   translateX:
-              //     bodyNodeCoord[0] - bodypart.bodyPart.node[0] * scaleFactor,
-              // },
-              // {
-              //   translateY:
-              //     bodyNodeCoord[1] * 1 - bodypart.bodyPart.node[1] * scaleFactor,
-              // },
-              { scaleX: bodypart.bodyPart.reflected ? -1 : 1 },
-              {
-                scale:
-                  bodypart.bodyPart.node[2] !== undefined
-                    ? bodypart.bodyPart.node[2]
-                    : 1,
-              },
-            ],
-            left: Math.abs(bodyNodeCoord[0] - bodypart.bodyPart.node[0] * scaleFactor),
-            top: Math.abs(bodyNodeCoord[1] * 1 - bodypart.bodyPart.node[1] * scaleFactor),
-            width: bodypart.bodyPart.width * scaleFactor,
-            height: bodypart.bodyPart.height * scaleFactor,
-            zIndex: bodypart.bodyPart.zIndex,
-          },
-        });
+        bodypart.ref.current.setNativeProps({ styles: updateNativeProps(bodypart, bodypart.ref, bodyNodeCoord, scaleFactor) })
+        
       }
       i++;
     });
@@ -142,6 +152,7 @@ const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
             if (bodypart)
               return (
                 <Image
+                  key={i}
                   ref={bodypart.ref}
                   style={[
                     styles.bodyPart,

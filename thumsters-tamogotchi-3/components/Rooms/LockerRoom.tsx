@@ -63,37 +63,40 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
 
   // ListBodyPart functionality:
   const [pressedBodyPart, setPressedBodyPart] = useState<BodyPart>();
-
   function changeBodyPart(bodyPart: BodyPart, side: "left" | "right" | "") {
     setPressedBodyPart(bodyPart);
+    // console.log(bodyPart, " ", side);
 
-    if (pressedBodyPart != null && bodyPart.category) {
+    if (pressedBodyPart !== null && bodyPart.category) {
       type bodyPartCategories = "eyes" | "head" | "leftarm" | "leftleg" | "mouth" | "rightarm" | "rightleg";
-      const bodyPartNameTemp: string = side + bodyPart.category;
+      const bodyPartNameTemp: string = side.toLowerCase() + bodyPart.category.toLowerCase();
+      console.log(bodyPartNameTemp)
+    
 
       function isBodyPartCategory(value: string): value is bodyPartCategories {
         return ["eyes", "head", "leftarm", "leftleg", "mouth", "rightarm", "rightleg"].includes(value);
       }
-
-      if (isBodyPartCategory(bodyPartNameTemp)) { // Checking if it is of type bodyPartCatogiersseafasdfafd
+      
+      if (isBodyPartCategory(bodyPartNameTemp)) { // Checking was it is of type bodyPartCatogiersseafasdfafd
         const bodyPartName: bodyPartCategories = bodyPartNameTemp;
         
-        if (monster.bodypartnodes[bodyPartName] === undefined) 
+        if (monster.bodypartnodes[bodyPartName] === undefined) // If the body does not have this body part
           return
 
-
-        const action: monsterAction = {
-          bodyPartToChange: {
-            bodyPartName: bodyPartName, // Getting the bodypart name and side
-            newValue: {
-              bodyPart: pressedBodyPart,
-              ref: monster.bodypartnodes[bodyPartName]!.ref,
+          if (monsterDispatch) {
+          const action: monsterAction = {
+            bodyPartToChange: {
+              bodyPartName: bodyPartName, // Getting the bodypart name and side
+              newValue: {
+                bodyPart: bodyPart,
+                ref: monster.bodypartnodes[bodyPartName]?.ref,
+              },
             },
-          },
-        };
-        if (monsterDispatch) monsterDispatch(action);
+          };
+          // console.log(monster.bodypartnodes[bodyPartName]?.ref)
+          monsterDispatch(action);
+        }
       }
-
     }
   }
 
