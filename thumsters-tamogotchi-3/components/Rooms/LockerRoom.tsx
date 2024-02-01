@@ -30,6 +30,7 @@ import {
   GestureHandlerRootView,
   TouchableOpacity,
 } from "react-native-gesture-handler";
+import PrimaryButton from "../Button";
 
 interface Props {
   removeAttributesBar: emptyFunction;
@@ -146,19 +147,11 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
           contentContainerStyle={{ alignItems: "center" }}
           horizontal={true}
           renderItem={({ item, index }) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.categoryButton}
-              onPress={() => {
+            <PrimaryButton title={item} key={index} buttonInnerStyles={styles.categoryButton}
+            onPress={() => {
                 CategoryClick(item);
                 console.log(item + " was pressed");
-              }}
-            >
-              <View style={styles.shadow} />
-              <View style={styles.main}>
-                <Text style={styles.categoryButtonText}>{item}</Text>
-              </View>
-            </TouchableOpacity>
+              }}/>
           )}
         />
         <FlatList
@@ -182,7 +175,8 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
+    height: "109%"
   },
   top: {
     flex: 1.5,
@@ -226,34 +220,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 8, // used in place of 'gap' property
   },
-  shadow: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 5,
-    backgroundColor: theme.default.interactionShadow,
-  },
-  main: {
-    ...StyleSheet.absoluteFillObject,
-    position: "relative",
-    borderRadius: 5,
-    top: -5.5,
-    backgroundColor: theme.default.backgroundColor,
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  categoryButtonText: {
-    fontSize: 16,
-    textAlign: "center",
-    color: theme.default.interactionShadow,
-    fontWeight: "800",
-  },
   bodyPartsBar: {
     flex: 2,
     paddingTop: 40,
     paddingBottom: 50,
     flexDirection: "row",
   },
-
   bodyPartList: {
     height: "40%",
     // flex: 1,
@@ -262,3 +234,18 @@ const styles = StyleSheet.create({
   },
 });
 export default LockerRoom;
+
+{/* <View style={styles.shadow} />
+              <View style={styles.main}>
+                <Text style={styles.categoryButtonText}>{item}</Text>
+              </View> */}
+            //   <TouchableOpacity
+            //   key={index}
+            //   style={styles.categoryButton}
+            //   onPress={() => {
+            //     CategoryClick(item);
+            //     console.log(item + " was pressed");
+            //   }}
+            // >
+              
+            // </TouchableOpacity>

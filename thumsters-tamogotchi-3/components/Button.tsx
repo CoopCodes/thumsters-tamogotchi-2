@@ -7,6 +7,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   GestureResponderEvent,
+  StyleProp,
+  ViewStyle,
 } from "react-native";
 import { theme } from "../global";
 
@@ -17,13 +19,12 @@ interface Props {
   width?: number;
   height?: number;
   key?: number; // for when the component is being called from a loop
-  buttonInnerStyles: object;
+  buttonInnerStyles: StyleProp<ViewStyle>;
 }
 
-const Button = ({ title, image, onPress, width, height, key, buttonInnerStyles }: Props) => {
+const PrimaryButton = ({ title, image, onPress, width, height, key, buttonInnerStyles }: Props) => {
   const styles = StyleSheet.create({
     button: {
-      ...buttonInnerStyles,
       minWidth: width,
       height: height,
       justifyContent: "center",
@@ -57,7 +58,7 @@ const Button = ({ title, image, onPress, width, height, key, buttonInnerStyles }
   return (
     <TouchableOpacity
       key={key}
-      style={styles.button}
+      style={[styles.button, buttonInnerStyles]}
       onPress={onPress ? onPress : () => {}}
     >
       <View style={styles.shadow} />

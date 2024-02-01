@@ -50,7 +50,7 @@ const Bedroom = ({}: Props) => {
 
   return (
     <View>
-      <View style={styles.top}>
+      {/* <View style={styles.top}>
         <Text style={styles.title}>Bedroom</Text>
         <View style={styles.monster}>
           {monster ? (
@@ -81,7 +81,7 @@ const Bedroom = ({}: Props) => {
                 height={100}
               />
         </View>
-      </View>
+      </View> */}
     </View>
   );
 }; 
