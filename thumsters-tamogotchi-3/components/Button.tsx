@@ -9,6 +9,7 @@ import {
   GestureResponderEvent,
   StyleProp,
   ViewStyle,
+  ImageStyle,
 } from "react-native";
 import { theme } from "../global";
 
@@ -20,9 +21,10 @@ interface Props {
   height?: number;
   key?: number; // for when the component is being called from a loop
   buttonInnerStyles: StyleProp<ViewStyle>;
+  imageInnerStyles?: StyleProp<ImageStyle>;
 }
 
-const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles }: Props) => {
+const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles, imageInnerStyles }: Props) => {
   const styles = StyleSheet.create({
     button: {
       minWidth: width,
@@ -50,9 +52,7 @@ const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles
       color: theme.default.interactionShadow,
       fontWeight: "800",
     },
-    image: {
-      width: 32,
-    },
+
   });
 
   return (
@@ -65,7 +65,7 @@ const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles
         {title !== undefined ? (
           <Text style={styles.buttonText}>{title}</Text>
         ) : image !== undefined ? (
-          <Image style={styles.image} source={image}></Image>
+          <Image style={imageInnerStyles} source={image}></Image>
         ) : (
           <></>
         )}

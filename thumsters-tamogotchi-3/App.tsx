@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useState } from "react";
+import React, { useReducer, useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -24,9 +24,22 @@ import {
   bodyPartInfo,
   IBodyPartNodes,
   emptyFunction,
+  useLoadFonts,
 } from "./global";
 import { monsterAction } from "./Contexts/MonsterContext";
 import LockerRoom from "./components/Rooms/LockerRoom";
+import { NavigationContainer } from "@react-navigation/native";
+
+import { useFonts, loadAsync } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import BottomTabs from "./components/BottomTabs";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
+const Tab = createBottomTabNavigator();
+
+
 
 // const breakpoints = {
 //   s: 700,
@@ -105,13 +118,35 @@ export default function App() {
 
   // Monster Logic TODO: change the way body is accessed
 
-  
-
   const [showAttributesBar, setShowAttributeBar] = useState(true);
 
   const removeAttributesBar: emptyFunction = () => {
     setShowAttributeBar(false);
   };
+
+  // Custom font stuff
+  
+  // const fontInfo = useLoadFonts();
+  // if (!fontInfo?.fontsLoaded) {
+  //   return null;
+  // }
+
+  // useEffect(() => {
+  //   if (fontsLoaded || fontError) {
+  //     // Hide the splash screen after the fonts have loaded (or an error was returned) and the UI is ready.
+  //     SplashScreen.hideAsync();
+  //   }
+  // }, [fontsLoaded, fontError]);
+
+  
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (fontsLoaded || fontError) {
+  //     await SplashScreen.hideAsync();
+  //   } else {
+  //     return null;
+  // }
+  // }, [fontsLoaded, fontError]);
+
 
   return (
     <MonsterProvider>
@@ -155,8 +190,18 @@ export default function App() {
           ) : (
             <></>
           )}
-          {/* <Bedroom /> */}
-          <LockerRoom removeAttributesBar={removeAttributesBar} />
+          {/* <NavigationContainer>
+            <Tab.Navigator>
+              <Tab.Screen name="Bedroom" component={Bedroom} />
+              <Tab.Screen name="Home2" component={Bedroom} />
+            </Tab.Navigator>
+          </NavigationContainer> */}
+          {/* <Text style={ styles.text }>Hello</Text> */}
+          {/* <Bedroom></Bedroom> */}
+          {/* <LockerRoom removeAttributesBar={removeAttributesBar}/> */}
+          <SafeAreaProvider style={{ backgroundColor: "black", marginBottom: -105 }}>
+            <BottomTabs removeAttributesBar={removeAttributesBar}></BottomTabs>
+          </SafeAreaProvider>
         </View>
       </AttributesContext.Provider>
     </MonsterProvider>
@@ -170,6 +215,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     fontFamily: theme.default.fontBold,
   },
+  text: { fontFamily: "Poppins-ExtraBold", zIndex: 2 },
   attributes: {
     marginLeft: "auto",
     marginRight: "auto",
@@ -182,8 +228,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 100,
   },
-  // room: {
-  //   height: '100%',
-  //   width: '100%'
-  // }
+  bottomTabs: {
+    position: "relative",
+    backgroundColor: "black",
+    bottom: 0,
+  }
 });

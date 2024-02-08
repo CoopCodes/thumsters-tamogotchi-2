@@ -1,6 +1,6 @@
 import { useRef, useState, useContext } from "react";
 import { BodyPart, theme, OnRemoveType, nodeRangeThreshold, vw, ChangeBodyPart } from "../global";
-import { Animated, PanResponder, View, Image, StyleSheet } from "react-native";
+import { Animated, PanResponder, View, Image, StyleSheet, ViewStyle, StyleProp } from "react-native";
 import { MonsterContext } from "../Contexts/MonsterContext";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
@@ -17,15 +17,14 @@ const ListBodyPart = ({ bodypart, OnPress }: Props) => {
   //   100 * bodypart.aspectRatio[1],
   // ])
 
-  let bodyPartReflected: "left" | "right" | "" = (bodypart.category === undefined || ["Eyes", "Mouth", "Head", "Body"].includes(bodypart.category))? "" : (!bodypart.reflected)? "left" : "right";
+  let bodyPartReflected: "left" | "right" | "" = (bodypart.category === undefined || ["Eyes", "Mouth", "Head", "Body"].includes(bodypart.category))? "" : (!bodypart.reflected)? "right" : "left";
   // console.log(bodyPartReflected)
 
   return (
     <GestureHandlerRootView>
       <TouchableOpacity style={[styles.parent, {
-        height: 100 * bodypart.aspectRatio[1],
-        // backgroundColor: 'black'
-      }]} onPress={() => { OnPress(bodypart, bodyPartReflected); console.log(bodypart) }}>{/* Checks whether it is on the left or right */}
+        height: 100 * bodypart.aspectRatio[1]
+      }]} onPress={() => { OnPress(bodypart, bodyPartReflected); console.log("PRESSED: ", bodypart) }}>{/* Checks whether it is on the left or right */}
           <Image
             style={[
               {

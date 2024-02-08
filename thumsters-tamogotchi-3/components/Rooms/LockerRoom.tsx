@@ -26,18 +26,18 @@ import BedroomImage from "../../assets/resources/images/Bedroom.png";
 import ListBodyPart from "../ListBodyPart";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import {
-  Gesture,
   GestureHandlerRootView,
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import PrimaryButton from "../Button";
 
 interface Props {
-  removeAttributesBar: emptyFunction;
+  removeAttributesBar?: emptyFunction;
 }
 
 const LockerRoom = ({ removeAttributesBar }: Props) => {
-  removeAttributesBar();
+  if (removeAttributesBar)
+    removeAttributesBar();
 
   // Monster Initialization
   const { monster, monsterDispatch } = useContext(MonsterContext);
@@ -65,7 +65,6 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
   const [pressedBodyPart, setPressedBodyPart] = useState<BodyPart>();
   function changeBodyPart(bodyPart: BodyPart, side: "left" | "right" | "") {
     setPressedBodyPart(bodyPart);
-    // console.log(bodyPart, " ", side);
 
     if (pressedBodyPart !== null && bodyPart.category) {
       type bodyPartCategories = "eyes" | "head" | "leftarm" | "leftleg" | "mouth" | "rightarm" | "rightleg";
@@ -150,7 +149,10 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
           contentContainerStyle={{ alignItems: "center" }}
           horizontal={true}
           renderItem={({ item, index }) => (
-            <PrimaryButton title={item} key={index} buttonInnerStyles={styles.categoryButton}
+            <PrimaryButton title={item} key={index} buttonInnerStyles={[styles.categoryButton, {
+                marginLeft: (index === 0)? 20 : 0,
+                marginRight: ((index + 1) === categories.length)? 20 : 8
+              }]}
             onPress={() => {
                 CategoryClick(item);
                 console.log(item + " was pressed");
@@ -162,7 +164,7 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
           data={displayBodyParts}
           horizontal={true}
           keyExtractor={(item) => item.key}
-          contentContainerStyle={{ marginRight: 10, alignItems: "flex-end" }}
+          contentContainerStyle={{ alignItems: "flex-end" }}
           renderItem={({ item }) => (
             <ListBodyPart
               bodypart={item.bodyPart}
@@ -211,8 +213,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 3,
     borderTopWidth: 3,
     borderColor: "#E5E7EB",
-    paddingLeft: 20,
-    // paddingRight: 20,/
+    // paddingLeft: 20,
+    // paddingRight: 20,
     paddingVertical: 10,
     flexDirection: "row",
   },

@@ -1,5 +1,8 @@
-import { Ref, RefObject, useRef } from 'react';
+import { Ref, RefObject, useEffect } from 'react';
 import { Dimensions, Image, ImageSourcePropType } from 'react-native'
+
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
 // Body parts
 import arm from "./assets/resources/Monsters/1/Arm.png";
@@ -28,6 +31,7 @@ export const theme: ITheme = {
     "backgroundColor": '#FFFFFF',
     "interactionPrimary": '#9F53FF',
     "interactionShadow": '#713BB2',
+    "typographyDark": "#4D4752",
     "customizationBar": '#F3F4F6',
     "customizationBarStroke": '#E5E7EB',
     "health": "rgba(255, 72, 72, 1)",
@@ -171,7 +175,7 @@ export interface IBodyNodes {
       rightarm: { bodyPart: new BodyPart([400, 86], arm, -1, 'Arm', [546, 413],2,), ref: undefined},
       leftleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg', [144, 47],2,), ref: undefined},
       rightleg: { bodyPart: new BodyPart([45, 34], foot, 0, 'Leg',[144, 47],2, true), ref: undefined},
-      eyes: { bodyPart: new BodyPart([500, 500, 0.5], eyes2, 2, 'Eyes',[1000, 1000],2,), ref: undefined},
+      eyes: { bodyPart: new BodyPart([500, 500, 0.4], eyes2, 2, 'Eyes',[1000, 1000],2,), ref: undefined},
       head: undefined,
       mouth: { bodyPart: new BodyPart([170, 138], mouth, 2, 'Mouth', [375, 144],2,), ref: undefined},
     },
@@ -180,13 +184,30 @@ export interface IBodyNodes {
       rightarm: [752, 600],
       leftleg: [300, 1200],
       rightleg: [490, 1200],
-      eyes: [405, 390],
+      eyes: [405, 390],  
       head: undefined,
       mouth: [405, 765],
     }
   },
 }
 
+export function useLoadFonts() {
+  const [fontsLoaded, fontError] = useFonts({
+    'Poppins-ExtraBold': require('./assets/fonts/Poppins-ExtraBold.ttf'),
+  });
+
+  useEffect(() => {
+    async function prepare() {
+      await SplashScreen.preventAutoHideAsync();
+    }
+    prepare();
+  }, []);
+
+  if (fontsLoaded) {
+    SplashScreen.hideAsync();
+  }
+  return { fontsLoaded, fontError};
+}
 
 interface ListBodyPartType {
   key: string;
@@ -260,7 +281,7 @@ export const nodeRangeThreshold = 0;
 
 export class Body {
   bodypartnodes: IBodyPartNodes;
-  bodypartnodesRelToVP: IBodyPartNodes;
+  // bodypartnodesRelToVP: IBodyPartNodes;
   nodes: IBodyNodes;
   width: number;
   height: number;
@@ -269,7 +290,7 @@ export class Body {
   
   constructor(bodypartnodes: IBodyPartNodes = emptyBodyPartNodes, nodes: IBodyNodes = emptyNodes, dimensions: Array<number>, transforms: ITransforms, bodyImage: ImageSourcePropType | undefined) {
     this.bodypartnodes = bodypartnodes;
-    this.bodypartnodesRelToVP = this.translateNodes(this.bodypartnodes);
+    // this.bodypartnodesRelToVP = this.translateNodes(this.bodypartnodes);
     this.nodes = nodes;
     this.bodyImage = bodyImage;
     this.width = dimensions[0];
@@ -277,21 +298,21 @@ export class Body {
     this.transforms = transforms;
   }
   
-  translateNodes(nodes: IBodyPartNodes): IBodyPartNodes {
-    // let newNodes: IBodyPartNodes = JSON.parse(JSON.stringify(nodes)); // Deep copy
-    let newNodes: IBodyPartNodes = Object.assign({}, nodes); // Shallow copy
-    if (nodes !== undefined && newNodes !== undefined) {
-      Object.values(newNodes).map((bodypart: bodyPartInfo, index: number) => {
-        if (bodypart !== undefined && bodypart.bodyPart !== undefined && Object.values(nodes)[index] !== undefined) {
-          bodypart.bodyPart.node[1] = bodypart.bodyPart.node[1] + 10;
-          Object.values(nodes)[index].bodyPart.node[1] += 2;
-          // console.log("New Node: " + bodypart.bodyPart.node[1]);
-          // console.log("Old Node: " + Object.values(nodes)[index].bodyPart.node[1])
-        }
-      })
-    }
-    return newNodes;
-  }
+  // translateNodes(nodes: IBodyPartNodes): IBodyPartNodes {
+  //   // let newNodes: IBodyPartNodes = JSON.parse(JSON.stringify(nodes)); // Deep copy
+  //   let newNodes: IBodyPartNodes = Object.assign({}, nodes); // Shallow copy
+  //   if (nodes !== undefined && newNodes !== undefined) {
+  //     Object.values(newNodes).map((bodypart: bodyPartInfo, index: number) => {
+  //       if (bodypart !== undefined && bodypart.bodyPart !== undefined && Object.values(nodes)[index] !== undefined) {
+  //         bodypart.bodyPart.node[1] = bodypart.bodyPart.node[1] + 10;
+  //         Object.values(nodes)[index].bodyPart.node[1] += 2;
+  //         // console.log("New Node: " + bodypart.bodyPart.node[1]);
+  //         // console.log("Old Node: " + Object.values(nodes)[index].bodyPart.node[1])
+  //       }
+  //     })
+  //   }
+  //   return newNodes;
+  // }
 }
 
 export type OnRemoveType = (bodyPartToRemove: BodyPart) => void;
