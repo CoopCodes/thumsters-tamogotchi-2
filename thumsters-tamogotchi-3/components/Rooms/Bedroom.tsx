@@ -19,11 +19,11 @@ import PrimaryButton from "../Button";
 import leftBackground from "../../assets/resources/images/Bedroom-Left.png";
 import rightBackground from "../../assets/resources/images/Bedroom-Right.png";
 import { useLoadFonts } from "../../global";
-import { useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 
 
 // Bedroom group stack provider:
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import LockerRoom from "./LockerRoom";
 
 // Import or define your screen components
@@ -36,20 +36,18 @@ interface HomeStackProps {
 
 function HomeStackScreen({ removeAttributesBar }: HomeStackProps) {
   return (
-    <HomeStack.Navigator>
-      <HomeStack.Screen name="Home" component={Bedroom} />
-      <HomeStack.Screen name="Dressing Room" component={LockerRoom} initialParams={{
-        removeAttributesBar: removeAttributesBar
-      }}/>
-    </HomeStack.Navigator>
+    <NavigationContainer>
+      <HomeStack.Navigator>
+        <HomeStack.Screen name="Home" component={Bedroom} />
+        <HomeStack.Screen name="LockerRoom" component={LockerRoom} initialParams={{
+          removeAttributesBar: removeAttributesBar
+        }}/>
+      </HomeStack.Navigator>
+    </NavigationContainer>
   );
 }
 
-
-
-interface Props {}
-
-const Bedroom = ({  }: Props) => {
+function Bedroom({navigation}: {navigation: any}) {
   const { monster, monsterDispatch } = useContext(MonsterContext);
   useEffect(() => {
     if (monsterDispatch) {
@@ -110,7 +108,7 @@ const Bedroom = ({  }: Props) => {
             buttonInnerStyles={styles.bottomButton}
             imageInnerStyles={styles.buttonImage}
             onPress={() => {
-              navigation.navigate('AdditionalScreen')
+              navigation.navigate('LockerRoom')
             }}
           />
           <Text style={styles.buttonText}>Dressing Room</Text>
