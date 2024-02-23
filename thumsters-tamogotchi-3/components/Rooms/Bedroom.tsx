@@ -108,7 +108,8 @@ function Bedroom({navigation}: {navigation: any}) {
             buttonInnerStyles={styles.bottomButton}
             imageInnerStyles={styles.buttonImage}
             onPress={() => {
-              navigation.navigate('LockerRoom')
+              console.log('Navigating...')
+              navigation.navigate("LockerRoom");
             }}
           />
           <Text style={styles.buttonText}>Dressing Room</Text>
