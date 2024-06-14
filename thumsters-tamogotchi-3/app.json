@@ -15,9 +15,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.thumsters.tamogotchi"
     },
     "android": {
+      "package": "com.thumsters.tamogotchi",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.jpg",
         "backgroundColor": "#ffffff"

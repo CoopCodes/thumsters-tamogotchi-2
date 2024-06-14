@@ -1,18 +1,14 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   View,
   Image,
   Text,
-  ImageSourcePropType,
   StyleSheet,
-  Platform,
-  TouchableOpacity,
-  useWindowDimensions,
   Dimensions,
 } from "react-native";
 import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
 import { theme } from "../../global";
-import { bodysInfo, Body, bodyImage } from "../../global";
+import { bodySets, Body, bodyImage } from "../../global";
 import Monster from "../Monster";
 import clothesHanger from "../../assets/resources/images/ClothesHanger.png";
 import PrimaryButton from "../Button";
@@ -28,7 +24,7 @@ import LockerRoom from "./LockerRoom";
 
 // Import or define your screen components
 
-const HomeStack = createStackNavigator();
+export const HomeStack = createStackNavigator();
 
 interface HomeStackProps {
   removeAttributesBar: () => void;
@@ -52,7 +48,7 @@ function Bedroom({navigation}: {navigation: any}) {
   useEffect(() => {
     if (monsterDispatch) {
       const action: monsterAction = {
-        bodyParts: bodysInfo[1].bodyparts,
+        bodyParts: bodySets[1].bodyparts,
         bodyImage: bodyImage,
         body: monster,
       };

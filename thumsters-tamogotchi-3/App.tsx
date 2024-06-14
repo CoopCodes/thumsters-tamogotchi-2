@@ -20,7 +20,7 @@ import {
   Body,
   BodyPart,
   bodyImage,
-  bodysInfo,
+  bodySets,
   bodyPartInfo,
   IBodyPartNodes,
   emptyFunction,

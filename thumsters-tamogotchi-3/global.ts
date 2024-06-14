@@ -47,19 +47,19 @@ export const theme: ITheme = {
 
 export class BodyPart {
   node: number[]; // The Nodes position, this is where the body part connects to the body.
-  reflected: boolean;
-  zIndex: number;
+  reflected: boolean; // Is the body part reflected (would be if was a left arm, and the image is for right)
+  zIndex: number; 
   category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg' | undefined;
 
-  width: number;
-  height: number;
+  width: number; // Determined by dimensions parameter 
+  height: number; // Determined by dimensions parameter 
   aspectRatio: number[];
-  badContrast: boolean;
+  badContrast: boolean; // IF listed as a ListBodyPart: adds a white background to increase contrast.
 
   image: ImageSourcePropType; // Image path
-  imageBadContrast: ImageSourcePropType | undefined;
+  imageBadContrast: ImageSourcePropType | undefined; // IF listed as a ListBodyPart: if specified replaces the default image with this, to increase contrast. Must have the same dimension.
 
-  bodySet: number;
+  bodySet: number; // What bodySet it belongs too, (one bodySet could be the billy)
   
   constructor(node: number[], image: ImageSourcePropType,
     zIndex: number, category: 'Body' | 'Head' | 'Eyes' | 'Mouth' | 'Arm' | 'Leg' | undefined, dimensions: Array<number>, bodySet: number, reflected?: boolean | undefined, badContrast: boolean = false, imageBadContrast: ImageSourcePropType | undefined = undefined) {
@@ -93,14 +93,14 @@ export class BodyPart {
 
 export type OnNodePress = (bodypart: BodyPart) => void;
 
-export type bodyPartInfo = {
+export type bodyPartInfo = { // Used in the Monster.tsx Component
   bodyPart: BodyPart,
   onPress?: OnNodePress,
   ref: RefObject<any> | undefined //  User defined
 }
 
 
-export interface IBodyPartNodes {
+export interface IBodyPartNodes { 
   leftarm: bodyPartInfo;
   rightarm: bodyPartInfo;
   leftleg: bodyPartInfo;
@@ -110,7 +110,7 @@ export interface IBodyPartNodes {
   mouth: bodyPartInfo;
 }
 
-export interface IBodyNodes {
+export interface IBodyNodes { // x and y positions of the nodes on the body, not the actual body parts on the body.
   leftarm: Array<number>;
   rightarm: Array<number>;
   leftleg: Array<number>;
@@ -125,10 +125,11 @@ export interface IBodyNodes {
   //   ref: undefined,
   // }
   
-  const offsetX = -35;
+  const offsetX = -35; // For some reason  
   
   // Assets: right now it is loading only the first monster, but this needs to be changed so it is dynamic.
-  export const bodysInfo: { [key: number]: { bodyparts: IBodyPartNodes; body: IBodyNodes } } = {
+  // Loading the bodySets
+  export const bodySets: { [key: number]: { bodyparts: IBodyPartNodes; body: IBodyNodes } } = {
     0: {
       bodyparts: {
         leftarm: { bodyPart: new BodyPart([25, 25, 2], node, 1, undefined,[50, 50], 0, true), ref: undefined },
@@ -209,7 +210,7 @@ export function useLoadFonts() {
   return { fontsLoaded, fontError};
 }
 
-interface ListBodyPartType {
+interface ListBodyPartType { 
   key: string;
   bodyPart: BodyPart;
 }
@@ -223,14 +224,16 @@ interface ListBodyPartType {
   //   allbodyparts = allbodyparts.concat(bodyParts);
   //   i++;
   // }
-  // allbodyparts.map((bodypart) => {
+  // allbodyparts.map((bodypart) => 
     //   console.log(bodypart);
     // })
 
-    const allBodyParts: ListBodyPartType[] = [];
+// Converting all the bodyparts listed in bodySets, to a list of ListBodyPartType, to be consumed by the Locker Room Component
+
+const allBodyParts: ListBodyPartType[] = [];
     
 // Traverse through each body 
-Object.values(bodysInfo).forEach((bodyInfo, index) => {
+Object.values(bodySets).forEach((bodyInfo, index) => {
   // Traverse through bodyparts of each body
   for (const bodyPartKey in bodyInfo.bodyparts) {
     const bodyPartInfo = bodyInfo.bodyparts[bodyPartKey as keyof IBodyPartNodes];
@@ -245,19 +248,19 @@ Object.values(bodysInfo).forEach((bodyInfo, index) => {
 
 allBodyParts.map((part, index) => {
   part.key =`${index}`
-  // console.log(part)
 })
 
 export const AllBodyParts = allBodyParts;
 
+// Default value for nodes in a Body class, if parameter is undefined
 const emptyBodyPartNodes: IBodyPartNodes = {
-  leftarm: bodysInfo[1].bodyparts.leftarm,
-  rightarm: bodysInfo[1].bodyparts.rightarm,
-  leftleg: bodysInfo[1].bodyparts.leftleg,
-  rightleg: bodysInfo[1].bodyparts.rightleg,
-  eyes: bodysInfo[1].bodyparts.eyes,
-  head: bodysInfo[1].bodyparts.head,
-  mouth: bodysInfo[1].bodyparts.mouth,
+  leftarm: bodySets[1].bodyparts.leftarm,
+  rightarm: bodySets[1].bodyparts.rightarm,
+  leftleg: bodySets[1].bodyparts.leftleg,
+  rightleg: bodySets[1].bodyparts.rightleg,
+  eyes: bodySets[1].bodyparts.eyes,
+  head: bodySets[1].bodyparts.head,
+  mouth: bodySets[1].bodyparts.mouth,
 }
 
 const emptyNodes: IBodyNodes = {
@@ -276,12 +279,10 @@ export interface ITransforms {
   scale: number
 }
 
-const roomDistanceFromVPTop = 150;
 export const nodeRangeThreshold = 0;
 
 export class Body {
   bodypartnodes: IBodyPartNodes;
-  // bodypartnodesRelToVP: IBodyPartNodes;
   nodes: IBodyNodes;
   width: number;
   height: number;
@@ -290,7 +291,6 @@ export class Body {
   
   constructor(bodypartnodes: IBodyPartNodes = emptyBodyPartNodes, nodes: IBodyNodes = emptyNodes, dimensions: Array<number>, transforms: ITransforms, bodyImage: ImageSourcePropType | undefined) {
     this.bodypartnodes = bodypartnodes;
-    // this.bodypartnodesRelToVP = this.translateNodes(this.bodypartnodes);
     this.nodes = nodes;
     this.bodyImage = bodyImage;
     this.width = dimensions[0];

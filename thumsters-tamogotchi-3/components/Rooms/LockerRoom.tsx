@@ -20,7 +20,7 @@ import {
   theme,
   emptyFunction,
 } from "../../global";
-import { bodysInfo, Body, bodyImage } from "../../global";
+import { bodySets, Body, bodyImage } from "../../global";
 import Monster from "../Monster";
 import BedroomImage from "../../assets/resources/images/Bedroom.png";
 import ListBodyPart from "../ListBodyPart";
@@ -44,7 +44,7 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
   useEffect(() => {
     if (monsterDispatch) {
       const action: monsterAction = {
-        bodyParts: bodysInfo[1].bodyparts,
+        bodyParts: bodySets[1].bodyparts,
         bodyImage: bodyImage,
         body: monster,
       };

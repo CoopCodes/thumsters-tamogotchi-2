@@ -1,6 +1,6 @@
 import { createContext, Reducer, Ref, Dispatch, ReactNode, useState, useReducer } from 'react';
 import { Image, ImageSourcePropType, View } from 'react-native'
-import { IBodyPartNodes, Body, OnNodePress, bodyPartInfo, emptyBody, bodysInfo, bodyImage } from '../global';
+import { IBodyPartNodes, Body, OnNodePress, bodyPartInfo, emptyBody, bodySets, bodyImage } from '../global';
 import Monster, { updateNativeProps } from '../components/Monster';
 
 export type monsterAction = {
@@ -76,15 +76,15 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
     monsterReducer,
     new Body(
       {
-        leftarm: bodysInfo[1].bodyparts.leftarm,
-        rightarm: bodysInfo[1].bodyparts.rightarm,
-        leftleg: bodysInfo[1].bodyparts.leftleg,
-        rightleg: bodysInfo[1].bodyparts.rightleg,
-        eyes: bodysInfo[1].bodyparts.eyes,
+        leftarm: bodySets[1].bodyparts.leftarm,
+        rightarm: bodySets[1].bodyparts.rightarm,
+        leftleg: bodySets[1].bodyparts.leftleg,
+        rightleg: bodySets[1].bodyparts.rightleg,
+        eyes: bodySets[1].bodyparts.eyes,
         head: undefined,
-        mouth: bodysInfo[1].bodyparts.mouth,
+        mouth: bodySets[1].bodyparts.mouth,
       },
-      bodysInfo[1].body,
+      bodySets[1].body,
       [757, 1200],
       {
         x: 0,

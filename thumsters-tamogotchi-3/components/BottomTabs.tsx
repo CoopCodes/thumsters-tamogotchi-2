@@ -6,6 +6,7 @@ import { Image, View, StyleSheet } from "react-native"
 import Bedroom from './Rooms/Bedroom';
 import { NavigationContainer } from '@react-navigation/native';
 import { theme } from '../global';
+import { HomeStack } from './Rooms/Bedroom';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -26,7 +27,22 @@ function BottomTabs({ removeAttributesBar }: Props) {
           zIndex: 2,
         }}
       >
-        <Tab.Screen
+        <HomeStack.Navigator initialRouteName='Bedroom' screenOptions={{
+          headerShown: false
+        }}>
+          <HomeStack.Screen name="Bedroom"
+            component={Bedroom}
+            initialParams={{
+              removeAttributesBar: removeAttributesBar
+              
+            }}
+          />
+          <HomeStack.Screen
+            name="Locker Room"
+            component={Bedroom}
+          />
+        </HomeStack.Navigator>
+        {/* <Tab.Screen
           name="Bedroom"
           component={Bedroom}
           options={{
@@ -50,7 +66,7 @@ function BottomTabs({ removeAttributesBar }: Props) {
             ),
             
           }}
-        />
+        /> */}
       </Tab.Navigator>
     </NavigationContainer>
   );

@@ -1,22 +1,22 @@
-import React, { useState, useRef, useEffect, Ref, RefObject } from "react";
+import React, { useRef } from "react";
 import {
   View,
   Image,
-  Text,
-  ImageSourcePropType,
   StyleSheet,
-  findNodeHandle,
 } from "react-native";
-import { theme, Body, bodyPartInfo, bodysInfo } from "../global";
-import node from "../assets/resources/Monsters/1/Nodenode.png";
+import { Body, bodyPartInfo, bodySets } from "../global";
+// import node from "../assets/resources/Monsters/1/Nodenode.png";
 
 interface Props {
   monsterBody: Body;
   mood: string;
-  scaleFactor: number;
+  scaleFactor: number; // Changes in LockerRoom
 }
 
-export function updateNativeProps(
+/**
+ * Moves the body part to the correct position, width, height, and scale. based on the nodes position.
+ */
+export function updateNativeProps( 
   bodypart: bodyPartInfo,
   ref: React.RefObject<any>,
   bodyNodeCoord: number[],
@@ -49,10 +49,16 @@ export function updateNativeProps(
     height: bodypart.bodyPart.height * scaleFactor,
     zIndex: bodypart.bodyPart.zIndex,
   };
-  // }
-  // );
 }
 
+/**
+ * Sets the styles for a given body part based on the provided scale factor and index.
+ *
+ * @param {bodyPartInfo} bodypart - The body part information.
+ * @param {number} scaleFactor - The scale factor to apply.
+ * @param {number} i - The index of the body part.
+ * @return {Object} - The styles object for the body part.
+ */
 export function setBodyPartStyles(
   bodypart: bodyPartInfo,
   scaleFactor: number,
@@ -66,14 +72,14 @@ export function setBodyPartStyles(
     typeof bodypart.ref === "object" &&
     bodypart.ref.current !== undefined
   ) {
-    const combinedScaleFactor = bodypart.bodyPart.node[2]
-      ? scaleFactor * bodypart.bodyPart.node[2]
-      : scaleFactor;
+    // const combinedScaleFactor = bodypart.bodyPart.node[2]
+    //   ? scaleFactor * bodypart.bodyPart.node[2]
+    //   : scaleFactor;
 
     // if (checkBodyPart(potentialTitle)) {
     // }
     // Returning an array of the all the bodypart titles, as to match it with the current bodypart, and then finds the corresponding node that it should attach to on the body.
-    const partTitle = Object.keys(bodysInfo[1].bodyparts)[i] as
+    const partTitle = Object.keys(bodySets[1].bodyparts)[i] as
       | "leftarm"
       | "rightarm"
       | "leftleg"
@@ -82,7 +88,7 @@ export function setBodyPartStyles(
       | "head"
       | "mouth";
 
-    const node = bodysInfo[1].body[partTitle];
+    const node = bodySets[1].body[partTitle];
     const bodyNodeCoord: Array<number> = node !== undefined ? node : [0, 0];
     
     return {
@@ -132,17 +138,17 @@ const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
   monsterBody.bodypartnodes.eyes.ref = eyesRef;
   monsterBody.bodypartnodes.mouth.ref = mouthRef;
 
-  function checkBodyPart(part: string): boolean {
-    return (
-      part === "leftarm" ||
-      part === "rightarm" ||
-      part === "leftleg" ||
-      part === "rightleg" ||
-      part === "eyes" ||
-      part === "head" ||
-      part === "mouth"
-    );
-  }
+  // function checkBodyPart(part: string): boolean {
+  //   return (
+  //     part === "leftarm" ||
+  //     part === "rightarm" ||
+  //     part === "leftleg" ||
+  //     part === "rightleg" ||
+  //     part === "eyes" ||
+  //     part === "head" ||
+  //     part === "mouth"
+  //   );
+  // }
 
   // useEffect(() => {
   //   let i: number = 0;
@@ -203,7 +209,7 @@ const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
         ) : null}
         {Object.values(monsterBody.bodypartnodes).map(
           (bodypart: bodyPartInfo, i: number) => {
-            const partTitle = Object.keys(bodysInfo[1].bodyparts)[i] as
+            const partTitle = Object.keys(bodySets[1].bodyparts)[i] as
               | "leftarm"
               | "rightarm"
               | "leftleg"
@@ -211,7 +217,7 @@ const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
               | "eyes"
               | "head"
               | "mouth";
-            const node = bodysInfo[1].body[partTitle];
+            const node = bodySets[1].body[partTitle];
             const bodyNodeCoord: Array<number> =
               node !== undefined ? node : [0, 0];
             if (bodypart)
