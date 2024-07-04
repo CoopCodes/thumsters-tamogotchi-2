@@ -1,5 +1,5 @@
 import { createMaterialBottomTabNavigator } from "react-native-paper/react-navigation";
-import bedroomIcon from "../assets/resources/images/BedroomIcon.png";
+import BedroomIcon from "../assets/resources/images/BedroomIcon.svg";
 
 import { Image, View, StyleSheet } from "react-native";
 
@@ -33,12 +33,11 @@ function BottomTabs() {
           options={{
             tabBarIcon: () => (
               <View style={styles.tabIcon}>
-                <Image
-                  source={bedroomIcon}  
+                <BedroomIcon
                   style={{
                     width: "100%",
                     height: "100%",
-                    objectFit: "contain",
+                    // objectFit: "contain",
                   }}
                 />
               </View>
@@ -51,12 +50,11 @@ function BottomTabs() {
           options={{
             tabBarIcon: () => (
               <View style={styles.tabIcon}>
-                <Image
-                  source={bedroomIcon}  
+                <BedroomIcon
                   style={{
                     width: "100%",
                     height: "100%",
-                    objectFit: "contain",
+                    // objectFit: "contain",
                   }}
                 />
               </View>

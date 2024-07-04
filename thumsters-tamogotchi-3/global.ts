@@ -1,21 +1,22 @@
 import { Ref, RefObject, useEffect } from "react";
-import { Dimensions, Image, ImageSourcePropType } from "react-native";
+import { Dimensions } from "react-native";
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
 // Body parts
-import arm from "./assets/resources/Monsters/1/Arm.png";
-import body from "./assets/resources/Monsters/1/Body.png";
-import eyes from "./assets/resources/Monsters/1/Eye.png";
-import eyesBadContrast from "./assets/resources/Monsters/1/Eye_BadContrast.png";
-import foot from "./assets/resources/Monsters/1/Foot.png";
-import eyes2 from "./assets/resources/Monsters/1/eye2.png";
-import mouth from "./assets/resources/Monsters/1/Mouth.png";
-import node from "./assets/resources/Monsters/1/Nodenode.png";
-import arm2 from "./assets/resources/Monsters/2/arm.png";
+import arm from "./assets/resources/Monsters/1/Arm.svg";
+import body from "./assets/resources/Monsters/1/Body.svg";
+import eyes from "./assets/resources/Monsters/1/Eye.svg";
+// import eyesBadContrast from "./assets/resources/Monsters/1/Eye_BadContrast.svg";
+import foot from "./assets/resources/Monsters/1/Foot.svg";
+import eyes2 from "./assets/resources/Monsters/1/eye2.svg";
+import mouth from "./assets/resources/Monsters/1/Mouth.svg";
+import node from "./assets/resources/Monsters/1/Nodenode.svg";
+import arm2 from "./assets/resources/Monsters/2/arm.svg";
 
-import ImageNotImplemented from "./assets/resources/images/ImageNotImplemented.png";
+import ImageNotImplemented from "./assets/resources/images/ImageNotImplemented.svg";
+import { SvgProps } from "react-native-svg";
 
 export const bodyImage = body;
 
@@ -60,21 +61,21 @@ export class BodyPart {
   aspectRatio: number[];
   badContrast: boolean; // IF listed as a ListBodyPart: adds a white background to increase contrast.
 
-  image: ImageSourcePropType; // Image path
-  imageBadContrast: ImageSourcePropType | undefined; // IF listed as a ListBodyPart: if specified replaces the default image with this, to increase contrast. Must have the same dimension.
+  image: React.FC<SvgProps>; // Image path
+  imageBadContrast: React.FC<SvgProps> | undefined; // IF listed as a ListBodyPart: if specified replaces the default image with this, to increase contrast. Must have the same dimension.
 
   bodySet: number; // What bodySet it belongs too, (one bodySet could be the billy)
 
   constructor(
     node: number[],
-    image: ImageSourcePropType,
+    image: React.FC<SvgProps>,
     zIndex: number,
     category: "Body" | "Head" | "Eyes" | "Mouth" | "Arm" | "Leg" | undefined,
     dimensions: Array<number>,
     bodySet: number,
     reflected?: boolean | undefined,
     badContrast: boolean = false,
-    imageBadContrast: ImageSourcePropType | undefined = undefined
+    imageBadContrast: React.FC<SvgProps> | undefined = undefined
   ) {
     this.node = node;
     this.reflected = reflected === undefined ? false : true;
@@ -225,9 +226,7 @@ export const bodySets: {
           [1000, 1000],
           1,
           true,
-          true,
-          eyesBadContrast
-        ),
+          true        ),
         ref: undefined,
       },
       head: undefined,
@@ -396,7 +395,7 @@ export class Body {
   nodes: IBodyNodes;
   width: number;
   height: number;
-  bodyImage: ImageSourcePropType | undefined;
+  bodyImage: React.FC<SvgProps> | undefined;
   transforms: ITransforms;
 
   constructor(
@@ -404,7 +403,7 @@ export class Body {
     nodes: IBodyNodes = emptyNodes,
     dimensions: Array<number>,
     transforms: ITransforms,
-    bodyImage: ImageSourcePropType | undefined
+    bodyImage: React.FC<SvgProps> | undefined
   ) {
     this.bodypartnodes = bodypartnodes;
     this.nodes = nodes;

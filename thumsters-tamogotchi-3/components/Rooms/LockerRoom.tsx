@@ -3,7 +3,6 @@ import {
   View,
   Image,
   Text,
-  ImageSourcePropType,
   StyleSheet,
   Platform,
   ScrollView,
@@ -22,8 +21,7 @@ import {
 } from "../../global";
 import { bodySets, Body, bodyImage } from "../../global";
 import Monster from "../Monster";
-import BedroomImage from "../../assets/resources/images/Bedroom.png";
-import ListBodyPart from "../ListBodyPart";
+ import ListBodyPart from "../ListBodyPart";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import {
   GestureHandlerRootView,

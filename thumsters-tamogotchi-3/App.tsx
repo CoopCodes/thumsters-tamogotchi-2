@@ -10,14 +10,13 @@ import {
   View,
   Text,
   StyleSheet,
-  ImageSourcePropType,
   Dimensions,
 } from "react-native";
 
-import heartIcon from "./assets/resources/images/heart.png";
-import hungerIcon from "./assets/resources/images/hunger.png";
-import happinessIcon from "./assets/resources/images/happiness.png";
-import energyIcon from "./assets/resources/images/energy.png";
+import HeartIcon from "./assets/resources/images/heart.svg";
+import HungerIcon from "./assets/resources/images/hunger.svg";
+import HappinessIcon from "./assets/resources/images/happiness.svg";
+import energyIcon from "./assets/resources/images/energy.svg";
 import Attribute from "./components/Attribute";
 import Bedroom from "./components/Rooms/Bedroom";
 import { AttributesContext } from "./Contexts/AttributeContext";
@@ -172,22 +171,22 @@ export default function App() {
                 {/* Render Attribute components here */}
                 <Attribute
                   attrName="health"
-                  image={heartIcon}
+                  Image={HeartIcon}
                   progress={attributes.health}
                 />
                 <Attribute
                   attrName="hunger"
-                  image={hungerIcon}
+                  Image={HungerIcon}
                   progress={attributes.hunger}
                 />
                 <Attribute
                   attrName="happiness"
-                  image={happinessIcon}
+                  Image={HappinessIcon}
                   progress={attributes.happiness}
                 />
                 <Attribute
                   attrName="energy"
-                  image={energyIcon}
+                  Image={energyIcon}
                   progress={attributes.energy}
                 />
               </View>

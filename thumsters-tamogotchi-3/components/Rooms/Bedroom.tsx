@@ -14,8 +14,8 @@ import Monster from "../Monster";
 import clothesHanger from "../../assets/resources/images/ClothesHanger.svg";
 
 import PrimaryButton from "../Button";
-import leftBackground from "../../assets/resources/images/Bedroom-Left.png";
-import rightBackground from "../../assets/resources/images/Bedroom-Right.png";
+import LeftBackground from "../../assets/resources/images/Bedroom-Left.svg";
+import RightBackground from "../../assets/resources/images/Bedroom-Right.svg";
 import { useLoadFonts } from "../../global";
 import { NavigationContainer } from "@react-navigation/native";
 
@@ -55,16 +55,14 @@ function Bedroom({navigation}: {navigation: any}) {
         </View>
         <View style={styles.background}>
           <View style={styles.topLeft}>
-            <Image
+            <LeftBackground
               style={[styles.leftImage, styles.topImage]}
-              source={leftBackground}
-            ></Image>
+            ></LeftBackground>
           </View>
           <View style={styles.topRight}>
-            <Image
+            <RightBackground
               style={[styles.rightImage, styles.topImage]}
-              source={rightBackground}
-            ></Image>
+            ></RightBackground>
           </View>
         </View>
       </View>

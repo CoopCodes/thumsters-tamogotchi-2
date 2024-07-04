@@ -9,7 +9,6 @@ import { bodySets, bodyImage } from "../../global";
 import Monster from "../Monster";
 
 // Import images
-import clothesHanger from "../../assets/resources/images/ClothesHanger.png"
 import { useLoadFonts } from "../../global";
 
 
@@ -37,7 +36,7 @@ function RoomTemplate() {
       {/* If you want to add the Monster: */}
       <View style={styles.monster}>
           {monster ? (
-            <Monster scaleFactor={0.3} monsterBody={monster} mood={""} />
+            <Monster scaleFactor={0.3} monsterBody={monster} />
           ) : null}
         </View>
     </View>

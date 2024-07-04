@@ -7,7 +7,7 @@ import {
   useState,
   useReducer,
 } from "react";
-import { Image, ImageSourcePropType, View } from "react-native";
+import { Image, View } from "react-native";
 import {
   IBodyPartNodes,
   Body,
@@ -18,11 +18,12 @@ import {
   bodyImage,
 } from "../global";
 import Monster, { updateNativeProps } from "../components/Monster";
+import { SvgProps } from "react-native-svg";
 
 export type monsterAction = {
   bodyParts?: IBodyPartNodes | undefined;
   bodyPartToChange?: { bodyPartName: string; newValue: bodyPartInfo };
-  bodyImage?: ImageSourcePropType | undefined;
+  bodyImage?: React.FC<SvgProps> | undefined;
   body?: Body | undefined;
   OnNodePress?: OnNodePress;
 };

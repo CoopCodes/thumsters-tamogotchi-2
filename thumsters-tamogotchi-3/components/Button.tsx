@@ -3,7 +3,6 @@ import {
   View,
   Image,
   Text,
-  ImageSourcePropType,
   StyleSheet,
   TouchableOpacity,
   GestureResponderEvent,

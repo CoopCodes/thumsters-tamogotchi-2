@@ -193,7 +193,7 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
     <View style={styles.room}>
       <View style={styles.body}>
         {monsterBody.bodyImage ? (
-          <Image
+          <monsterBody.bodyImage
             style={[
               styles.bodyImage,
               {
@@ -206,7 +206,6 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
                 ],
               },
             ]}
-            source={monsterBody.bodyImage}
           />
         ) : null}
         {Object.values(monsterBody.bodypartnodes).map(
@@ -224,14 +223,13 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
               node !== undefined ? node : [0, 0];
             if (bodypart)
               return (
-                <Image
+                <bodypart.bodyPart.image
                   key={i}
-                  ref={bodypart.ref}
+                  // ref={bodypart.ref}
                   style={[
                     styles.bodyPart,
                     setBodyPartStyles(bodypart, scaleFactor, i, state),
                   ]}
-                  source={bodypart.bodyPart.image}
                 />
               );
             else return;

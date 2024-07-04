@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { View, Image, Text, ImageSourcePropType, StyleSheet,  } from 'react-native';
+import { View, Image, Text, StyleSheet,  } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { theme } from '../global';
+import { SvgProps } from 'react-native-svg';
 
 interface Props {
   attrName: string;
-  image: ImageSourcePropType;
+  Image: React.FC<SvgProps>;
   progress: number;
 }
 
-const Attribute = ({ attrName, image, progress }: Props) => {
+const Attribute = ({ attrName, Image, progress }: Props) => {
   const [progressState, setProgressState] = useState(progress);
 
   return (
@@ -23,7 +24,7 @@ const Attribute = ({ attrName, image, progress }: Props) => {
             backgroundColor={theme.default.interactionShadow}>
                 {
                     () => (
-                        <Image style={(attrName === "energy")? energyStyles.attrImage : styles.attrImage} source={image}/>
+                        <Image style={(attrName === "energy")? energyStyles.attrImage : styles.attrImage}/>
                     )
                 }
             </AnimatedCircularProgress>
