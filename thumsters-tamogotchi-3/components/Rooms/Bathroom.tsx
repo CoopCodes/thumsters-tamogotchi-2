@@ -24,21 +24,20 @@ import Sponge from "../../assets/resources/images/Sponge.png";
 // Bedroom group stack provider:
 import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import LockerRoom from "./LockerRoom";
-import Animated from "react-native-reanimated";
 
 // Import or define your screen components
 
 const Bathroom = ({ navigation }) => {
   const { monster, monsterDispatch } = useContext(MonsterContext);
-  const [position, setPosition] = useState({ x: 280, y: 83 });
-  const [originalPosition] = useState({ x: 280, y: 83 });
+  const [position, setPosition] = useState({ x: 280, y: 77 });
+  const [originalPosition] = useState({ x: 280, y: 77 });
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (evt, gestureState) => {
         setPosition({
           x: gestureState.moveX - 25, // Adjust for the center of the sponge
-          y: gestureState.moveY - 120, // Adjust for the center of the sponge
+          y: gestureState.moveY - 135, // Adjust for the center of the sponge
         });
         console.log(gestureState.moveX, gestureState.moveY)
       },
@@ -74,12 +73,12 @@ const Bathroom = ({ navigation }) => {
             <Monster scaleFactor={0.3} monsterBody={monster} mood={""} />
           ) : null}
         </View>
-        <Animated.View
+        <View
               {...panResponder.panHandlers}
               style={[styles.sponge, { top: position.y, left: position.x }]}
             >
               <Image source={Sponge} style={styles.spongeImage} />
-            </Animated.View>
+            </View>
         <View style={styles.background}>
           <View style={styles.topLeft}>
             <Image style={[styles.shelf, styles.topImage]} source={Shelf} />
