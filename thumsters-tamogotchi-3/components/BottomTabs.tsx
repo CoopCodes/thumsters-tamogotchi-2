@@ -8,6 +8,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { theme } from "../global";
 import LockerRoom from "./Rooms/LockerRoom";
 import HomeStackScreen from "./Navigators/HomeStackScreen";
+import Bathroom from "./Rooms/Bathroom";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -29,6 +30,24 @@ function BottomTabs() {
         <Tab.Screen
           name="Bedroom"
           component={HomeStackScreen}
+          options={{
+            tabBarIcon: () => (
+              <View style={styles.tabIcon}>
+                <Image
+                  source={bedroomIcon}  
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                  }}
+                />
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Bathroom"
+          component={Bathroom}
           options={{
             tabBarIcon: () => (
               <View style={styles.tabIcon}>
