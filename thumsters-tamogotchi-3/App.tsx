@@ -36,6 +36,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import BottomTabs from "./components/BottomTabs";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import Bathroom from "./components/Rooms/Bathroom";
 
 const Tab = createBottomTabNavigator();
 
@@ -197,11 +198,12 @@ export default function App() {
             </Tab.Navigator>
           </NavigationContainer> */}
           {/* <Text style={ styles.text }>Hello</Text> */}
-          {/* <Bedroom></Bedroom> */}
+          <Bathroom></Bathroom>
           {/* <LockerRoom removeAttributesBar={removeAttributesBar}/> */}
-          <SafeAreaProvider style={{ backgroundColor: "black", marginBottom: -105 }}>
+
+          {/* <SafeAreaProvider style={{ backgroundColor: "black", marginBottom: -105 }}>
             <BottomTabs removeAttributesBar={removeAttributesBar}></BottomTabs>
-          </SafeAreaProvider>
+          </SafeAreaProvider> */}
         </View>
       </AttributesContext.Provider>
     </MonsterProvider>
