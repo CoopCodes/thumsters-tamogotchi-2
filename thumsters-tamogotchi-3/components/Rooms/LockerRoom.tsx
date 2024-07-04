@@ -153,7 +153,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
         <Text style={styles.header}>Customise your thumster</Text>
         <View style={styles.monster}>
           {monster ? (
-            <Monster monsterBody={monster} mood={""} scaleFactor={0.2} />
+            <Monster monsterBody={monster} scaleFactor={0.2} />
           ) : null}
         </View>
       </View>
