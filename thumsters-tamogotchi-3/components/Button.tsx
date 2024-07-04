@@ -10,8 +10,16 @@ import {
   StyleProp,
   ViewStyle,
   ImageStyle,
+  Pressable,
 } from "react-native";
 import { theme } from "../global";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  AnimationCallback,
+  runOnJS,
+} from "react-native-reanimated";
 
 interface Props {
   title?: string;
@@ -23,29 +31,68 @@ interface Props {
   buttonInnerStyles: StyleProp<ViewStyle>;
   imageInnerStyles?: StyleProp<ImageStyle>;
   selectable?: boolean; // Changes the style
-  activeIndex: number;
-  index: number; // The index of the button in the list of buttons
+  activeIndex?: number;
+  index?: number; // The index of the button in the list of buttons
 }
 
-const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles, imageInnerStyles, selectable = false, activeIndex, index }: Props) => {
+const PrimaryButton = ({
+  title,
+  image,
+  onPress,
+  width,
+  height,
+  buttonInnerStyles,
+  imageInnerStyles,
+  selectable = false,
+  activeIndex,
+  index,
+}: Props) => {
   const [active, setActive] = useState(false);
-  
+
+  const buttonOffset = useSharedValue(-5.5);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      top: buttonOffset.value,
+    };
+  });
+
+  const AnimateButton = (amount: number, finished?: AnimationCallback) => {
+    buttonOffset.value = withSpring(amount, {
+      duration: 500,
+      dampingRatio: .6,
+      stiffness: 100,
+    }, finished);
+  }
+
+  async function OnPressHandler (event: GestureResponderEvent) {
+    if (!selectable) {
+      AnimateButton(0);
+      setTimeout(() => {
+        AnimateButton(-5.5);
+      }, 500)
+    }
+    if (onPress) {
+      onPress(event);
+    }
+  };
+
   useEffect(() => {
     if (selectable) {
       if (activeIndex === index) {
         setActive(true);
+        AnimateButton(0);
       } else {
         setActive(false);
+        AnimateButton(-5.5);
       }
     }
-  }, [activeIndex])
-  
-  
+  }, [activeIndex]);
+
   const styles = StyleSheet.create({
     button: {
       minWidth: width,
       height: height,
-      justifyContent: "center",      
+      justifyContent: "center",
     },
     shadow: {
       ...StyleSheet.absoluteFillObject,
@@ -56,7 +103,7 @@ const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles
       ...StyleSheet.absoluteFillObject,
       position: "relative",
       borderRadius: 5,
-      top: (!active)? -5.5 : 0,
+      // top: (!active)? -5.5 : 0,
       backgroundColor: theme.default.backgroundColor,
       flex: 1,
       alignItems: "center",
@@ -68,16 +115,15 @@ const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles
       color: theme.default.interactionShadow,
       fontWeight: "800",
     },
-
   });
 
   return (
-    <TouchableOpacity
+    <Pressable
       style={[styles.button, buttonInnerStyles]}
-      onPress={onPress ? onPress : () => {}}
+      onPress={OnPressHandler}
     >
       <View style={styles.shadow} />
-      <View style={styles.main}>
+      <Animated.View style={[styles.main, animatedStyle]}>
         {title !== undefined ? (
           <Text style={styles.buttonText}>{title}</Text>
         ) : image !== undefined ? (
@@ -85,8 +131,8 @@ const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles
         ) : (
           <></>
         )}
-      </View>
-    </TouchableOpacity>
+      </Animated.View>
+    </Pressable>
   );
 };
 

@@ -9,7 +9,7 @@ import { Body, bodyPartInfo, bodySets } from "../global";
 
 interface Props {
   monsterBody: Body;
-  mood: string;
+  state?: string;
   scaleFactor: number; // Changes in LockerRoom
 }
 
@@ -20,7 +20,7 @@ export function updateNativeProps(
   bodypart: bodyPartInfo,
   ref: React.RefObject<any>,
   bodyNodeCoord: number[],
-  scaleFactor: number
+  scaleFactor: number,
 ) {
   // ref.current.setNativeProps({
   //   style:
@@ -62,7 +62,8 @@ export function updateNativeProps(
 export function setBodyPartStyles(
   bodypart: bodyPartInfo,
   scaleFactor: number,
-  i: number
+  i: number,
+  state: string,
 ) {
   if (
     bodypart !== undefined &&
@@ -116,14 +117,15 @@ export function setBodyPartStyles(
         bodypart.bodyPart.node[1] * scaleFactor,
       width: bodypart.bodyPart.width * scaleFactor,
       height: bodypart.bodyPart.height * scaleFactor,
-      zIndex: bodypart.bodyPart.zIndex,
+      zIndex: (state.includes("turned") && bodypart.bodyPart.category !== "Body") ? -1 : bodypart.bodyPart.zIndex,
+
     };
   }
   // }
   // );
 }
 
-const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
+const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
   const leftArmRef = useRef();
   const rightArmRef = useRef();
   const leftLegRef = useRef();
@@ -227,7 +229,7 @@ const Monster = ({ monsterBody, mood, scaleFactor = 0.3 }: Props) => {
                   ref={bodypart.ref}
                   style={[
                     styles.bodyPart,
-                    setBodyPartStyles(bodypart, scaleFactor, i),
+                    setBodyPartStyles(bodypart, scaleFactor, i, state),
                   ]}
                   source={bodypart.bodyPart.image}
                 />

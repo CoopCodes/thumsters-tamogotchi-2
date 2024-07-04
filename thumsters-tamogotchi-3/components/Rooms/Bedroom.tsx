@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Image,
@@ -22,29 +22,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import LockerRoom from "./LockerRoom";
 
-// Import or define your screen components
-
-export const HomeStack = createStackNavigator();
-
-interface HomeStackProps {
-  removeAttributesBar: () => void;
-}
-
-function HomeStackScreen({ removeAttributesBar }: HomeStackProps) {
-  return (
-    <NavigationContainer>
-      <HomeStack.Navigator>
-        <HomeStack.Screen name="Home" component={Bedroom} />
-        <HomeStack.Screen name="LockerRoom" component={LockerRoom} initialParams={{
-          removeAttributesBar: removeAttributesBar
-        }}/>
-      </HomeStack.Navigator>
-    </NavigationContainer>
-  );
-}
-
 function Bedroom({navigation}: {navigation: any}) {
   const { monster, monsterDispatch } = useContext(MonsterContext);
+  const [ turned, setTurned ] = useState(false);
+  
   useEffect(() => {
     if (monsterDispatch) {
       const action: monsterAction = {
@@ -67,7 +48,7 @@ function Bedroom({navigation}: {navigation: any}) {
         <Text style={styles.title}>Bedroom</Text>
         <View style={styles.monster}>
           {monster ? (
-            <Monster scaleFactor={0.3} monsterBody={monster} mood={""} />
+            <Monster scaleFactor={0.3} monsterBody={monster} state={turned ? "turned" : ""} />
           ) : null}
         </View>
         <View style={styles.background}>
@@ -93,8 +74,11 @@ function Bedroom({navigation}: {navigation: any}) {
             height={114}
             buttonInnerStyles={styles.bottomButton}
             imageInnerStyles={styles.buttonImage}
+            onPress={() => {
+              setTurned(!turned);
+            }}
           />
-          <Text style={styles.buttonText}>Dressing Room</Text>
+          <Text style={styles.buttonText}>Clean Bed</Text>
         </View>
         <View style={[styles.column]}>
           <PrimaryButton
@@ -226,3 +210,7 @@ const styles = StyleSheet.create({
 });
 
 export default Bedroom;
+function setState(arg0: boolean): { turned: any; setTurned: any; } {
+  throw new Error("Function not implemented.");
+}
+

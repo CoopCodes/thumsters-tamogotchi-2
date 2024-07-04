@@ -13,6 +13,7 @@ import foot from "./assets/resources/Monsters/1/Foot.png";
 import eyes2 from "./assets/resources/Monsters/1/eye2.png";
 import mouth from "./assets/resources/Monsters/1/Mouth.png";
 import node from "./assets/resources/Monsters/1/Nodenode.png";
+import arm2 from "./assets/resources/Monsters/2/arm.png";
 
 import ImageNotImplemented from "./assets/resources/images/ImageNotImplemented.png";
 
@@ -255,7 +256,7 @@ export const bodySets: {
   2: {
     bodyparts: {
       leftarm: {
-        bodyPart: new BodyPart([110, 86], arm, -1, "Arm", [546, 413], 2, true),
+        bodyPart: new BodyPart([200, 600], arm2, -1, "Arm", [955, 984, 0.4], 2),
         ref: undefined,
       },
       rightarm: {
