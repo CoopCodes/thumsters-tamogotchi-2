@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Dimensions,
   PanResponder,
+  Animated,
 } from "react-native";
 import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
 import { theme } from "../../global";
@@ -21,32 +22,69 @@ import Toilet from "../../assets/resources/images/Toilet.png";
 import Sink from "../../assets/resources/images/Sink.png";
 import Shelf from "../../assets/resources/images/BathroomShelf.png";
 import Sponge from "../../assets/resources/images/Sponge.png";
+import SoapSponge from '../../assets/resources/images/SoapSponge.png'
+import Reflection from '../../assets/resources/images/ProgressReflection.png'
 // Bedroom group stack provider:
 import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import LockerRoom from "./LockerRoom";
 
 // Import or define your screen components
 
-const Bathroom = ({ navigation }) => {
+
+const Bathroom = ({  }) => {
   const { monster, monsterDispatch } = useContext(MonsterContext);
-  const [position, setPosition] = useState({ x: 280, y: 77 });
-  const [originalPosition] = useState({ x: 280, y: 77 });
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: (evt, gestureState) => {
-        setPosition({
-          x: gestureState.moveX - 25, // Adjust for the center of the sponge
-          y: gestureState.moveY - 135, // Adjust for the center of the sponge
-        });
-        console.log(gestureState.moveX, gestureState.moveY)
-      },
-      onPanResponderRelease: () => {
-        setPosition(originalPosition);
-      },
-      
-    })
-  ).current;
+  const [position, setPosition] = useState({ x: 280, y: 294 });
+  const [progressWidth, setProgressWidth] = useState(new Animated.Value(31));
+  const [hitBoxPosition, setHitBoxPosition] = useState({ x: 102, y: 0 });
+  const [hitBoxDimensions, setHitBoxDimensions] = useState({ width: 150, height: 245 });
+
+  const maxProgressWidth = 280;
+  const minProgressWidth = 31;
+
+  const increaseProgress = () => {
+    Animated.timing(progressWidth, {
+      toValue: maxProgressWidth,
+      duration: 10000, // Adjust the duration as needed
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const decreaseProgress = () => {
+    Animated.timing(progressWidth, {
+      toValue: minProgressWidth,
+      duration: 40000, // Adjust the duration as needed
+      useNativeDriver: false,
+    }).start();
+  };
+
+ const panResponder = useRef(
+  PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderMove: (evt, gestureState) => {
+      const newPosition = {
+        x: gestureState.moveX - 25, // Adjust for the center of the sponge
+        y: (Dimensions.get("window").height - gestureState.moveY) - 340, // Adjust for the center of the sponge
+      };
+      setPosition(newPosition);
+
+      // Check if sponge is over hitBox
+      if (
+        newPosition.x >= hitBoxPosition.x &&
+        newPosition.x <= hitBoxPosition.x + hitBoxDimensions.width &&
+        newPosition.y >= hitBoxPosition.y &&
+        newPosition.y <= hitBoxPosition.y + hitBoxDimensions.height
+      ) {
+        increaseProgress(); // If inside hitbox, increase progress
+      } else {
+        decreaseProgress(); // Otherwise, decrease progress
+      }
+    },
+    onPanResponderRelease: () => {
+      setPosition(position)
+      decreaseProgress(); // Stop progress when touch is released
+    },
+  })
+).current;
 
   useEffect(() => {
     if (monsterDispatch) {
@@ -68,21 +106,28 @@ const Bathroom = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.top}>
         <Text style={styles.title}>Bathroom</Text>
-        <View style={styles.monster}>
+        <View
+          style={styles.monster}
+          id="hitBox"
+          onLayout={(event) => {
+            const layout = event.nativeEvent.layout;
+            setHitBoxPosition({ x: layout.x, y: layout.y });
+            setHitBoxDimensions({ width: layout.width, height: layout.height });
+          }}
+        >
           {monster ? (
             <Monster scaleFactor={0.3} monsterBody={monster} mood={""} />
           ) : null}
         </View>
         <View
-              {...panResponder.panHandlers}
-              style={[styles.sponge, { top: position.y, left: position.x }]}
-            >
-              <Image source={Sponge} style={styles.spongeImage} />
-            </View>
+          {...panResponder.panHandlers}
+          style={[styles.sponge, { bottom: position.y, left: position.x }]}
+        >
+          <Image source={Sponge} style={styles.spongeImage} />
+        </View>
         <View style={styles.background}>
           <View style={styles.topLeft}>
             <Image style={[styles.shelf, styles.topImage]} source={Shelf} />
-            
             <Image style={[styles.leftImage, styles.topImage]} source={Toilet} />
           </View>
           <View style={styles.topRight}>
@@ -91,14 +136,48 @@ const Bathroom = ({ navigation }) => {
         </View>
       </View>
       <View style={styles.bottom}>
-        <View style={[styles.column]}></View>
-        <View style={[styles.column]}></View>
+        <View style={styles.cleanProgress}>
+          <Image source={SoapSponge}/>
+          <View style={styles.progressMould}>
+            <Animated.View style={[styles.progressBar, { width: progressWidth }]}>
+              <Image source={Reflection} style={styles.reflection}/>
+            </Animated.View>
+          </View>
+        </View>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  reflection: {},
+
+  progressBar: {
+    height: 38,
+    backgroundColor: '#54AAFF',
+    borderRadius: 12,
+    display: 'flex',
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    padding: 5,
+  },
+
+  cleanProgress: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 15,
+    justifyContent: 'center',
+    paddingBottom: 100
+  },
+
+  progressMould: {
+    width: 280,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: '#D9D9D9'
+  },
+
   monster: {
     transform: [{ scale: 0.7 }, { translateY: 10 }],
     zIndex: 2,
@@ -146,7 +225,7 @@ const styles = StyleSheet.create({
   },
   sponge: {
     position: "absolute",
-    top: -156,
+    // top: -156,
     right: 26,
     zIndex: 50,
   },
