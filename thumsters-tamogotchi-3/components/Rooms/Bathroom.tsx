@@ -63,7 +63,7 @@ const Bathroom = ({  }) => {
     onPanResponderMove: (evt, gestureState) => {
       const newPosition = {
         x: gestureState.moveX - 25, // Adjust for the center of the sponge
-        y: (Dimensions.get("window").height - gestureState.moveY) - 340, // Adjust for the center of the sponge
+        y: (Dimensions.get("window").height - gestureState.moveY) - 345, // Adjust for the center of the sponge
       };
       setPosition(newPosition);
 
