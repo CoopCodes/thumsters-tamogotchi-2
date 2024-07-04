@@ -1,0 +1,27 @@
+<svg width="121" height="278" viewBox="0 0 121 278" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M32 190H90L93 278H29L32 190Z" fill="#D8C0E2"/>
+<ellipse cx="60.5" cy="73" rx="58.5" ry="73" fill="#00D1FF"/>
+<mask id="mask0_7_23" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="2" y="0" width="117" height="146">
+<ellipse cx="60.5" cy="73" rx="58.5" ry="73" fill="#00D1FF"/>
+</mask>
+<g mask="url(#mask0_7_23)">
+<rect x="9" y="36.6855" width="11.2561" height="127.448" transform="rotate(-59.7517 9 36.6855)" fill="#60E2FF"/>
+<rect x="9" y="16.8469" width="14.9633" height="127.448" transform="rotate(-59.7517 9 16.8469)" fill="#60E2FF"/>
+<rect x="-5" y="64.8469" width="19.5021" height="127.448" transform="rotate(-59.7517 -5 64.8469)" fill="#60E2FF"/>
+<rect x="2" y="50.6855" width="17" height="127.448" transform="rotate(-59.7517 2 50.6855)" fill="#B2EFFC"/>
+<rect x="9" y="25.1664" width="10.6112" height="127.448" transform="rotate(-59.7517 9 25.1664)" fill="#B2EFFC"/>
+</g>
+<path d="M56 134.5C56 132.015 58.0147 130 60.5 130C62.9853 130 65 132.015 65 134.5V166H56V134.5Z" fill="#D8C0E2"/>
+<path d="M57.5 138H60.5H63.5L62.6094 162H58.3906L57.5 138Z" fill="#00D1FF"/>
+<circle cx="55" cy="163" r="3" fill="#AAF0FF"/>
+<circle cx="56" cy="160" r="3" fill="#E4FAFF"/>
+<circle cx="66" cy="162" r="3" fill="#4BC9FF"/>
+<circle cx="63" cy="161" r="3" fill="#00B2FF"/>
+<circle cx="60" cy="161" r="3" fill="#63CEFB"/>
+<path d="M56 134.5C56 132.015 58.0147 130 60.5 130C62.9853 130 65 132.015 65 134.5V141.5C65 143.985 62.9853 146 60.5 146C58.0147 146 56 143.985 56 141.5V134.5Z" fill="#EBDFF0"/>
+<path d="M120.966 180.261C120.966 199.999 93.8944 216 60.5 216C27.1056 216 0.0340017 199.999 0.0340017 180.261C0.0340017 160.522 -3.46403 162.026 60.5 162.026C124.464 162.026 120.966 160.522 120.966 180.261Z" fill="#EBDFF0"/>
+<circle cx="79.5" cy="150.5" r="4.5" fill="#FF6C6C"/>
+<circle cx="79.5" cy="150.5" r="4.5" fill="#FF6C6C"/>
+<circle cx="41.5" cy="150.5" r="4.5" fill="#FF6C6C"/>
+<circle cx="41.5" cy="150.5" r="4.5" fill="#8196FF"/>
+</svg>
