@@ -1,15 +1,15 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   View,
   Image,
   Text,
   StyleSheet,
   Dimensions,
-  Pressable,
+  PanResponder,
 } from "react-native";
 import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
 import { theme } from "../../global";
-import { bodySets, Body, bodyImage } from "../../global";
+import { bodySets, bodyImage } from "../../global";
 import Monster from "../Monster";
 import clothesHanger from "../../assets/resources/images/ClothesHanger.png";
 import PrimaryButton from "../Button";
@@ -17,29 +17,38 @@ import leftBackground from "../../assets/resources/images/Bedroom-Left.png";
 import rightBackground from "../../assets/resources/images/Bedroom-Right.png";
 import { useLoadFonts } from "../../global";
 import { NavigationContainer } from "@react-navigation/native";
-import Toilet from "../../assets/resources/images/Toilet.png"
-import Sink from "../../assets/resources/images/Sink.png"
-import Shelf from "../../assets/resources/images/BathroomShelf.png"
-import Sponge from "../../assets/resources/images/Sponge.png"
+import Toilet from "../../assets/resources/images/Toilet.png";
+import Sink from "../../assets/resources/images/Sink.png";
+import Shelf from "../../assets/resources/images/BathroomShelf.png";
+import Sponge from "../../assets/resources/images/Sponge.png";
 // Bedroom group stack provider:
-import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
+import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import LockerRoom from "./LockerRoom";
+import Animated from "react-native-reanimated";
 
 // Import or define your screen components
 
-
-
-function spongeTest() {
- 
-  console.log("ive been pressed");
-  // useEffect(() => {
-  //   if
-  // })
-  
-}
-
-function Bathroom({navigation}: {navigation: any}) {
+const Bathroom = ({ navigation }) => {
   const { monster, monsterDispatch } = useContext(MonsterContext);
+  const [position, setPosition] = useState({ x: 280, y: 83 });
+  const [originalPosition] = useState({ x: 280, y: 83 });
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (evt, gestureState) => {
+        setPosition({
+          x: gestureState.moveX - 25, // Adjust for the center of the sponge
+          y: gestureState.moveY - 120, // Adjust for the center of the sponge
+        });
+        console.log(gestureState.moveX, gestureState.moveY)
+      },
+      onPanResponderRelease: () => {
+        setPosition(originalPosition);
+      },
+      
+    })
+  ).current;
+
   useEffect(() => {
     if (monsterDispatch) {
       const action: monsterAction = {
@@ -50,8 +59,6 @@ function Bathroom({navigation}: {navigation: any}) {
       monsterDispatch(action);
     }
   }, []);
-
-
 
   const fontInfo = useLoadFonts();
   if (!fontInfo?.fontsLoaded) {
@@ -67,70 +74,32 @@ function Bathroom({navigation}: {navigation: any}) {
             <Monster scaleFactor={0.3} monsterBody={monster} mood={""} />
           ) : null}
         </View>
+        <Animated.View
+              {...panResponder.panHandlers}
+              style={[styles.sponge, { top: position.y, left: position.x }]}
+            >
+              <Image source={Sponge} style={styles.spongeImage} />
+            </Animated.View>
         <View style={styles.background}>
           <View style={styles.topLeft}>
-          <Image
-              style={[styles.shelf, styles.topImage]}
-              source={Shelf}
-            ></Image>
-            <Pressable id="spongeButton" onPress={spongeTest}>
-          <Image
-              id="sponge"
-              style={[styles.sponge, styles.topImage]}
-              source={Sponge}
-            ></Image>
-            </Pressable>
-          <Image
-              style={[styles.leftImage, styles.topImage]}
-              source={Toilet}
-            ></Image>
-         
+            <Image style={[styles.shelf, styles.topImage]} source={Shelf} />
+            
+            <Image style={[styles.leftImage, styles.topImage]} source={Toilet} />
           </View>
           <View style={styles.topRight}>
-            <Image
-              style={[styles.rightImage, styles.topImage]}
-              source={Sink}
-            ></Image>
+            <Image style={[styles.rightImage, styles.topImage]} source={Sink} />
           </View>
         </View>
       </View>
       <View style={styles.bottom}>
-        <View style={[styles.column]}>
-          <PrimaryButton
-            image={clothesHanger}
-            width={Dimensions.get("window").width * 0.4}
-            height={114}
-            buttonInnerStyles={styles.bottomButton}
-            imageInnerStyles={styles.buttonImage}
-          />
-          <Text style={styles.buttonText}>Dressing Room</Text>
-        </View>
-        <View style={[styles.column]}>
-          <PrimaryButton
-            image={clothesHanger}
-            width={Dimensions.get("window").width * 0.4}
-            height={114}
-            buttonInnerStyles={styles.bottomButton}
-            imageInnerStyles={styles.buttonImage}
-            onPress={() => {
-              console.log('Navigating...')
-              navigation.navigate("LockerRoom");
-            }}
-          />
-          <Text style={styles.buttonText}>Dressing Room</Text>
-        </View>
+        <View style={[styles.column]}></View>
+        <View style={[styles.column]}></View>
       </View>
-      {/* <View style={styles.monster}>
-          {monster ? (
-            <Monster scaleFactor={0.3} monsterBody={monster} mood={""} />
-          ) : null}
-        </View> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-
   monster: {
     transform: [{ scale: 0.7 }, { translateY: 10 }],
     zIndex: 2,
@@ -145,10 +114,10 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
   container: {
-    // flex: 1,
     height: "90%",
   },
   top: {
+    position: "relative",
     flex: 1.5,
     backgroundColor: "#FFFFFF",
     alignItems: "center",
@@ -160,21 +129,14 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#4D4752",
     marginTop: Dimensions.get("window").height * 0.03,
-    fontFamily: "Poppins-ExtraBold"
+    fontFamily: "Poppins-ExtraBold",
   },
-  // monster: {
-  //   marginTop: "auto",
-  //   height: Dimensions.get("window").height * 0.35,
-  //   resizeMode: "contain", // change as needed
-  //   // backgroundColor: 'black',
-  // },
   topImage: {
     position: "relative",
     marginTop: 20,
-    // height: Dimensions.get("window").width * 0.5,
     maxHeight: Dimensions.get("window").width,
     zIndex: 0,
-    objectFit: "contain"
+    objectFit: "contain",
   },
   background: {
     position: "absolute",
@@ -186,11 +148,17 @@ const styles = StyleSheet.create({
   sponge: {
     position: "absolute",
     top: -156,
-    right: 26
+    right: 26,
+    zIndex: 50,
+  },
+  spongeImage: {
+    width: 52, // Adjust the width as necessary
+    height: 22, // Adjust the height as necessary
+    zIndex: 50
   },
   shelf: {
     right: 50,
-    top: -100
+    top: -100,
   },
   leftImage: {
     left: -60,
@@ -229,12 +197,12 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: theme.default.typographyDark,
     fontSize: 20,
-    fontFamily: "Poppins-ExtraBold"
+    fontFamily: "Poppins-ExtraBold",
   },
   buttonImage: {
     width: "50%",
     height: "50%",
-    objectFit: "contain"
+    objectFit: "contain",
   },
   column: {
     flex: 1,
