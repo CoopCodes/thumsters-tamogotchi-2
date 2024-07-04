@@ -26,7 +26,7 @@ const ListBodyPart = ({ bodypart, OnPress }: Props) => {
           <TouchableOpacity style={[styles.parent, {
             height: 100 * bodypart.aspectRatio[1]
           }]} onPress={() => { OnPress(bodypart, bodyPartReflected); console.log("PRESSED: ", bodypart) }}>{/* Checks whether it is on the left or right */}
-              <Image
+              <bodypart.image
                 style={[
                   {
                     width: vw(33),
@@ -35,12 +35,12 @@ const ListBodyPart = ({ bodypart, OnPress }: Props) => {
                   },
                   styles.image,
                 ]}
-                source={
-                  (!bodypart.badContrast)? 
-                    bodypart.image : 
-                    (bodypart.imageBadContrast !== undefined)?
-                      bodypart.imageBadContrast : bodypart.image
-                }
+                // source={
+                //   (!bodypart.badContrast)? 
+                //     bodypart.image : 
+                //     (bodypart.imageBadContrast !== undefined)?
+                //       bodypart.imageBadContrast : bodypart.image
+                // }
               />
           </TouchableOpacity>
       </GestureHandlerRootView>

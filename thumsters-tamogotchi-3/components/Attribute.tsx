@@ -37,13 +37,13 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.75 }, { rotate: "-90deg" }],
   },
   attrImage: {
-    transform: [{ scale: 0.35 }, { rotate: "90deg" }]
+    transform: [{ scale: 0.5 }, { rotate: "90deg" }]
   }
 });
 
 const energyStyles = StyleSheet.create({
   attrImage: {
-    transform: [{ scale: 0.04 }, { rotate: "90deg" }]
+    transform: [{ scale: 0.6 }, { rotate: "90deg" }]
   }
 })
 

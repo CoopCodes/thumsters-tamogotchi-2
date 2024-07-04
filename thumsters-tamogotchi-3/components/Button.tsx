@@ -128,7 +128,7 @@ const PrimaryButton = ({
           <Text style={styles.buttonText}>{title}</Text>
         ) : Image !== undefined ? (
           // <Image style={imageInnerStyles} source={image}></Image>
-          <Image/>
+          <Image style={imageInnerStyles}/>
         ) : (
           <></>
         )}

@@ -1,9 +1,5 @@
 import React, { useRef } from "react";
-import {
-  View,
-  Image,
-  StyleSheet,
-} from "react-native";
+import { View, Image, StyleSheet } from "react-native";
 import { Body, bodyPartInfo, bodySets } from "../global";
 // import node from "../assets/resources/Monsters/1/Nodenode.png";
 
@@ -16,11 +12,11 @@ interface Props {
 /**
  * Moves the body part to the correct position, width, height, and scale. based on the nodes position.
  */
-export function updateNativeProps( 
+export function updateNativeProps(
   bodypart: bodyPartInfo,
   ref: React.RefObject<any>,
   bodyNodeCoord: number[],
-  scaleFactor: number,
+  scaleFactor: number
 ) {
   // ref.current.setNativeProps({
   //   style:
@@ -63,7 +59,7 @@ export function setBodyPartStyles(
   bodypart: bodyPartInfo,
   scaleFactor: number,
   i: number,
-  state: string,
+  state: string
 ) {
   if (
     bodypart !== undefined &&
@@ -91,7 +87,7 @@ export function setBodyPartStyles(
 
     const node = bodySets[1].body[partTitle];
     const bodyNodeCoord: Array<number> = node !== undefined ? node : [0, 0];
-    
+
     return {
       transform: [
         // {
@@ -117,8 +113,10 @@ export function setBodyPartStyles(
         bodypart.bodyPart.node[1] * scaleFactor,
       width: bodypart.bodyPart.width * scaleFactor,
       height: bodypart.bodyPart.height * scaleFactor,
-      zIndex: (state.includes("turned") && bodypart.bodyPart.category !== "Body") ? -1 : bodypart.bodyPart.zIndex,
-
+      zIndex:
+        state.includes("turned") && bodypart.bodyPart.category !== "Body"
+          ? -1
+          : bodypart.bodyPart.zIndex,
     };
   }
   // }
@@ -223,14 +221,16 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
               node !== undefined ? node : [0, 0];
             if (bodypart)
               return (
-                <bodypart.bodyPart.image
-                  key={i}
-                  // ref={bodypart.ref}
+                <View
                   style={[
                     styles.bodyPart,
                     setBodyPartStyles(bodypart, scaleFactor, i, state),
                   ]}
-                />
+                  key={i}
+                  ref={bodypart.ref}
+                >
+                  <bodypart.bodyPart.image />
+                </View>
               );
             else return;
           }
@@ -245,8 +245,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     position: "absolute",
   },
-  room: {
-  },
+  room: {},
   body: {
     width: "100%",
     height: "100%",

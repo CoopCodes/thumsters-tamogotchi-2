@@ -272,7 +272,7 @@ export const bodySets: {
       },
       eyes: {
         bodyPart: new BodyPart(
-          [500, 500, 0.4],
+          [500, 500],
           eyes2,
           2,
           "Eyes",
