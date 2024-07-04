@@ -30,6 +30,7 @@ const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles
       minWidth: width,
       height: height,
       justifyContent: "center",
+      overflow: "visible",
     },
     shadow: {
       ...StyleSheet.absoluteFillObject,

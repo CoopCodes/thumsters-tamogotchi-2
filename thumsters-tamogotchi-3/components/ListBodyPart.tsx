@@ -21,33 +21,36 @@ const ListBodyPart = ({ bodypart, OnPress }: Props) => {
   // console.log(bodyPartReflected)
 
   return (
-    <GestureHandlerRootView>
-      <TouchableOpacity style={[styles.parent, {
-        height: 100 * bodypart.aspectRatio[1]
-      }]} onPress={() => { OnPress(bodypart, bodyPartReflected); console.log("PRESSED: ", bodypart) }}>{/* Checks whether it is on the left or right */}
-          <Image
-            style={[
-              {
-                width: vw(33),
-                height: '100%',
-                transform: [{ scaleX: (bodypart.reflected)? -1 : 1 }],
-              },
-              styles.image,
-            ]}
-            source={
-              (!bodypart.badContrast)? 
-                bodypart.image : 
-                (bodypart.imageBadContrast !== undefined)?
-                  bodypart.imageBadContrast : bodypart.image
-            }
-          />
-      </TouchableOpacity>
-    </GestureHandlerRootView>
+    <View>
+      <GestureHandlerRootView>
+          <TouchableOpacity style={[styles.parent, {
+            height: 100 * bodypart.aspectRatio[1]
+          }]} onPress={() => { OnPress(bodypart, bodyPartReflected); console.log("PRESSED: ", bodypart) }}>{/* Checks whether it is on the left or right */}
+              <Image
+                style={[
+                  {
+                    width: vw(33),
+                    height: '100%',
+                    transform: [{ scaleX: (bodypart.reflected)? -1 : 1 }],
+                  },
+                  styles.image,
+                ]}
+                source={
+                  (!bodypart.badContrast)? 
+                    bodypart.image : 
+                    (bodypart.imageBadContrast !== undefined)?
+                      bodypart.imageBadContrast : bodypart.image
+                }
+              />
+          </TouchableOpacity>
+      </GestureHandlerRootView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   parent: {
+    // backgroundColor: "white",
     marginRight: 20,
     overflow: "visible",
   },

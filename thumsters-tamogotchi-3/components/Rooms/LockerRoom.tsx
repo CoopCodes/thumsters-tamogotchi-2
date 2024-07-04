@@ -30,14 +30,15 @@ import {
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import PrimaryButton from "../Button";
+import ShowAttributesContext from "../../Contexts/ShowAttributeContext";
 
-interface Props {
-  removeAttributesBar?: emptyFunction;
-}
 
-const LockerRoom = ({ removeAttributesBar }: Props) => {
-  if (removeAttributesBar)
-    removeAttributesBar();
+const LockerRoom = ({ navigation }: { navigation: any }) => {
+  const { showAttributesBar, setShowAttributeBar } = useContext(ShowAttributesContext);
+
+  useEffect(() => {
+    setShowAttributeBar(false);
+  }, [])
 
   // Monster Initialization
   const { monster, monsterDispatch } = useContext(MonsterContext);
@@ -129,12 +130,24 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
     // console.log(displayBodyParts);
   };
 
+  const back = () => {
+    setShowAttributeBar(true);
+    navigation.goBack();
+  };
+  
   useEffect(() => {
     CategoryClick("Mouth"); // Calling function to actually show the bodyparts
   }, []);
   return (
     <View style={styles.container}>
       <View style={styles.top}>
+        <View style={styles.backButtonContainer}>
+          <TouchableOpacity 
+            style={{ backgroundColor: "transparent", padding: 5 }}
+            onPress={back}>
+            <Text style={styles.backButton}>{"<"}</Text>
+          </TouchableOpacity>
+        </View>
         <Text style={styles.header}>Customise your thumster</Text>
         <View style={styles.monster}>
           {monster ? (
@@ -171,6 +184,7 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
               OnRemove={() => removeBodyPart(item)}
               OnPress={changeBodyPart}
             />
+            // <View style={{ backgroundColor: "red", height: 100, width: 100 }}></View>
           )}
         />
       </GestureHandlerRootView>
@@ -179,11 +193,26 @@ const LockerRoom = ({ removeAttributesBar }: Props) => {
 };
 
 const styles = StyleSheet.create({
+  backButtonContainer: {
+    position: "absolute",
+    top: 30,
+    left: 20,
+    elevation: 10,
+    zIndex: 100,
+    backgroundColor: "transparent"
+  },
+  backButton: {
+    fontWeight: "800",
+    fontSize: 25,
+    color: theme.default.interactionPrimary,
+  },
   container: {
-    // flex: 1,
-    height: "109%"
+    height: "100%", // 109
+    backgroundColor: "blue",
+    // flex: ,
   },
   top: {
+    position: "relative",
     flex: 1.5,
     backgroundColor: "#FFFFFF",
     alignItems: "center",
@@ -205,38 +234,39 @@ const styles = StyleSheet.create({
   bottom: {
     flex: 1,
     backgroundColor: "#F3F4F6",
+    paddingBottom: 100,
   },
   categoryBar: {
     flex: 1,
-    flexGrow: 1,
-    // height: 100,
+    flexGrow: .35,
     borderBottomWidth: 3,
     borderTopWidth: 3,
     borderColor: "#E5E7EB",
-    // paddingLeft: 20,
-    // paddingRight: 20,
     paddingVertical: 10,
     flexDirection: "row",
+    overflow: "visible",
   },
   categoryButton: {
     minWidth: 89,
     marginTop: 5.5,
-    height: 56,
+    minHeight: "90%",
+    
     justifyContent: "center",
     marginRight: 8, // used in place of 'gap' property
   },
-  bodyPartsBar: {
-    flex: 2,
-    paddingTop: 40,
-    paddingBottom: 50,
-    flexDirection: "row",
-  },
   bodyPartList: {
-    height: "40%",
+    height: 0,
+    // backgroundColor: "white",
     // flex: 1,
     paddingLeft: 20,
-    paddingBottom: 20,
+    paddingBottom: 50,
   },
+  // bodyPartsBar: {
+  //   flex: 2,
+  //   paddingTop: 40,
+  //   paddingBottom: 50,
+  //   flexDirection: "row",
+  // },
 });
 export default LockerRoom;
 

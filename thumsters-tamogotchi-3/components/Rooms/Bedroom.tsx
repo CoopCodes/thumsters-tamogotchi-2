@@ -15,35 +15,8 @@ import PrimaryButton from "../Button";
 import leftBackground from "../../assets/resources/images/Bedroom-Left.png";
 import rightBackground from "../../assets/resources/images/Bedroom-Right.png";
 import { useLoadFonts } from "../../global";
-import { NavigationContainer } from "@react-navigation/native";
 
-
-// Bedroom group stack provider:
-import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
-import LockerRoom from "./LockerRoom";
-
-// Import or define your screen components
-
-export const HomeStack = createStackNavigator();
-
-interface HomeStackProps {
-  removeAttributesBar: () => void;
-}
-
-function HomeStackScreen({ removeAttributesBar }: HomeStackProps) {
-  return (
-    <NavigationContainer>
-      <HomeStack.Navigator>
-        <HomeStack.Screen name="Home" component={Bedroom} />
-        <HomeStack.Screen name="LockerRoom" component={LockerRoom} initialParams={{
-          removeAttributesBar: removeAttributesBar
-        }}/>
-      </HomeStack.Navigator>
-    </NavigationContainer>
-  );
-}
-
-function Bedroom({navigation}: {navigation: any}) {
+function Bedroom({ navigation }: { navigation: any }) {
   const { monster, monsterDispatch } = useContext(MonsterContext);
   useEffect(() => {
     if (monsterDispatch) {

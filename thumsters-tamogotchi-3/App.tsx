@@ -1,4 +1,11 @@
-import React, { useReducer, useEffect, useState, useCallback } from "react";
+import React, {
+  useReducer,
+  useEffect,
+  useState,
+  useCallback,
+  createContext,
+  useContext,
+} from "react";
 import {
   View,
   Text,
@@ -30,16 +37,13 @@ import { monsterAction } from "./Contexts/MonsterContext";
 import LockerRoom from "./components/Rooms/LockerRoom";
 import { NavigationContainer } from "@react-navigation/native";
 
-import { useFonts, loadAsync } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
+import { useFonts, loadAsync } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
 
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import BottomTabs from "./components/BottomTabs";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
-const Tab = createBottomTabNavigator();
-
-
+import ShowAttributesContext from "./Contexts/ShowAttributeContext";
 
 // const breakpoints = {
 //   s: 700,
@@ -118,14 +122,10 @@ export default function App() {
 
   // Monster Logic TODO: change the way body is accessed
 
-  const [showAttributesBar, setShowAttributeBar] = useState(true);
-
-  const removeAttributesBar: emptyFunction = () => {
-    setShowAttributeBar(false);
-  };
+  const [ showAttributesBar, setShowAttributeBar ] = useState(true);
 
   // Custom font stuff
-  
+
   // const fontInfo = useLoadFonts();
   // if (!fontInfo?.fontsLoaded) {
   //   return null;
@@ -138,7 +138,6 @@ export default function App() {
   //   }
   // }, [fontsLoaded, fontError]);
 
-  
   // const onLayoutRootView = useCallback(async () => {
   //   if (fontsLoaded || fontError) {
   //     await SplashScreen.hideAsync();
@@ -146,7 +145,6 @@ export default function App() {
   //     return null;
   // }
   // }, [fontsLoaded, fontError]);
-
 
   return (
     <MonsterProvider>
@@ -156,53 +154,62 @@ export default function App() {
           attributesDispatch: attributesDispatch,
         }}
       >
-        <View
-          style={[
-            styles.view,
-            { backgroundColor: theme.default.backgroundColor },
-          ]}
+        <ShowAttributesContext.Provider
+          value={{
+            showAttributesBar: false,
+            setShowAttributeBar: setShowAttributeBar,
+          }}
         >
-          {/* If showAttributesBar is true, then show it, else show nothing */}
-          {showAttributesBar ? (
-            <View style={[styles.attributes]}>
-              {/* Render Attribute components here */}
-              <Attribute
-                attrName="health"
-                image={heartIcon}
-                progress={attributes.health}
-              />
-              <Attribute
-                attrName="hunger"
-                image={hungerIcon}
-                progress={attributes.hunger}
-              />
-              <Attribute
-                attrName="happiness"
-                image={happinessIcon}
-                progress={attributes.happiness}
-              />
-              <Attribute
-                attrName="energy"
-                image={energyIcon}
-                progress={attributes.energy}
-              />
-            </View>
-          ) : (
-            <></>
-          )}
-          {/* <NavigationContainer>
-            <Tab.Navigator>
-              <Tab.Screen name="Bedroom" component={Bedroom} />
-              <Tab.Screen name="Home2" component={Bedroom} />
-            </Tab.Navigator>
-          </NavigationContainer> */}
-          {/* <Text style={ styles.text }>Hello</Text> */}
-          {/* <Bedroom></Bedroom> */}
-          {/* <LockerRoom removeAttributesBar={removeAttributesBar}/> */}
-          <SafeAreaProvider style={{ backgroundColor: "black", marginBottom: -105 }}>
-            <BottomTabs removeAttributesBar={removeAttributesBar}></BottomTabs>
-          </SafeAreaProvider>
-        </View>
+          <View
+            style={[
+              styles.view,
+              { backgroundColor: theme.default.backgroundColor },
+            ]}
+          >
+            {/* If showAttributesBar is true, then show it, else show nothing */}
+            {showAttributesBar ? (
+              <View style={[styles.attributes]}>
+                {/* Render Attribute components here */}
+                <Attribute
+                  attrName="health"
+                  image={heartIcon}
+                  progress={attributes.health}
+                />
+                <Attribute
+                  attrName="hunger"
+                  image={hungerIcon}
+                  progress={attributes.hunger}
+                />
+                <Attribute
+                  attrName="happiness"
+                  image={happinessIcon}
+                  progress={attributes.happiness}
+                />
+                <Attribute
+                  attrName="energy"
+                  image={energyIcon}
+                  progress={attributes.energy}
+                />
+              </View>
+            ) : (
+              <></>
+            )}
+            {/* <NavigationContainer>
+              <Tab.Navigator>
+                <Tab.Screen name="Bedroom" component={Bedroom} />
+                <Tab.Screen name="Home2" component={Bedroom} />
+              </Tab.Navigator>
+            </NavigationContainer> */}
+            {/* <Text style={ styles.text }>Hello</Text> */}
+            {/* <Bedroom></Bedroom> */}
+            {/* <LockerRoom removeAttributesBar={removeAttributesBar}/> */}
+            <SafeAreaProvider
+              style={{ backgroundColor: "black", marginBottom: -105 }}
+            >
+              <BottomTabs></BottomTabs>
+            </SafeAreaProvider>
+          </View>
+        </ShowAttributesContext.Provider>
       </AttributesContext.Provider>
     </MonsterProvider>
   );
@@ -232,5 +239,5 @@ const styles = StyleSheet.create({
     position: "relative",
     backgroundColor: "black",
     bottom: 0,
-  }
+  },
 });

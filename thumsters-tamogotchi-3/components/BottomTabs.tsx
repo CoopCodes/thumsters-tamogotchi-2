@@ -1,61 +1,50 @@
-import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
-import bedroomIcon from '../assets/resources/images/BedroomIcon.png';
+import { createMaterialBottomTabNavigator } from "react-native-paper/react-navigation";
+import bedroomIcon from "../assets/resources/images/BedroomIcon.png";
 
-import { Image, View, StyleSheet } from "react-native"
+import { Image, View, StyleSheet } from "react-native";
 
-import Bedroom from './Rooms/Bedroom';
-import { NavigationContainer } from '@react-navigation/native';
-import { theme } from '../global';
-import { HomeStack } from './Rooms/Bedroom';
+import Bedroom from "./Rooms/Bedroom";
+import { NavigationContainer } from "@react-navigation/native";
+import { theme } from "../global";
+import LockerRoom from "./Rooms/LockerRoom";
+import HomeStackScreen from "./Navigators/HomeStackScreen";
 
 const Tab = createMaterialBottomTabNavigator();
 
-interface Props {
-  removeAttributesBar: () => void
-}
 
-function BottomTabs({ removeAttributesBar }: Props) {
+function BottomTabs() {
   return (
     <NavigationContainer>
       <Tab.Navigator
+        style={styles.bar}
         initialRouteName="Bedroom"
         activeColor={theme.default.interactionPrimary}
-        barStyle={{ 
-          backgroundColor: 'white', 
-          position: "absolute", 
-          // bottom: -90, 
+        barStyle={{
+          backgroundColor: "white",
+          position: "absolute",
+          // bottom: -90,
           zIndex: 2,
         }}
       >
-        <HomeStack.Navigator initialRouteName='Bedroom' screenOptions={{
-          headerShown: false
-        }}>
-          <HomeStack.Screen name="Bedroom"
-            component={Bedroom}
-            initialParams={{
-              removeAttributesBar: removeAttributesBar
-              
-            }}
-          />
-          <HomeStack.Screen
-            name="Locker Room"
-            component={Bedroom}
-          />
-        </HomeStack.Navigator>
-        {/* <Tab.Screen
+        <Tab.Screen
           name="Bedroom"
-          component={Bedroom}
+          component={HomeStackScreen}
           options={{
             tabBarIcon: () => (
               <View style={styles.tabIcon}>
-                <Image source={bedroomIcon} style={{ width: "100%", height: "100%",objectFit: "contain" }}/>
+                <Image
+                  source={bedroomIcon}  
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                  }}
+                />
               </View>
             ),
-          }} initialParams={{
-            removeAttributesBar: removeAttributesBar
           }}
         />
-          <Tab.Screen
+        {/* <Tab.Screen
           name="Locker Room"
           component={Bedroom}
           options={{
@@ -73,11 +62,19 @@ function BottomTabs({ removeAttributesBar }: Props) {
 }
 
 const styles = StyleSheet.create({
+  bar: {
+    position: "absolute",
+    bottom: 50,
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2,
+  },
   tabIcon: {
     width: "100%",
     zIndex: 2,
-    overflow: "visible"
-  }
-})
+    overflow: "visible",
+  },
+});
 
-export default BottomTabs
+export default BottomTabs;
