@@ -95,7 +95,7 @@ function Bedroom({ navigation }: { navigation: any }) {
 
 const styles = StyleSheet.create({
   monster: {
-    transform: [{ scale: 0.7 }, { translateY: -43 }],
+    transform: [{ scale: 0.7 }, { translateY: 20 }],
     zIndex: 2,
     marginTop: "auto",
     height: Dimensions.get("window").height * 0.35,
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     height: "90%",
   },
   top: {
-    flex: 1.5,
+    flex: 2,
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",

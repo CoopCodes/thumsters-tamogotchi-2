@@ -133,11 +133,13 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   const back = () => {
     setShowAttributeBar(true);
     navigation.goBack();
-  };
-  
+  };  
   useEffect(() => {
     CategoryClick("Mouth"); // Calling function to actually show the bodyparts
   }, []);
+
+  const [activeCategoryIndex, setActiveCategoryIndex] = useState<number>(0);
+
   return (
     <View style={styles.container}>
       <View style={styles.top}>
@@ -168,8 +170,13 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
               }]}
             onPress={() => {
                 CategoryClick(item);
-                console.log(item + " was pressed");
-              }}/>
+                setActiveCategoryIndex(index);
+            }}
+            activeIndex={activeCategoryIndex}
+            index={index}
+            selectable={true}
+
+            />
           )}
         />
         <FlatList
@@ -193,6 +200,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
 };
 
 const styles = StyleSheet.create({
+  
   backButtonContainer: {
     position: "absolute",
     top: 30,
@@ -227,6 +235,7 @@ const styles = StyleSheet.create({
   },
   monster: {
     marginTop: "auto",
+    transform: [{ translateY: 70 }],
     height: Dimensions.get("window").height * 0.35,
     resizeMode: "contain", // change as needed
     // backgroundColor: 'black',

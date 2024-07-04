@@ -22,15 +22,30 @@ interface Props {
   key?: number; // for when the component is being called from a loop
   buttonInnerStyles: StyleProp<ViewStyle>;
   imageInnerStyles?: StyleProp<ImageStyle>;
+  selectable?: boolean; // Changes the style
+  activeIndex: number;
+  index: number; // The index of the button in the list of buttons
 }
 
-const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles, imageInnerStyles }: Props) => {
+const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles, imageInnerStyles, selectable = false, activeIndex, index }: Props) => {
+  const [active, setActive] = useState(false);
+  
+  useEffect(() => {
+    if (selectable) {
+      if (activeIndex === index) {
+        setActive(true);
+      } else {
+        setActive(false);
+      }
+    }
+  }, [activeIndex])
+  
+  
   const styles = StyleSheet.create({
     button: {
       minWidth: width,
       height: height,
-      justifyContent: "center",
-      overflow: "visible",
+      justifyContent: "center",      
     },
     shadow: {
       ...StyleSheet.absoluteFillObject,
@@ -41,7 +56,7 @@ const PrimaryButton = ({ title, image, onPress, width, height, buttonInnerStyles
       ...StyleSheet.absoluteFillObject,
       position: "relative",
       borderRadius: 5,
-      top: -5.5,
+      top: (!active)? -5.5 : 0,
       backgroundColor: theme.default.backgroundColor,
       flex: 1,
       alignItems: "center",

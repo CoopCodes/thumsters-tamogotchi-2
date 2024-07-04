@@ -233,7 +233,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    height: 100,
+    transform: [{ translateY: -5 }],
+    height: 110,
+    backgroundColor: "#F3F4F6",
+    borderBottomWidth: 3,
+    borderTopWidth: 0,
+    borderColor: "#E5E7EB",
   },
   bottomTabs: {
     position: "relative",
