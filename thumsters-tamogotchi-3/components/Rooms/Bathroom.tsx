@@ -18,12 +18,12 @@ import leftBackground from "../../assets/resources/images/Bedroom-Left.png";
 import rightBackground from "../../assets/resources/images/Bedroom-Right.png";
 import { useLoadFonts } from "../../global";
 import { NavigationContainer } from "@react-navigation/native";
-import Toilet from "../../assets/resources/images/Toilet.png";
-import Sink from "../../assets/resources/images/Sink.png";
-import Shelf from "../../assets/resources/images/BathroomShelf.png";
-import Sponge from "../../assets/resources/images/Sponge.png";
-import SoapSponge from '../../assets/resources/images/SoapSponge.png'
-import Reflection from '../../assets/resources/images/ProgressReflection.png'
+import Toilet from "../../assets/resources/images/Toilet.svg";
+import Sink from "../../assets/resources/images/Sink.svg";
+import Shelf from "../../assets/resources/images/BathroomShelf.svg";
+import Sponge from "../../assets/resources/images/Sponge.svg";
+import SoapSponge from '../../assets/resources/images/SoapSponge.svg'
+import Reflection from '../../assets/resources/images/ProgressReflection.svg'
 // Bedroom group stack provider:
 import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import LockerRoom from "./LockerRoom";
@@ -116,31 +116,31 @@ const Bathroom = ({  }) => {
           }}
         >
           {monster ? (
-            <Monster scaleFactor={0.3} monsterBody={monster} mood={""} />
+            <Monster scaleFactor={0.3} monsterBody={monster}  />
           ) : null}
         </View>
         <View
           {...panResponder.panHandlers}
           style={[styles.sponge, { bottom: position.y, left: position.x }]}
         >
-          <Image source={Sponge} style={styles.spongeImage} />
+          <Sponge style={styles.spongeImage} />
         </View>
         <View style={styles.background}>
           <View style={styles.topLeft}>
-            <Image style={[styles.shelf, styles.topImage]} source={Shelf} />
-            <Image style={[styles.leftImage, styles.topImage]} source={Toilet} />
+            <Shelf style={[styles.shelf, styles.topImage]} />
+            <Toilet style={[styles.leftImage, styles.topImage]}  />
           </View>
           <View style={styles.topRight}>
-            <Image style={[styles.rightImage, styles.topImage]} source={Sink} />
+            <Sink style={[styles.rightImage, styles.topImage]}  />
           </View>
         </View>
       </View>
       <View style={styles.bottom}>
         <View style={styles.cleanProgress}>
-          <Image source={SoapSponge}/>
+          <SoapSponge />
           <View style={styles.progressMould}>
             <Animated.View style={[styles.progressBar, { width: progressWidth }]}>
-              <Image source={Reflection} style={styles.reflection}/>
+              <Reflection style={styles.reflection}/>
             </Animated.View>
           </View>
         </View>
