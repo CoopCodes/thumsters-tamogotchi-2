@@ -10,7 +10,9 @@ import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
 import { theme } from "../../global";
 import { bodySets, Body, bodyImage } from "../../global";
 import Monster from "../Monster";
-import clothesHanger from "../../assets/resources/images/ClothesHanger.png";
+
+import clothesHanger from "../../assets/resources/images/ClothesHanger.svg";
+
 import PrimaryButton from "../Button";
 import leftBackground from "../../assets/resources/images/Bedroom-Left.png";
 import rightBackground from "../../assets/resources/images/Bedroom-Right.png";
@@ -69,7 +71,7 @@ function Bedroom({navigation}: {navigation: any}) {
       <View style={styles.bottom}>
         <View style={[styles.column]}>
           <PrimaryButton
-            image={clothesHanger}
+            Image={clothesHanger}
             width={Dimensions.get("window").width * 0.4}
             height={114}
             buttonInnerStyles={styles.bottomButton}
@@ -82,7 +84,7 @@ function Bedroom({navigation}: {navigation: any}) {
         </View>
         <View style={[styles.column]}>
           <PrimaryButton
-            image={clothesHanger}
+            Image={clothesHanger}
             width={Dimensions.get("window").width * 0.4}
             height={114}
             buttonInnerStyles={styles.bottomButton}

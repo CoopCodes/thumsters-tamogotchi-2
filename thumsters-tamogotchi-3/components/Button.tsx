@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { Component, useContext, useEffect, useState } from "react";
 import {
   View,
   Image,
@@ -20,10 +20,11 @@ import Animated, {
   AnimationCallback,
   runOnJS,
 } from "react-native-reanimated";
+import { SvgProps } from "react-native-svg";
 
 interface Props {
   title?: string;
-  image?: ImageSourcePropType;
+  Image?: React.FC<SvgProps>;
   onPress?: (event: GestureResponderEvent) => void;
   width?: number;
   height?: number;
@@ -37,7 +38,7 @@ interface Props {
 
 const PrimaryButton = ({
   title,
-  image,
+  Image,
   onPress,
   width,
   height,
@@ -126,8 +127,9 @@ const PrimaryButton = ({
       <Animated.View style={[styles.main, animatedStyle]}>
         {title !== undefined ? (
           <Text style={styles.buttonText}>{title}</Text>
-        ) : image !== undefined ? (
-          <Image style={imageInnerStyles} source={image}></Image>
+        ) : Image !== undefined ? (
+          // <Image style={imageInnerStyles} source={image}></Image>
+          <Image/>
         ) : (
           <></>
         )}
