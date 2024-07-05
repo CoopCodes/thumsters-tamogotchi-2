@@ -55,9 +55,7 @@ function Bedroom({navigation}: {navigation: any}) {
         </View>
         <View style={styles.background}>
           <View style={styles.topLeft}>
-            <LeftBackground
-              style={[styles.leftImage, styles.topImage]}
-            ></LeftBackground>
+            <LeftBackground preserveAspectRatio="XMinYMin Slice" width="100%" height="60%" style={[styles.leftImage, styles.topImage]}/>
           </View>
           <View style={styles.topRight}>
             <RightBackground
@@ -146,32 +144,37 @@ const styles = StyleSheet.create({
     position: "relative",
     marginTop: 20,
     // height: Dimensions.get("window").width * 0.5,
-    maxHeight: Dimensions.get("window").width,
+    // maxHeight: Dimensions.get("window").width,
+    width: "100%",
+    height: "100%",
+
     zIndex: 0,
-    objectFit: "contain"
   },
   background: {
     position: "absolute",
     bottom: 0,
     height: Dimensions.get("window").height,
     width: "100%",
-    backgroundColor: "white",
   },
   leftImage: {
-    // left: 0,
   },
   rightImage: {
     // right: 0,
     // bottom: -13,
   },
   topLeft: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "flex-end",
     position: "absolute",
-    right: -100,
+    width: "80%",
+    height: "100%",
+    left: 0,
     bottom: 0,
   },
   topRight: {
     position: "absolute",
-    left: 50, // Dunno why this is working it shouldn't
+    right: 0,
     bottom: 0,
   },
   bottom: {
