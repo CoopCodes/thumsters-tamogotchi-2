@@ -13,10 +13,10 @@ import {
   Dimensions,
 } from "react-native";
 
-import HeartIcon from "./assets/resources/images/heart.svg";
-import HungerIcon from "./assets/resources/images/hunger.svg";
-import HappinessIcon from "./assets/resources/images/happiness.svg";
-import energyIcon from "./assets/resources/images/energy.svg";
+import HeartIcon from "./assets/resources/images/Heart.svg";
+import HungerIcon from "./assets/resources/images/Hunger.svg";
+import HappinessIcon from "./assets/resources/images/Happiness.svg";
+import energyIcon from "./assets/resources/images/Energy.svg";
 import Attribute from "./components/Attribute";
 import Bedroom from "./components/Rooms/Bedroom";
 import { AttributesContext } from "./Contexts/AttributeContext";

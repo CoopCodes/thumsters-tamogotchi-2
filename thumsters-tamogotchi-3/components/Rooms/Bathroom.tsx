@@ -7,6 +7,7 @@ import {
   Dimensions,
   PanResponder,
   Animated,
+  Pressable,
 } from "react-native";
 import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
 import { theme } from "../../global";
@@ -20,6 +21,7 @@ import { useLoadFonts } from "../../global";
 import { NavigationContainer } from "@react-navigation/native";
 import Toilet from "../../assets/resources/images/Toilet.svg";
 import Sink from "../../assets/resources/images/Sink.svg";
+import SinkOn from "../../assets/resources/images/RunningSink.svg";
 import Shelf from "../../assets/resources/images/BathroomShelf.svg";
 import Sponge from "../../assets/resources/images/Sponge.svg";
 import SoapSponge from '../../assets/resources/images/SoapSponge.svg'
@@ -40,6 +42,12 @@ const Bathroom = ({  }) => {
 
   const maxProgressWidth = 280;
   const minProgressWidth = 31;
+
+  const [isSinkOn, setIsSinkOn] = useState(false);
+
+  const tap = () => {
+    setIsSinkOn(!isSinkOn);
+  };
 
   const increaseProgress = () => {
     Animated.timing(progressWidth, {
@@ -131,13 +139,16 @@ const Bathroom = ({  }) => {
             <Toilet style={[styles.leftImage, styles.topImage]}  />
           </View>
           <View style={styles.topRight}>
-            <Sink style={[styles.rightImage, styles.topImage]}  />
+            <Pressable onPress={tap}>
+            <Sink id='sinkOff' style={[styles.rightImage, styles.topImage, { display: isSinkOn ? 'none' : 'flex' }]}  />
+            <SinkOn id='sinkOn' style={[styles.rightImage, styles.topImage, { display: isSinkOn ? 'flex' : 'none' } ]} />
+            </Pressable>
           </View>
         </View>
       </View>
       <View style={styles.bottom}>
         <View style={styles.cleanProgress}>
-          <SoapSponge />
+          <SoapSponge style={styles.soapSponge} />
           <View style={styles.progressMould}>
             <Animated.View style={[styles.progressBar, { width: progressWidth }]}>
               <Reflection style={styles.reflection}/>
@@ -150,7 +161,15 @@ const Bathroom = ({  }) => {
 };
 
 const styles = StyleSheet.create({
-  reflection: {},
+
+  reflection: {
+    width: 15,
+    marginTop: -12
+  },
+
+  soapSponge: {
+    width: 40
+  },
 
   progressBar: {
     height: 38,
