@@ -34,5 +34,13 @@
       }
     },
     "owner": "coopcodes"
-  }
+    
+  },
+  "plugins": 
+  [
+    "expo-font",
+    {
+      "fonts": ["node_modules/@expo-google-fonts/poppins/Poppins_900Black.ttf"]
+    }
+  ]
 }

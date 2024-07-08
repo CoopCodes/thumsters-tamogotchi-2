@@ -1,13 +1,9 @@
-import React, { useRef } from "react";
+import React, { useContext, useEffect, useMemo, useRef } from "react";
 import { View, Image, StyleSheet } from "react-native";
-import { Body, bodyPartInfo, bodySets } from "../global";
+import { Body, BodyPart, bodyPartInfo, bodySets } from "../global";
+import { SvgProps } from "react-native-svg";
+import MoodContext from "../Contexts/MoodContext";
 // import node from "../assets/resources/Monsters/1/Nodenode.png";
-
-interface Props {
-  monsterBody: Body;
-  state?: string;
-  scaleFactor: number; // Changes in LockerRoom
-}
 
 /**
  * Moves the body part to the correct position, width, height, and scale. based on the nodes position.
@@ -123,6 +119,12 @@ export function setBodyPartStyles(
   // );
 }
 
+interface Props {
+  monsterBody: Body;
+  state?: string;
+  scaleFactor: number; // Changes in LockerRoom
+}
+
 const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
   const leftArmRef = useRef();
   const rightArmRef = useRef();
@@ -137,6 +139,17 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
   monsterBody.bodypartnodes.rightleg.ref = rightLegRef;
   monsterBody.bodypartnodes.eyes.ref = eyesRef;
   monsterBody.bodypartnodes.mouth.ref = mouthRef;
+
+  const maxTop = Object.values(monsterBody.nodes).reduce(
+    (max, node: number[]) =>
+      (node &&
+        Math.max(
+          max,
+          node[1] || Number.NEGATIVE_INFINITY
+        )) ||
+      max,
+    Number.NEGATIVE_INFINITY
+  );
 
   // function checkBodyPart(part: string): boolean {
   //   return (
@@ -187,9 +200,11 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
   //   });
   // }, [monsterBody]);
 
+  const {mood, setMood} = useContext(MoodContext);
+
   return (
     <View style={styles.room}>
-      <View style={styles.body}>
+      <View style={[styles.body, {paddingBottom: maxTop}]}>
         {monsterBody.bodyImage ? (
           <monsterBody.bodyImage
             style={[
@@ -229,7 +244,18 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
                   key={i}
                   ref={bodypart.ref}
                 >
-                  <bodypart.bodyPart.image />
+                  {(bodypart.bodyPart.moodsImages === undefined || mood === "" || bodypart.bodyPart.moodsImages.filter((moodImage: { [key: string]: React.FC<SvgProps> }) => Object.keys(moodImage).includes(mood)).length === 0) ? (
+                    <bodypart.bodyPart.image />
+                  ) : (
+                    bodypart.bodyPart.moodsImages.map(
+                      (moodImage: { [key: string]: React.FC<SvgProps> }, index) => {
+                        if (Object.keys(moodImage).includes(mood)) {
+                          let MoodImageToUse = moodImage[mood];
+                          return <MoodImageToUse key={index}/>
+                        }
+                      }
+                    )
+                  )}
                 </View>
               );
             else return;
@@ -245,7 +271,8 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     position: "absolute",
   },
-  room: {},
+  room: {
+  },
   body: {
     width: "100%",
     height: "100%",

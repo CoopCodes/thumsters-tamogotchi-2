@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#4D4752",
     marginTop: Dimensions.get("window").height * 0.03,
-    fontFamily: "Poppins-ExtraBold",
+    fontFamily: "Poppins_900Black",
   },
   topImage: {
     position: "relative",
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: theme.default.typographyDark,
     fontSize: 20,
-    fontFamily: "Poppins-ExtraBold",
+    fontFamily: "Poppins_900Black",
   },
   buttonImage: {
     width: "50%",

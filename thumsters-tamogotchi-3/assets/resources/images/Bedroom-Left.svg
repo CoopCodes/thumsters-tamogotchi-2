@@ -7,7 +7,7 @@
 <rect x="-1" y="495" width="60" height="18" fill="#AFA3BD"/>
 <rect x="30" y="444" width="6" height="27" fill="black"/>
 <rect x="16" y="465" width="34" height="6" fill="black"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M44.5 409H21.5L10 444.4H56L44.5 409Z" fill="white"/>
+<path d="M21.5 409H44.5L56 444.4H10L21.5 409Z" fill="#F7EB83"/>
 <rect x="15" y="265" width="94" height="7" fill="#CFB3DB"/>
 <rect x="109" y="198" width="94" height="7" fill="#CFB3DB"/>
 <rect x="15" y="131" width="94" height="7" fill="#CFB3DB"/>

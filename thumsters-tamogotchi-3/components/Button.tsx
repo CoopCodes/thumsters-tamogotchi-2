@@ -33,6 +33,7 @@ interface Props {
   selectable?: boolean; // Changes the style
   activeIndex?: number;
   index?: number; // The index of the button in the list of buttons
+  fill?: string;
 }
 
 const PrimaryButton = ({
@@ -46,6 +47,7 @@ const PrimaryButton = ({
   selectable = false,
   activeIndex,
   index,
+  fill = ""
 }: Props) => {
   const [active, setActive] = useState(false);
 
@@ -128,7 +130,7 @@ const PrimaryButton = ({
           <Text style={styles.buttonText}>{title}</Text>
         ) : Image !== undefined ? (
           // <Image style={imageInnerStyles} source={image}></Image>
-          <Image style={imageInnerStyles}/>
+          <Image style={imageInnerStyles} fill={fill}/>
         ) : (
           <></>
         )}

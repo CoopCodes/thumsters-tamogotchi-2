@@ -8,12 +8,17 @@ import * as SplashScreen from "expo-splash-screen";
 import arm from "./assets/resources/Monsters/1/Arm.svg";
 import body from "./assets/resources/Monsters/1/Body.svg";
 import eyes from "./assets/resources/Monsters/1/Eye.svg";
+import eyesSleeping from "./assets/resources/Monsters/1/EyesSleeping.svg";
 // import eyesBadContrast from "./assets/resources/Monsters/1/Eye_BadContrast.svg";
 import foot from "./assets/resources/Monsters/1/Foot.svg";
 import eyes2 from "./assets/resources/Monsters/1/eye2.svg";
 import mouth from "./assets/resources/Monsters/1/Mouth.svg";
 import node from "./assets/resources/Monsters/1/Nodenode.svg";
 import arm2 from "./assets/resources/Monsters/2/arm.svg";
+
+import mouthSad from "./assets/resources/Monsters/1/MouthSad.svg";
+import eyesHappy from "./assets/resources/Monsters/1/EyesHappy.svg";
+import mouthHappy from "./assets/resources/Monsters/1/MouthHappy.svg";
 
 import ImageNotImplemented from "./assets/resources/images/ImageNotImplemented.svg";
 import { SvgProps } from "react-native-svg";
@@ -61,10 +66,12 @@ export class BodyPart {
   aspectRatio: number[];
   badContrast: boolean; // IF listed as a ListBodyPart: adds a white background to increase contrast.
 
-  image: React.FC<SvgProps>; // Image path
+  image: React.FC<SvgProps>; // Image path, can
   imageBadContrast: React.FC<SvgProps> | undefined; // IF listed as a ListBodyPart: if specified replaces the default image with this, to increase contrast. Must have the same dimension.
 
-  bodySet: number; // What bodySet it belongs too, (one bodySet could be the billy)
+  bodySet: number; // What bodySet it belongs too, (one bodySet could be the harold)
+
+  moodsImages: { [key: string]: React.FC<SvgProps> }[] | undefined;
 
   constructor(
     node: number[],
@@ -75,7 +82,8 @@ export class BodyPart {
     bodySet: number,
     reflected?: boolean | undefined,
     badContrast: boolean = false,
-    imageBadContrast: React.FC<SvgProps> | undefined = undefined
+    imageBadContrast: React.FC<SvgProps> | undefined = undefined,
+    moodsImages: { [key: string]: React.FC<SvgProps> }[] | undefined = undefined
   ) {
     this.node = node;
     this.reflected = reflected === undefined ? false : true;
@@ -91,6 +99,8 @@ export class BodyPart {
     this.imageBadContrast = imageBadContrast;
 
     this.bodySet = bodySet;
+
+    this.moodsImages = moodsImages;
 
     // Object.values(bodysInfo).map((body, index) => {
     //   // Object.values(body.bodyparts).filter((bodypart) => { bodypart ===  })
@@ -226,7 +236,11 @@ export const bodySets: {
           [1000, 1000],
           1,
           true,
-          true        ),
+          true, undefined, [
+            { "sleeping": eyesSleeping },
+            { "happy": eyesHappy },
+            { "blinking": eyesSleeping }
+          ]),
         ref: undefined,
       },
       head: undefined,
@@ -237,7 +251,10 @@ export const bodySets: {
           2,
           "Mouth",
           [375, 144],
-          1
+          1, undefined, undefined, undefined, [
+            { "sad": mouthSad },
+            { "happy": mouthHappy }
+          ]
         ),
         ref: undefined,
       },
@@ -283,7 +300,7 @@ export const bodySets: {
       },
       head: undefined,
       mouth: {
-        bodyPart: new BodyPart([170, 138], mouth, 2, "Mouth", [375, 144], 2),
+        bodyPart: new BodyPart([170, 138], mouth, 2, "Mouth", [375, 144], 2, undefined, undefined, undefined, [{ "sad": mouthSad }]),
         ref: undefined,
       },
     },

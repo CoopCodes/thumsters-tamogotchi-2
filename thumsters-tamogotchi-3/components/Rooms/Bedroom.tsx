@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   View,
   Image,
@@ -16,44 +16,93 @@ import clothesHanger from "../../assets/resources/images/ClothesHanger.svg";
 import PrimaryButton from "../Button";
 import LeftBackground from "../../assets/resources/images/Bedroom-Left.svg";
 import RightBackground from "../../assets/resources/images/Bedroom-Right.svg";
+import Sleep from "../../assets/resources/images/sleep.svg";
+import BedroomTopView from "../../assets/resources/images/BedroomTopView.svg";
 import { useLoadFonts } from "../../global";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
 
 
 // Bedroom group stack provider:
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import LockerRoom from "./LockerRoom";
+import { AttributesContext } from "../../Contexts/AttributeContext";
+import MoodContext from "../../Contexts/MoodContext";
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 function Bedroom({navigation}: {navigation: any}) {
   const { monster, monsterDispatch } = useContext(MonsterContext);
-  const [ turned, setTurned ] = useState(false);
+  const { attributes, attributesDispatch } = useContext(AttributesContext);
+  const { mood, setMood } = useContext(MoodContext);
   
-  useEffect(() => {
-    if (monsterDispatch) {
-      const action: monsterAction = {
-        bodyParts: bodySets[1].bodyparts,
-        bodyImage: bodyImage,
-        body: monster,
-      };
-      monsterDispatch(action);
+  // useEffect(() => {
+  //   if (setMood)
+  //     setMood("happy");
+  // }, [])
+
+  const [ turned, setTurned ] = useState(false);
+  const [ sleeping, setSleeping ] = useState(false);
+  
+  // useEffect(() => {
+  //   if (monsterDispatch) {
+  //     const action: monsterAction = {
+  //       bodyParts: bodySets[1].bodyparts,
+  //       bodyImage: bodyImage,
+  //       body: monster,
+  //     };
+  //     monsterDispatch(action);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (attributes && attributesDispatch && attributes.energy <= 100) {
+  //     setInterval(() => {
+  //       if (sleeping)
+  //         attributesDispatch({ attribute: "energy", operation: "+", perk: 1 });
+  //     }, 2000)
+  //   }
+  // }, [])
+
+  const topViewOffset = useSharedValue(500);
+  const topViewAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      top: topViewOffset.value
     }
-  }, []);
+  })
+
+  const monsterOffsetY = useSharedValue(0);
+  const monsterAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      top: monsterOffsetY.value
+    }
+  })
+
+  const AnimateTopView = (topViewValue: number, monsterValue: number) => {
+    topViewOffset.value = withTiming(topViewValue, { duration: 1000, easing: Easing.inOut(Easing.quad) })
+    monsterOffsetY.value = withTiming(monsterValue, { duration: 1000, easing: Easing.inOut(Easing.quad) })
+  }
 
   const fontInfo = useLoadFonts();
   if (!fontInfo?.fontsLoaded) {
     return null;
   }
+  
 
   return (
     <View style={styles.container}>
       <View style={styles.top}>
-        <Text style={styles.title}>Bedroom</Text>
-        <View style={styles.monster}>
+        <Text style={[styles.title, { color: sleeping ? "white" : "#4D4752" }]}>Bedroom</Text>
+        <Animated.View style={[styles.monster, monsterAnimatedStyle]}>
           {monster ? (
-            <Monster scaleFactor={0.3} monsterBody={monster} state={turned ? "turned" : ""} />
+            <Monster scaleFactor={0.3} monsterBody={monster} state={`
+              ${turned ? "turned" : ""}
+              ${sleeping ? "sleeping" : ""}
+              `} />
           ) : null}
-        </View>
-        <View style={styles.background}>
+        </Animated.View>
+        <Animated.View style={[styles.bedroomTopView, topViewAnimatedStyle]}>
+          <BedroomTopView width="100%" height="100%" />
+        </Animated.View>
+        <View style={[styles.background]}>
           <View style={styles.topLeft}>
             <LeftBackground preserveAspectRatio="XMinYMin Slice" width="100%" height="60%" style={[styles.leftImage, styles.topImage]}/>
           </View>
@@ -63,20 +112,45 @@ function Bedroom({navigation}: {navigation: any}) {
             ></RightBackground>
           </View>
         </View>
+        <View style={[styles.nightOverlay, { opacity: sleeping ? 0.98 : 0 }]}/>
       </View>
       <View style={styles.bottom}>
         <View style={[styles.column]}>
           <PrimaryButton
-            Image={clothesHanger}
+            Image={Sleep}
             width={Dimensions.get("window").width * 0.4}
             height={114}
             buttonInnerStyles={styles.bottomButton}
             imageInnerStyles={styles.buttonImage}
             onPress={() => {
-              setTurned(!turned);
+              // Shows the monsters eyes opening after lights turn on
+              if (setMood) {
+                if (!sleeping) {
+                  AnimateTopView(0, -50)
+                  setTimeout(() => {
+                    setMood("sleeping");
+                    setTimeout(() => {
+                      setSleeping(!sleeping);
+                    }, 2000);
+                  }, 1000)
+                }
+                else { // Sleeping was true
+                  setSleeping(!sleeping);
+                  setTimeout(() => {
+                    AnimateTopView(500, 0)
+                    setTimeout(() => {
+                      setMood("");
+                    }, 1000);
+                  }, 2000);
+                }
+              }
+              // setTimeout(() => {
+              //   setSleeping(!sleeping);
+              // }, 2000);
             }}
+            fill={theme.default.interactionShadow}
           />
-          <Text style={styles.buttonText}>Clean Bed</Text>
+          <Text style={styles.buttonText}>Sleep</Text>
         </View>
         <View style={[styles.column]}>
           <PrimaryButton
@@ -89,6 +163,7 @@ function Bedroom({navigation}: {navigation: any}) {
               console.log('Navigating...')
               navigation.navigate("LockerRoom");
             }}
+            fill={theme.default.interactionShadow}
           />
           <Text style={styles.buttonText}>Dressing Room</Text>
         </View>
@@ -108,7 +183,8 @@ const styles = StyleSheet.create({
     zIndex: 2,
     marginTop: "auto",
     height: Dimensions.get("window").height * 0.35,
-    resizeMode: "contain", // change as needed
+    resizeMode: "contain",
+    position: "relative",
   },
   bedroom: {
     position: "absolute",
@@ -117,22 +193,23 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
   container: {
+    position: "relative",
     // flex: 1,
     height: "90%",
   },
   top: {
+    position: "relative",
     flex: 2,
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
   },
   title: {
-    zIndex: 2,
+    zIndex: 100,
     fontSize: 25,
     fontWeight: "800",
-    color: "#4D4752",
     marginTop: Dimensions.get("window").height * 0.03,
-    fontFamily: "Poppins-ExtraBold"
+    fontFamily: 'Poppins_900Black'
   },
   // monster: {
   //   marginTop: "auto",
@@ -149,6 +226,15 @@ const styles = StyleSheet.create({
     height: "100%",
 
     zIndex: 0,
+  },
+  bedroomTopView: {
+    position: "absolute",
+    backgroundColor: "white",
+    left: 0,
+    right: -12,
+    width: "105%",
+    height: "100%",
+    zIndex: 1,
   },
   background: {
     position: "absolute",
@@ -196,7 +282,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: theme.default.typographyDark,
     fontSize: 20,
-    fontFamily: "Poppins-ExtraBold"
+    fontFamily: "Poppins_900Black"
   },
   buttonImage: {
     width: "50%",
@@ -209,6 +295,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     textAlign: "center",
     gap: 20,
+  },
+  nightOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "black",
+    zIndex: 10,
   },
 });
 

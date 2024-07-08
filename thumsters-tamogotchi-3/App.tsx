@@ -43,6 +43,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import BottomTabs from "./components/BottomTabs";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import ShowAttributesContext from "./Contexts/ShowAttributeContext";
+import MoodContext from "./Contexts/MoodContext";
+import { Poppins_700Bold, Poppins_900Black } from "@expo-google-fonts/poppins";
 
 // const breakpoints = {
 //   s: 700,
@@ -65,7 +67,28 @@ import ShowAttributesContext from "./Contexts/ShowAttributeContext";
 //   },
 // });
 
+
+
 export default function App() {
+  // Mood Context
+  const [mood, setMood] = useState("");
+
+  // Fonts Loading
+  const [loaded, error] = useFonts({
+    Poppins_900Black
+  })
+  
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  // if (!loaded && !error) {
+  //   return ;
+  // }
+
+
   // Attribute Logic
   type attributesAction = {
     attribute: string;
@@ -85,8 +108,9 @@ export default function App() {
   };
 
   let attributeTicks: { [key: string]: number } = {
-    hunger: 1000,
+    hunger: 144000,
     health: 1000,
+    energy: 3000
   };
 
   const attributesReducer = (state: Attributes, action: attributesAction) => {
@@ -108,16 +132,28 @@ export default function App() {
     attributesInitial
   );
 
-  useEffect(() => {
-    setInterval(() => {
-      if (attributes.hunger > 0) {
-        attributesDispatch({ attribute: "hunger", operation: "-", perk: 1 });
-      } else if (attributes.hunger === 0) {
-        // Start health decreasing
-        attributesDispatch({ attribute: "health", operation: "-", perk: 1 });
-      }
-    }, attributeTicks.hunger);
-  }, []);
+  // Makes performance horrible
+  // useEffect(() => {
+  //   const interval1 = setInterval(() => {
+  //     if (attributes.energy > 0) {
+  //       attributesDispatch({ attribute: "energy", operation: "-", perk: 1 });
+  //     }
+  //   }, 1000);
+
+  // //   // Happens every attributeTicks.hunger milliseconds, if hunger is 0, then the health decreases
+  // const interval2 = setInterval(() => {
+  //     if (attributes.hunger > 0) {
+  //       attributesDispatch({ attribute: "hunger", operation: "-", perk: 1 });
+  //     } else if (attributes.hunger <= 1) {
+  //       // Start health decreasing
+  //       attributesDispatch({ attribute: "health", operation: "-", perk: 1 });
+  //     }
+  //   }, attributeTicks.hunger);
+  //   return () => {
+  //     clearInterval(interval1);
+  //     clearInterval(interval2);
+  //   }
+  // }, []);
 
   // Monster Logic TODO: change the way body is accessed
 
@@ -147,69 +183,71 @@ export default function App() {
 
   return (
     <MonsterProvider>
-      <AttributesContext.Provider
-        value={{
-          attributes: attributes,
-          attributesDispatch: attributesDispatch,
-        }}
-      >
-        <ShowAttributesContext.Provider
+      <MoodContext.Provider value={{mood, setMood}}>
+        <AttributesContext.Provider
           value={{
-            showAttributesBar: false,
-            setShowAttributeBar: setShowAttributeBar,
+            attributes: attributes,
+            attributesDispatch: attributesDispatch,
           }}
         >
-          <View
-            style={[
-              styles.view,
-              { backgroundColor: theme.default.backgroundColor },
-            ]}
+          <ShowAttributesContext.Provider
+            value={{
+              showAttributesBar: false,
+              setShowAttributeBar: setShowAttributeBar,
+            }}
           >
-            {/* If showAttributesBar is true, then show it, else show nothing */}
-            {showAttributesBar ? (
-              <View style={[styles.attributes]}>
-                {/* Render Attribute components here */}
-                <Attribute
-                  attrName="health"
-                  Image={HeartIcon}
-                  progress={attributes.health}
-                />
-                <Attribute
-                  attrName="hunger"
-                  Image={HungerIcon}
-                  progress={attributes.hunger}
-                />
-                <Attribute
-                  attrName="happiness"
-                  Image={HappinessIcon}
-                  progress={attributes.happiness}
-                />
-                <Attribute
-                  attrName="energy"
-                  Image={energyIcon}
-                  progress={attributes.energy}
-                />
-              </View>
-            ) : (
-              <></>
-            )}
-            {/* <NavigationContainer>
-              <Tab.Navigator>
-                <Tab.Screen name="Bedroom" component={Bedroom} />
-                <Tab.Screen name="Home2" component={Bedroom} />
-              </Tab.Navigator>
-            </NavigationContainer> */}
-            {/* <Text style={ styles.text }>Hello</Text> */}
-            {/* <Bedroom></Bedroom> */}
-            {/* <LockerRoom removeAttributesBar={removeAttributesBar}/> */}
-            <SafeAreaProvider
-              style={{ backgroundColor: "black", marginBottom: -105 }}
+            <View
+              style={[
+                styles.view,
+                { backgroundColor: theme.default.backgroundColor },
+              ]}
             >
-              <BottomTabs></BottomTabs>
-            </SafeAreaProvider>
-          </View>
-        </ShowAttributesContext.Provider>
-      </AttributesContext.Provider>
+              {/* If showAttributesBar is true, then show it, else show nothing */}
+              {showAttributesBar ? (
+                <View style={[styles.attributes]}>
+                  {/* Render Attribute components here */}
+                  <Attribute
+                    attrName="health"
+                    Image={HeartIcon}
+                    progress={attributes.health}
+                  />
+                  <Attribute
+                    attrName="hunger"
+                    Image={HungerIcon}
+                    progress={attributes.hunger}
+                  />
+                  <Attribute
+                    attrName="happiness"
+                    Image={HappinessIcon}
+                    progress={attributes.happiness}
+                  />
+                  <Attribute
+                    attrName="energy"
+                    Image={energyIcon}
+                    progress={attributes.energy}
+                  />
+                </View>
+              ) : (
+                <></>
+              )}
+              {/* <NavigationContainer>
+                <Tab.Navigator>
+                  <Tab.Screen name="Bedroom" component={Bedroom} />
+                  <Tab.Screen name="Home2" component={Bedroom} />
+                </Tab.Navigator>
+              </NavigationContainer> */}
+              {/* <Text style={ styles.text }>Hello</Text> */}
+              {/* <Bedroom></Bedroom> */}
+              {/* <LockerRoom removeAttributesBar={removeAttributesBar}/> */}
+              <SafeAreaProvider
+                style={{ backgroundColor: "black", marginBottom: -105 }}
+              >
+                <BottomTabs></BottomTabs>
+              </SafeAreaProvider>
+            </View>
+          </ShowAttributesContext.Provider>
+        </AttributesContext.Provider>
+      </MoodContext.Provider>
     </MonsterProvider>
   );
 }
