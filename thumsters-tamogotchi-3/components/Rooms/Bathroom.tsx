@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Dimensions,
   PanResponder,
-  Animated,
   Pressable,
 } from "react-native";
 import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
@@ -29,19 +28,66 @@ import Reflection from '../../assets/resources/images/ProgressReflection.svg'
 // Bedroom group stack provider:
 import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import LockerRoom from "./LockerRoom";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Import or define your screen components
 
 
 const Bathroom = ({  }) => {
   const { monster, monsterDispatch } = useContext(MonsterContext);
-  const [position, setPosition] = useState({ x: 280, y: 294 });
-  const [progressWidth, setProgressWidth] = useState(new Animated.Value(31));
-  const [hitBoxPosition, setHitBoxPosition] = useState({ x: 102, y: 0 });
-  const [hitBoxDimensions, setHitBoxDimensions] = useState({ width: 150, height: 245 });
+  // const [position, setPosition] = useState({ x: 280, y: 294 });
+  // const [progressWidth, setProgressWidth] = useState(new Animated.Value(31));
+  const [hitBoxPosition, setHitBoxPosition] = useState({ x: 0, y: 0 });
+  const [hitBoxDimensions, setHitBoxDimensions] = useState({ width: 0, height: 0 });
+  const sprongePressed = useSharedValue<boolean>(false);
+
+  const  sprongeTranslateY = useSharedValue(0)
+  const  sprongeTranslateX = useSharedValue(0)
+
+  const initialSpongePosition = { x: 280, y: 294 }; // Initial position of the sponge
+  const spongeDimensions = { width: 52, height: 22 }; // Dimensions of the sponge
+  const panSponge = Gesture.Pan()
+    .onBegin(() => {
+      sprongePressed.value = true;
+    })
+    .onChange((event) => {
+      const spongeCurrentX = initialSpongePosition.x + event.translationX;
+      const spongeCurrentY = initialSpongePosition.y + event.translationY;
+
+      if (
+        spongeCurrentX + spongeDimensions.width >= hitBoxPosition.x &&
+        spongeCurrentX <= hitBoxPosition.x + hitBoxDimensions.width &&
+        spongeCurrentY + spongeDimensions.height >= hitBoxPosition.y &&
+        spongeCurrentY <= hitBoxPosition.y + hitBoxDimensions.height
+      ) {
+        console.log('hello'); // Log if the sponge is inside the hitbox
+      } else {
+        console.log('nope'); // Log if the sponge is outside the hitbox
+      }
+
+      sprongeTranslateX.value = event.translationX;
+      sprongeTranslateY.value = event.translationY;
+
+
+    })
+    .onFinalize(() => {
+      sprongeTranslateX.value = withSpring(0)
+      sprongeTranslateY.value = withSpring(0)
+      sprongePressed.value = false;
+    });
 
   const maxProgressWidth = 280;
   const minProgressWidth = 31;
+
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: sprongeTranslateX.value},
+      { translateY: sprongeTranslateY.value},
+      { scale: withTiming(sprongePressed.value ? 1.2 : 1) },
+    ],
+    // backgroundColor: sprongePressed.value ? '#FFE04B' : '#b58df1',
+  }));
 
   const [isSinkOn, setIsSinkOn] = useState(false);
 
@@ -50,49 +96,58 @@ const Bathroom = ({  }) => {
   };
 
   const increaseProgress = () => {
-    Animated.timing(progressWidth, {
-      toValue: maxProgressWidth,
-      duration: 10000, // Adjust the duration as needed
-      useNativeDriver: false,
-    }).start();
-  };
 
-  const decreaseProgress = () => {
-    Animated.timing(progressWidth, {
-      toValue: minProgressWidth,
-      duration: 40000, // Adjust the duration as needed
-      useNativeDriver: false,
-    }).start();
-  };
+  }
 
- const panResponder = useRef(
-  PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onPanResponderMove: (evt, gestureState) => {
-      const newPosition = {
-        x: gestureState.moveX - 25, // Adjust for the center of the sponge
-        y: (Dimensions.get("window").height - gestureState.moveY) - 345, // Adjust for the center of the sponge
-      };
-      setPosition(newPosition);
 
-      // Check if sponge is over hitBox
-      if (
-        newPosition.x >= hitBoxPosition.x &&
-        newPosition.x <= hitBoxPosition.x + hitBoxDimensions.width &&
-        newPosition.y >= hitBoxPosition.y &&
-        newPosition.y <= hitBoxPosition.y + hitBoxDimensions.height
-      ) {
-        increaseProgress(); // If inside hitbox, increase progress
-      } else {
-        decreaseProgress(); // Otherwise, decrease progress
-      }
-    },
-    onPanResponderRelease: () => {
-      setPosition(position)
-      decreaseProgress(); // Stop progress when touch is released
-    },
-  })
-).current;
+
+  // const increaseProgress = () => {
+  //   Animated.timing(progressWidth, {
+  //     toValue: maxProgressWidth,
+  //     duration: 10000, // Adjust the duration as needed
+  //     useNativeDriver: false,
+  //   }).start();
+  // };
+
+  // const decreaseProgress = () => {
+  //   Animated.timing(progressWidth, {
+  //     toValue: minProgressWidth,
+  //     duration: 40000, // Adjust the duration as needed
+  //     useNativeDriver: false,
+  //   }).start();
+  // };
+
+//  const panResponder = useRef(
+//   PanResponder.create({
+//     onStartShouldSetPanResponder: () => true,
+//     onPanResponderMove: (evt, gestureState) => {
+//       const newPosition = {
+//         x: gestureState.moveX - 25, // Adjust for the center of the sponge
+//         y: (Dimensions.get("window").height - gestureState.moveY) - 345, // Adjust for the center of the sponge
+//       };
+//       setPosition(newPosition);
+//       console.log(newPosition)
+//       // Check if sponge is over hitBox
+//       if (
+//         newPosition.x >= hitBoxPosition.x &&
+//         newPosition.x <= hitBoxPosition.x + hitBoxDimensions.width &&
+//         newPosition.y >= hitBoxPosition.y &&
+//         newPosition.y <= hitBoxPosition.y + hitBoxDimensions.height
+        
+//       ) {
+//         increaseProgress(); // If inside hitbox, increase progress
+//         console.log('hello')
+//       } else {
+//         decreaseProgress(); // Otherwise, decrease progress
+//       }
+      
+//     },
+//     onPanResponderRelease: () => {
+//       setPosition(position)
+//       decreaseProgress(); // Stop progress when touch is released
+//     },
+//   })
+// ).current;
 
   useEffect(() => {
     if (monsterDispatch) {
@@ -111,6 +166,9 @@ const Bathroom = ({  }) => {
   }
 
   return (
+    <GestureHandlerRootView>
+
+
     <View style={styles.container}>
       <View style={styles.top}>
         <Text style={styles.title}>Bathroom</Text>
@@ -119,20 +177,28 @@ const Bathroom = ({  }) => {
           id="hitBox"
           onLayout={(event) => {
             const layout = event.nativeEvent.layout;
+            
             setHitBoxPosition({ x: layout.x, y: layout.y });
             setHitBoxDimensions({ width: layout.width, height: layout.height });
           }}
         >
           {monster ? (
-            <Monster scaleFactor={0.3} monsterBody={monster}  />
+            <Monster scaleFactor={0.3} monsterBody={monster}   />
           ) : null}
         </View>
-        <View
-          {...panResponder.panHandlers}
-          style={[styles.sponge, { bottom: position.y, left: position.x }]}
+        <GestureDetector gesture={panSponge}>
+        <Animated.View
+          // {...panResponder.panHandlers}
+          style={[styles.sponge, 
+            animatedStyles
+          
+           
+          ]}
         >
           <Sponge style={styles.spongeImage} />
-        </View>
+        </Animated.View>
+        </GestureDetector>
+       
         <View style={styles.background}>
           <View style={styles.topLeft}>
             <Shelf style={[styles.shelf, styles.topImage]} />
@@ -150,13 +216,17 @@ const Bathroom = ({  }) => {
         <View style={styles.cleanProgress}>
           <SoapSponge style={styles.soapSponge} />
           <View style={styles.progressMould}>
-            <Animated.View style={[styles.progressBar, { width: progressWidth }]}>
+            <Animated.View style={[styles.progressBar, 
+              // { width: progressWidth }
+              
+              ]}>
               <Reflection style={styles.reflection}/>
             </Animated.View>
           </View>
         </View>
       </View>
     </View>
+    </GestureHandlerRootView>
   );
 };
 
@@ -245,7 +315,8 @@ const styles = StyleSheet.create({
   sponge: {
     position: "absolute",
     // top: -156,
-    right: 26,
+     left: 280, 
+     bottom: 294 ,
     zIndex: 50,
   },
   spongeImage: {
