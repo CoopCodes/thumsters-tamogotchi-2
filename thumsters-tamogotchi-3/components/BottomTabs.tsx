@@ -19,7 +19,7 @@ function BottomTabs() {
     <NavigationContainer>
       <Tab.Navigator
         style={styles.bar}
-        initialRouteName="Kitchen"
+        initialRouteName="Bathroom"
         activeColor={theme.default.interactionPrimary}
         barStyle={{
           backgroundColor: "white",
