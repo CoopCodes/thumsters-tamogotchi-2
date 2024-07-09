@@ -3,7 +3,7 @@ import { View, Image, StyleSheet } from "react-native";
 import { Body, BodyPart, bodyPartInfo, bodySets } from "../global";
 import { SvgProps } from "react-native-svg";
 import MoodContext from "../Contexts/MoodContext";
-// import node from "../assets/resources/Monsters/1/Nodenode.png";
+import Node from "../assets/resources/Monsters/1/Nodenode.svg";
 
 /**
  * Moves the body part to the correct position, width, height, and scale. based on the nodes position.
@@ -28,7 +28,7 @@ export function updateNativeProps(
       // },
       { scaleX: bodypart.bodyPart.reflected ? -1 : 1 },
       {
-        scale: bodypart.bodyPart.node[2] ? bodypart.bodyPart.node[2] : 1,
+        scale: bodypart.bodyPart.scale,
       },
     ],
     // left: Math.abs((bodyNodeCoord[0] * combinedScaleFactor) - bodypart.bodyPart.node[0] * scaleFactor),
@@ -65,8 +65,8 @@ export function setBodyPartStyles(
     typeof bodypart.ref === "object" &&
     bodypart.ref.current !== undefined
   ) {
-    // const combinedScaleFactor = bodypart.bodyPart.node[2]
-    //   ? scaleFactor * bodypart.bodyPart.node[2]
+    // const combinedScaleFactor = bodypart.bodyPart.scale
+    //   ? scaleFactor * bodypart.bodyPart.scale
     //   : scaleFactor;
 
     // if (checkBodyPart(potentialTitle)) {
@@ -96,7 +96,7 @@ export function setBodyPartStyles(
         // },
         { scaleX: bodypart.bodyPart.reflected ? -1 : 1 },
         {
-          scale: bodypart.bodyPart.node[2] ? bodypart.bodyPart.node[2] : 1,
+          scale: bodypart.bodyPart.scale,
         },
       ],
       // left: Math.abs((bodyNodeCoord[0] * combinedScaleFactor) - bodypart.bodyPart.node[0] * scaleFactor),
@@ -142,12 +142,7 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
 
   const maxTop = Object.values(monsterBody.nodes).reduce(
     (max, node: number[]) =>
-      (node &&
-        Math.max(
-          max,
-          node[1] || Number.NEGATIVE_INFINITY
-        )) ||
-      max,
+      (node && Math.max(max, node[1] || Number.NEGATIVE_INFINITY)) || max,
     Number.NEGATIVE_INFINITY
   );
 
@@ -200,11 +195,11 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
   //   });
   // }, [monsterBody]);
 
-  const {mood, setMood} = useContext(MoodContext);
+  const { mood, setMood } = useContext(MoodContext);
 
   return (
     <View style={styles.room}>
-      <View style={[styles.body, {paddingBottom: maxTop}]}>
+      <View style={[styles.body, { paddingBottom: maxTop }]}>
         {monsterBody.bodyImage ? (
           <monsterBody.bodyImage
             style={[
@@ -223,6 +218,8 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
         ) : null}
         {Object.values(monsterBody.bodypartnodes).map(
           (bodypart: bodyPartInfo, i: number) => {
+            if (bodypart === undefined) return (<View key={i}></View>);
+            
             const partTitle = Object.keys(bodySets[1].bodyparts)[i] as
               | "leftarm"
               | "rightarm"
@@ -234,28 +231,66 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
             const node = bodySets[1].body[partTitle];
             const bodyNodeCoord: Array<number> =
               node !== undefined ? node : [0, 0];
+            
+            let BodyPartImage: React.FC<SvgProps> = Node;
+              
+            let moodBodyPart;
+            try {
+              if (bodypart.moodBodyParts !== undefined && mood != "") {
+                moodBodyPart = bodypart.moodBodyParts.filter(
+                  (moodBodyPart: { [key: string]: BodyPart }) =>
+                    Object.keys(moodBodyPart).includes(mood)
+                )[0][mood];
+              } else { moodBodyPart = undefined; }
+            } catch (e) { 
+              console.log(mood)
+              moodBodyPart = undefined; 
+            }
+            
+            // Check if the body part has mood images, if so, check if the current mood is empty or if the current mood is not in the mood images array. If so, use the default image. Otherwise, use the image for the current mood.
+            
+            if (moodBodyPart !== undefined) {
+              BodyPartImage = moodBodyPart.image;
+            } else {
+              if (
+                bodypart.bodyPart.moodsImages === undefined ||
+                mood === "" ||
+                bodypart.bodyPart.moodsImages.filter(
+                  (moodImage: { [key: string]: React.FC<SvgProps> }) =>
+                    Object.keys(moodImage).includes(mood)
+                ).length === 0
+              ) {
+                BodyPartImage = bodypart.bodyPart.image;
+              } 
+              else {
+                BodyPartImage = bodypart.bodyPart.moodsImages.filter(
+                  (moodImage: { [key: string]: React.FC<SvgProps> }) =>
+                    Object.keys(moodImage).includes(mood)
+                )[0][mood];
+              }
+            }
+
+            let moodBodyPartInfo: bodyPartInfo | undefined;
+            if (moodBodyPart !== undefined) {
+              moodBodyPartInfo = {
+                bodyPart: moodBodyPart,
+                onPress: bodypart.onPress,
+                ref: bodypart.ref
+              }
+            }
+
+            
             if (bodypart)
               return (
                 <View
                   style={[
                     styles.bodyPart,
-                    setBodyPartStyles(bodypart, scaleFactor, i, state),
+                    setBodyPartStyles(moodBodyPartInfo || bodypart, scaleFactor, i, state),
                   ]}
                   key={i}
                   ref={bodypart.ref}
                 >
-                  {(bodypart.bodyPart.moodsImages === undefined || mood === "" || bodypart.bodyPart.moodsImages.filter((moodImage: { [key: string]: React.FC<SvgProps> }) => Object.keys(moodImage).includes(mood)).length === 0) ? (
-                    <bodypart.bodyPart.image />
-                  ) : (
-                    bodypart.bodyPart.moodsImages.map(
-                      (moodImage: { [key: string]: React.FC<SvgProps> }, index) => {
-                        if (Object.keys(moodImage).includes(mood)) {
-                          let MoodImageToUse = moodImage[mood];
-                          return <MoodImageToUse key={index}/>
-                        }
-                      }
-                    )
-                  )}
+                  <BodyPartImage/>
                 </View>
               );
             else return;
@@ -271,8 +306,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     position: "absolute",
   },
-  room: {
-  },
+  room: {},
   body: {
     width: "100%",
     height: "100%",
@@ -296,3 +330,19 @@ const styles = StyleSheet.create({
 });
 
 export default Monster;
+
+// Graveyard
+
+// Determine which image to use
+// {(bodypart.bodyPart.moodsImages === undefined || mood === "" || bodypart.bodyPart.moodsImages.filter((moodImage: { [key: string]: React.FC<SvgProps> }) => Object.keys(moodImage).includes(mood)).length === 0) ? (
+//   <bodypart.bodyPart.image />
+// ) : (
+//   bodypart.bodyPart.moodsImages.map(
+//     (moodImage: { [key: string]: React.FC<SvgProps> }, index) => {
+//       if (Object.keys(moodImage).includes(mood)) {
+//         let MoodImageToUse = moodImage[mood];
+//         return <MoodImageToUse key={index}/>
+//       }
+//     }
+//   )
+// )}

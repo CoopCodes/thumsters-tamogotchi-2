@@ -91,7 +91,6 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
               },
             },
           };
-          // console.log(monster.bodypartnodes[bodyPartName]?.ref)
           monsterDispatch(action);
         }
       }
@@ -128,13 +127,14 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
     // console.log(displayBodyParts);
   };
 
+  useEffect(() => {
+    CategoryClick("Mouth"); // Calling function to actually show the bodyparts
+  }, []);
+  
   const back = () => {
     setShowAttributeBar(true);
     navigation.goBack();
   };  
-  useEffect(() => {
-    CategoryClick("Mouth"); // Calling function to actually show the bodyparts
-  }, []);
 
   const [activeCategoryIndex, setActiveCategoryIndex] = useState<number>(0);
 

@@ -115,7 +115,7 @@ const PrimaryButton = ({
       fontSize: 16,
       textAlign: "center",
       color: theme.default.interactionShadow,
-      fontWeight: "800",
+      fontFamily: "Poppins_900Black",
     },
   });
 

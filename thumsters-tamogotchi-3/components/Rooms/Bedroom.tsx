@@ -18,16 +18,15 @@ import LeftBackground from "../../assets/resources/images/Bedroom-Left.svg";
 import RightBackground from "../../assets/resources/images/Bedroom-Right.svg";
 import Sleep from "../../assets/resources/images/sleep.svg";
 import BedroomTopView from "../../assets/resources/images/BedroomTopView.svg";
-import { useLoadFonts } from "../../global";
 import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
 
 
 // Bedroom group stack provider:
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
-import LockerRoom from "./LockerRoom";
 import { AttributesContext } from "../../Contexts/AttributeContext";
 import MoodContext from "../../Contexts/MoodContext";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { useLoadFonts } from "../LoadFonts";
 
 function Bedroom({navigation}: {navigation: any}) {
   const { monster, monsterDispatch } = useContext(MonsterContext);
@@ -79,11 +78,6 @@ function Bedroom({navigation}: {navigation: any}) {
   const AnimateTopView = (topViewValue: number, monsterValue: number) => {
     topViewOffset.value = withTiming(topViewValue, { duration: 1000, easing: Easing.inOut(Easing.quad) })
     monsterOffsetY.value = withTiming(monsterValue, { duration: 1000, easing: Easing.inOut(Easing.quad) })
-  }
-
-  const fontInfo = useLoadFonts();
-  if (!fontInfo?.fontsLoaded) {
-    return null;
   }
   
 
@@ -141,7 +135,7 @@ function Bedroom({navigation}: {navigation: any}) {
                     setTimeout(() => {
                       setMood("");
                     }, 1000);
-                  }, 2000);
+                  }, 1000);
                 }
               }
               // setTimeout(() => {
@@ -165,7 +159,7 @@ function Bedroom({navigation}: {navigation: any}) {
             }}
             fill={theme.default.interactionShadow}
           />
-          <Text style={styles.buttonText}>Dressing Room</Text>
+          <Text style={styles.buttonText}>Dressing{"\n"} Room</Text>
         </View>
       </View>
       {/* <View style={styles.monster}>
@@ -206,8 +200,7 @@ const styles = StyleSheet.create({
   },
   title: {
     zIndex: 100,
-    fontSize: 25,
-    fontWeight: "800",
+    fontSize: 30,
     marginTop: Dimensions.get("window").height * 0.03,
     fontFamily: 'Poppins_900Black'
   },
@@ -272,6 +265,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 25,
     paddingTop: Dimensions.get("window").height * 0.05,
+    paddingBottom: 10,
     borderTopWidth: 3,
     borderColor: "#E5E7EB",
   },
@@ -279,10 +273,11 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   buttonText: {
-    fontWeight: "800",
     color: theme.default.typographyDark,
     fontSize: 20,
-    fontFamily: "Poppins_900Black"
+    fontFamily: "Poppins_900Black",
+    textAlign: "center",
+    lineHeight: 22
   },
   buttonImage: {
     width: "50%",

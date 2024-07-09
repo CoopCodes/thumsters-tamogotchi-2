@@ -45,6 +45,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import ShowAttributesContext from "./Contexts/ShowAttributeContext";
 import MoodContext from "./Contexts/MoodContext";
 import { Poppins_700Bold, Poppins_900Black } from "@expo-google-fonts/poppins";
+import ThumbucksContext, { thumbucksInitial } from "./Contexts/ThumbucksContext";
+import AllFoodsContext, { allFoodsInitial } from "./Contexts/AllFoodsContext";
 
 // const breakpoints = {
 //   s: 700,
@@ -73,20 +75,7 @@ export default function App() {
   // Mood Context
   const [mood, setMood] = useState("");
 
-  // Fonts Loading
-  const [loaded, error] = useFonts({
-    Poppins_900Black
-  })
-  
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
-
-  // if (!loaded && !error) {
-  //   return ;
-  // }
+  useLoadFonts()
 
 
   // Attribute Logic
@@ -102,7 +91,7 @@ export default function App() {
 
   const attributesInitial: Attributes = {
     health: 100,
-    hunger: 100,
+    hunger: 80,
     happiness: 100,
     energy: 100,
   };
@@ -158,28 +147,9 @@ export default function App() {
   // Monster Logic TODO: change the way body is accessed
 
   const [ showAttributesBar, setShowAttributeBar ] = useState(true);
+  const [ thumbucks, setThumbucks ] = useState(thumbucksInitial.thumbucks);
+  const [ allFoods, setAllFoods ] = useState(allFoodsInitial.allFoods);
 
-  // Custom font stuff
-
-  // const fontInfo = useLoadFonts();
-  // if (!fontInfo?.fontsLoaded) {
-  //   return null;
-  // }
-
-  // useEffect(() => {
-  //   if (fontsLoaded || fontError) {
-  //     // Hide the splash screen after the fonts have loaded (or an error was returned) and the UI is ready.
-  //     SplashScreen.hideAsync();
-  //   }
-  // }, [fontsLoaded, fontError]);
-
-  // const onLayoutRootView = useCallback(async () => {
-  //   if (fontsLoaded || fontError) {
-  //     await SplashScreen.hideAsync();
-  //   } else {
-  //     return null;
-  // }
-  // }, [fontsLoaded, fontError]);
 
   return (
     <MonsterProvider>
@@ -196,55 +166,59 @@ export default function App() {
               setShowAttributeBar: setShowAttributeBar,
             }}
           >
-            <View
-              style={[
-                styles.view,
-                { backgroundColor: theme.default.backgroundColor },
-              ]}
-            >
-              {/* If showAttributesBar is true, then show it, else show nothing */}
-              {showAttributesBar ? (
-                <View style={[styles.attributes]}>
-                  {/* Render Attribute components here */}
-                  <Attribute
-                    attrName="health"
-                    Image={HeartIcon}
-                    progress={attributes.health}
-                  />
-                  <Attribute
-                    attrName="hunger"
-                    Image={HungerIcon}
-                    progress={attributes.hunger}
-                  />
-                  <Attribute
-                    attrName="happiness"
-                    Image={HappinessIcon}
-                    progress={attributes.happiness}
-                  />
-                  <Attribute
-                    attrName="energy"
-                    Image={energyIcon}
-                    progress={attributes.energy}
-                  />
+            <ThumbucksContext.Provider value={{thumbucks: thumbucks, setThumbucks: setThumbucks}}>
+              <AllFoodsContext.Provider value={{allFoods: allFoods, setAllFoods: setAllFoods}}>
+                <View
+                  style={[
+                    styles.view,
+                    { backgroundColor: theme.default.backgroundColor },
+                  ]}
+                >
+                  {/* If showAttributesBar is true, then show it, else show nothing */}
+                  {showAttributesBar ? (
+                    <View style={[styles.attributes]}>
+                      {/* Render Attribute components here */}
+                      <Attribute
+                        attrName="health"
+                        Image={HeartIcon}
+                        progress={attributes.health}
+                      />
+                      <Attribute
+                        attrName="hunger"
+                        Image={HungerIcon}
+                        progress={attributes.hunger}
+                      />
+                      <Attribute
+                        attrName="happiness"
+                        Image={HappinessIcon}
+                        progress={attributes.happiness}
+                      />
+                      <Attribute
+                        attrName="energy"
+                        Image={energyIcon}
+                        progress={attributes.energy}
+                      />
+                    </View>
+                  ) : (
+                    <></>
+                  )}
+                  {/* <NavigationContainer>
+                    <Tab.Navigator>
+                      <Tab.Screen name="Bedroom" component={Bedroom} />
+                      <Tab.Screen name="Home2" component={Bedroom} />
+                    </Tab.Navigator>
+                  </NavigationContainer> */}
+                  {/* <Text style={ styles.text }>Hello</Text> */}
+                  {/* <Bedroom></Bedroom> */}
+                  {/* <LockerRoom removeAttributesBar={removeAttributesBar}/> */}
+                  <SafeAreaProvider
+                    style={{ backgroundColor: "black", marginBottom: -105 }}
+                  >
+                    <BottomTabs></BottomTabs>
+                  </SafeAreaProvider>
                 </View>
-              ) : (
-                <></>
-              )}
-              {/* <NavigationContainer>
-                <Tab.Navigator>
-                  <Tab.Screen name="Bedroom" component={Bedroom} />
-                  <Tab.Screen name="Home2" component={Bedroom} />
-                </Tab.Navigator>
-              </NavigationContainer> */}
-              {/* <Text style={ styles.text }>Hello</Text> */}
-              {/* <Bedroom></Bedroom> */}
-              {/* <LockerRoom removeAttributesBar={removeAttributesBar}/> */}
-              <SafeAreaProvider
-                style={{ backgroundColor: "black", marginBottom: -105 }}
-              >
-                <BottomTabs></BottomTabs>
-              </SafeAreaProvider>
-            </View>
+              </AllFoodsContext.Provider>
+            </ThumbucksContext.Provider>
           </ShowAttributesContext.Provider>
         </AttributesContext.Provider>
       </MoodContext.Provider>

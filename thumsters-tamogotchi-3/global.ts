@@ -11,7 +11,7 @@ import eyes from "./assets/resources/Monsters/1/Eye.svg";
 import eyesSleeping from "./assets/resources/Monsters/1/EyesSleeping.svg";
 // import eyesBadContrast from "./assets/resources/Monsters/1/Eye_BadContrast.svg";
 import foot from "./assets/resources/Monsters/1/Foot.svg";
-import eyes2 from "./assets/resources/Monsters/1/eye2.svg";
+import eyes2 from "./assets/resources/Monsters/2/eyes.svg";
 import mouth from "./assets/resources/Monsters/1/Mouth.svg";
 import node from "./assets/resources/Monsters/1/Nodenode.svg";
 import arm2 from "./assets/resources/Monsters/2/arm.svg";
@@ -19,9 +19,16 @@ import arm2 from "./assets/resources/Monsters/2/arm.svg";
 import mouthSad from "./assets/resources/Monsters/1/MouthSad.svg";
 import eyesHappy from "./assets/resources/Monsters/1/EyesHappy.svg";
 import mouthHappy from "./assets/resources/Monsters/1/MouthHappy.svg";
+import mouthOpen from "./assets/resources/Monsters/1/MouthEating.svg";
 
-import ImageNotImplemented from "./assets/resources/images/ImageNotImplemented.svg";
+import Egg from "./assets/resources/images/Food/egg.svg";
+import Bread from "./assets/resources/images/Food/bread.svg";
+import Apple from "./assets/resources/images/Food/apple.svg";
+import Cheese from "./assets/resources/images/Food/cheese.svg";
+import Banana from "./assets/resources/images/Food/banana.svg";
+
 import { SvgProps } from "react-native-svg";
+import { Poppins_900Black } from "@expo-google-fonts/poppins";
 
 export const bodyImage = body;
 
@@ -63,6 +70,7 @@ export class BodyPart {
 
   width: number; // Determined by dimensions parameter
   height: number; // Determined by dimensions parameter
+  scale: number;
   aspectRatio: number[];
   badContrast: boolean; // IF listed as a ListBodyPart: adds a white background to increase contrast.
 
@@ -92,6 +100,7 @@ export class BodyPart {
 
     this.width = dimensions[0];
     this.height = dimensions[1];
+    this.scale = dimensions[2] ? dimensions[2] : 1;
     this.aspectRatio = [this.width / this.height, this.height / this.width];
     this.badContrast = badContrast;
 
@@ -118,6 +127,7 @@ export type OnNodePress = (bodypart: BodyPart) => void;
 export type bodyPartInfo = {
   // Used in the Monster.tsx Component
   bodyPart: BodyPart;
+  moodBodyParts?: { [key: string]: BodyPart }[];
   onPress?: OnNodePress;
   ref: RefObject<any> | undefined; //  User defined
 };
@@ -229,11 +239,11 @@ export const bodySets: {
       },
       eyes: {
         bodyPart: new BodyPart(
-          [500, 500, 0.35],
+          [500, 500],
           eyes,
           2,
           "Eyes",
-          [1000, 1000],
+          [1000, 1000, 0.35],
           1,
           true,
           true, undefined, [
@@ -246,16 +256,19 @@ export const bodySets: {
       head: undefined,
       mouth: {
         bodyPart: new BodyPart(
-          [25, 25, 0.85],
+          [25, 25],
           mouth,
           2,
           "Mouth",
-          [375, 144],
+          [375, 144, 0.85],
           1, undefined, undefined, undefined, [
             { "sad": mouthSad },
-            { "happy": mouthHappy }
+            { "happy": mouthHappy },
           ]
         ),
+        moodBodyParts: [
+          { "mouthopen": new BodyPart([-50, -20], mouthOpen, 2, "Mouth", [199, 115, 1.8], 1) }
+        ],
         ref: undefined,
       },
     },
@@ -272,11 +285,11 @@ export const bodySets: {
   2: {
     bodyparts: {
       leftarm: {
-        bodyPart: new BodyPart([200, 600], arm2, -1, "Arm", [955, 984, 0.4], 2),
+        bodyPart: new BodyPart([200, 600], arm2, -1, "Arm", [955, 984], 2),
         ref: undefined,
       },
       rightarm: {
-        bodyPart: new BodyPart([400, 86], arm, -1, "Arm", [546, 413], 2),
+        bodyPart: new BodyPart([400, 86], arm, 2, "Arm", [546, 413], 2),
         ref: undefined,
       },
       leftleg: {
@@ -289,11 +302,11 @@ export const bodySets: {
       },
       eyes: {
         bodyPart: new BodyPart(
-          [500, 500],
+          [50, 45],
           eyes2,
           2,
           "Eyes",
-          [1000, 1000],
+          [99, 95, 3.5],
           2
         ),
         ref: undefined,
@@ -317,21 +330,15 @@ export const bodySets: {
 };
 
 export function useLoadFonts() {
-  const [fontsLoaded, fontError] = useFonts({
-    "Poppins-ExtraBold": require("./assets/fonts/Poppins-ExtraBold.ttf"),
-  });
-
-  useEffect(() => {
-    async function prepare() {
-      await SplashScreen.preventAutoHideAsync();
-    }
-    prepare();
-  }, []);
-
-  if (fontsLoaded) {
-    SplashScreen.hideAsync();
-  }
-  return { fontsLoaded, fontError };
+    // Fonts Loading
+    const [loaded, error] = useFonts({
+      Poppins_900Black
+    })
+    useEffect(() => {
+      if (loaded || error) {
+        SplashScreen.hideAsync();
+      }
+    }, [loaded, error]);
 }
 
 interface ListBodyPartType {
@@ -463,6 +470,63 @@ export type ChangeBodyPart = (
   bodyPart: BodyPart,
   side: "left" | "right" | ""
 ) => void;
+
+// Food stuff
+
+export const foodCategories = ["Misc", "Fruit", "Veges", "Meat"];
+
+export interface IFood {
+  name: string;
+  perk: number;
+  price: number;
+  category: (typeof foodCategories)[number];
+  image: React.FC<SvgProps>;
+  numOwned: number;
+}
+
+export const AllFoods: IFood[] = [
+  // Apple, banana, bread, cheese, egg
+  {
+    name: "Egg",
+    perk: 3,
+    price: 1,
+    category: "Misc",
+    image: Egg,
+    numOwned: 0,
+  },
+  {
+    name: "Cheese",
+    perk: 3,
+    price: 1,
+    category: "Misc",
+    image: Cheese,
+    numOwned: 0,
+  },
+  {
+    name: "Bread",
+    perk: 3,
+    price: 1,
+    category: "Misc",
+    image: Bread,
+    numOwned: 0,
+  },
+  {
+    name: "Banana",
+    perk: 3,
+    price: 1,
+    category: "Fruit",
+    image: Banana,
+    numOwned: 0,
+  },
+  {
+    name: "Apple",
+    perk: 3,
+    price: 1,
+    category: "Fruit",
+    image: Apple,
+    numOwned: 0,
+  },
+];
 
 export const vw = (vw: number) => Dimensions.get("window").width * (vw / 100);
 export const vh = (vh: number) => Dimensions.get("window").height * (vh / 100);

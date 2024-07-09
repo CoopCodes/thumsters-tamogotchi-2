@@ -52,11 +52,9 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
 
     if (action.bodyPartToChange) {
       let i;
-      // console.log("INSIDE ACTION REDUCER ", action.bodyPart)
       // x would be leftarm, righarm, etc...
       Object.keys(state.bodypartnodes).map((x: string, index: number) => {
         // Checking if the passed in bodypart to change is on the body
-        // console.log("INSIDE ACTION REDUCER", x, " ", action.bodyPartToChange?.bodyPartName)
         // if bodyppart is enetered bodypart, then will set i to index
         if (x === action.bodyPartToChange?.bodyPartName) i = index;
       });
@@ -78,9 +76,6 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
             0.3,
           ),
         });
-
-        // state.bodypartnodes[Object.values(state.bodypartnodes)[i]] =
-        //     action.bodyPartToChange.newValue;
       }
     }
 

@@ -16,8 +16,7 @@ import clothesHanger from "../../assets/resources/images/ClothesHanger.png";
 import PrimaryButton from "../Button";
 import leftBackground from "../../assets/resources/images/Bedroom-Left.png";
 import rightBackground from "../../assets/resources/images/Bedroom-Right.png";
-import { useLoadFonts } from "../../global";
-import { NavigationContainer } from "@react-navigation/native";
+ import { NavigationContainer } from "@react-navigation/native";
 import Toilet from "../../assets/resources/images/Toilet.svg";
 import Sink from "../../assets/resources/images/Sink.svg";
 import SinkOn from "../../assets/resources/images/RunningSink.svg";
@@ -30,6 +29,7 @@ import { createStackNavigator, StackNavigationProp } from "@react-navigation/sta
 import LockerRoom from "./LockerRoom";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
+import { useLoadFonts } from "../LoadFonts";
 
 // Import or define your screen components
 
@@ -160,11 +160,6 @@ const Bathroom = ({  }) => {
     }
   }, []);
 
-  const fontInfo = useLoadFonts();
-  if (!fontInfo?.fontsLoaded) {
-    return null;
-  }
-
   return (
     <GestureHandlerRootView>
 
@@ -292,8 +287,7 @@ const styles = StyleSheet.create({
   },
   title: {
     zIndex: 2,
-    fontSize: 25,
-    fontWeight: "800",
+    fontSize: 30,
     color: "#4D4752",
     marginTop: Dimensions.get("window").height * 0.03,
     fontFamily: "Poppins_900Black",
@@ -320,8 +314,8 @@ const styles = StyleSheet.create({
     zIndex: 50,
   },
   spongeImage: {
-    width: 52, // Adjust the width as necessary
-    height: 22, // Adjust the height as necessary
+    width: 52, 
+    height: 22, 
     zIndex: 50
   },
   shelf: {
@@ -347,7 +341,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   bottom: {
-    flex: 1,
+    flex: .5,
     backgroundColor: "#F3F4F6",
     height: "100%",
     width: "100%",
@@ -362,7 +356,6 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   buttonText: {
-    fontWeight: "800",
     color: theme.default.typographyDark,
     fontSize: 20,
     fontFamily: "Poppins_900Black",

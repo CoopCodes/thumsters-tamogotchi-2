@@ -9,6 +9,7 @@ import { theme } from "../global";
 import LockerRoom from "./Rooms/LockerRoom";
 import HomeStackScreen from "./Navigators/HomeStackScreen";
 import Bathroom from "./Rooms/Bathroom";
+import Kitchen from "./Rooms/Kitchen";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -18,7 +19,7 @@ function BottomTabs() {
     <NavigationContainer>
       <Tab.Navigator
         style={styles.bar}
-        initialRouteName="Bedroom"
+        initialRouteName="Kitchen"
         activeColor={theme.default.interactionPrimary}
         barStyle={{
           backgroundColor: "white",
@@ -37,7 +38,6 @@ function BottomTabs() {
                   style={{
                     width: "100%",
                     height: "100%",
-                    // objectFit: "contain",
                   }}
                 />
               </View>
@@ -54,25 +54,28 @@ function BottomTabs() {
                   style={{
                     width: "100%",
                     height: "100%",
-                    // objectFit: "contain",
                   }}
                 />
               </View>
             ),
           }}
         />
-        {/* <Tab.Screen
-          name="Locker Room"
-          component={Bedroom}
+        <Tab.Screen
+          name="Kitchen"
+          component={Kitchen}
           options={{
             tabBarIcon: () => (
               <View style={styles.tabIcon}>
-                <Image source={bedroomIcon} style={{ width: "100%", height: "100%",objectFit: "contain" }}/>
+                <BedroomIcon
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
               </View>
             ),
-            
           }}
-        /> */}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
