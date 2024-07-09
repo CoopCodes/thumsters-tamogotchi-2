@@ -122,6 +122,7 @@ function Kitchen() {
     const foodInstance = newAllFoods.filter(
       (food: IFood) => food.name === selectedFood
     )[0];
+    if (newAllFoods === undefined) return
     
     foodInstance.numOwned -= 1;
 
