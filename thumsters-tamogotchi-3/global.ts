@@ -243,7 +243,7 @@ export const bodySets: {
           eyes,
           2,
           "Eyes",
-          [1000, 1000, 0.35],
+          [1000, 1000, 0.33],
           1,
           true,
           true, undefined, [
@@ -289,7 +289,8 @@ export const bodySets: {
         ref: undefined,
       },
       rightarm: {
-        bodyPart: new BodyPart([400, 86], arm, 2, "Arm", [546, 413], 2),
+        // bodyPart: new BodyPart([400, 86], arm, 2, "Arm", [546, 413], 2),
+        bodyPart: new BodyPart([200, 600], arm2, -1, "Arm", [955, 984], 2),
         ref: undefined,
       },
       leftleg: {
@@ -302,11 +303,11 @@ export const bodySets: {
       },
       eyes: {
         bodyPart: new BodyPart(
-          [50, 45],
+          [(99*3) / 2, (95*3) / 2],
           eyes2,
           2,
           "Eyes",
-          [99, 95, 3.5],
+          [99*3, 95*3, 1.2],
           2
         ),
         ref: undefined,
@@ -504,7 +505,7 @@ export const AllFoods: IFood[] = [
   },
   {
     name: "Bread",
-    perk: 3,
+    perk: 20,
     price: 1,
     category: "Misc",
     image: Bread,
@@ -512,7 +513,7 @@ export const AllFoods: IFood[] = [
   },
   {
     name: "Banana",
-    perk: 3,
+    perk: -10,
     price: 1,
     category: "Fruit",
     image: Banana,
