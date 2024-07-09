@@ -31,7 +31,7 @@ import { createStackNavigator, StackNavigationProp } from "@react-navigation/sta
 import LockerRoom from "./LockerRoom";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import { useLoadFonts } from "../LoadFonts";
-import  Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming,  } from "react-native-reanimated";
+import  Animated, { interpolateColor, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming,  } from "react-native-reanimated";
 // Import or define your screen components
 
 
@@ -40,7 +40,7 @@ import  Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withT
 const Bathroom = ({  }) => {
   const { monster, monsterDispatch } = useContext(MonsterContext);
   // const [position, setPosition] = useState({ x: 280, y: 294 });
-  // const [progressWidth, setProgressWidth] = useState(new Animated.Value(31));
+  const progressWidth = useSharedValue(31); // Initialize with 31
   const [hitBoxPosition, setHitBoxPosition] = useState({ x: 0, y: 0 });
   const [hitBoxDimensions, setHitBoxDimensions] = useState({ width: 0, height: 0 });
   const sprongePressed = useSharedValue<boolean>(false);
@@ -52,6 +52,22 @@ const Bathroom = ({  }) => {
   //     useNativeDriver: false,
   //   }).start();
   // };
+
+  const maxProgressWidth = 280;
+  const minProgressWidth = 31;
+
+  const increaseProgress = () => {
+    // Assuming progressWidth is a shared value
+    progressWidth.value = withTiming(maxProgressWidth, {
+      duration: 10000, // Adjust the duration as needed
+    });
+  };
+  const decreaseProgress = () => {
+    // Assuming progressWidth is a shared value
+    progressWidth.value = withTiming(minProgressWidth, {
+      duration: 80000, // Adjust the duration as needed
+    });
+  };
 
   const  sprongeTranslateY = useSharedValue(0)
   const  sprongeTranslateX = useSharedValue(0)
@@ -73,8 +89,11 @@ const Bathroom = ({  }) => {
         spongeCurrentY <= hitBoxPosition.y + hitBoxDimensions.height
       ) {
         console.log('hello'); // Log if the sponge is inside the hitbox
+        runOnJS(increaseProgress)()
       } else {
         console.log('nope'); // Log if the sponge is outside the hitbox
+        runOnJS(decreaseProgress)()
+
       }
 
       sprongeTranslateX.value = event.translationX;
@@ -86,10 +105,10 @@ const Bathroom = ({  }) => {
       sprongeTranslateX.value = withSpring(0)
       sprongeTranslateY.value = withSpring(0)
       sprongePressed.value = false;
+      runOnJS(decreaseProgress)()
     });
 
-  const maxProgressWidth = 280;
-  const minProgressWidth = 31;
+ 
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [
@@ -106,6 +125,16 @@ const Bathroom = ({  }) => {
     setIsSinkOn(!isSinkOn);
   };
 
+
+  const animatedStyle = useAnimatedStyle(() => {
+    // Interpolate color based on progressWidth
+    const backgroundColor = interpolateColor(progressWidth.value, [31, maxProgressWidth], ['#FF0000', '#54AAFF']);
+    
+    return {
+      width: progressWidth.value, // Use the animated value for width
+      backgroundColor,
+    };
+  });
   // const increaseProgress = () => {
 
   // }
@@ -216,8 +245,7 @@ const Bathroom = ({  }) => {
         <View style={styles.cleanProgress}>
           <SoapSponge style={styles.soapSponge} />
           <View style={styles.progressMould}>
-            <Animated.View style={[styles.progressBar, 
-              // { width: progressWidth }
+            <Animated.View style={[styles.progressBar, animatedStyle
               
               ]}>
               <Reflection style={styles.reflection}/>
@@ -257,7 +285,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 15,
     justifyContent: 'center',
-    paddingBottom: 100
+    paddingBottom: 60
   },
 
   progressMould: {
