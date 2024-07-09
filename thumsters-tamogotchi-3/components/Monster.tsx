@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useMemo, useRef } from "react";
-import { View, Image, StyleSheet } from "react-native";
+import { View, Image, StyleSheet, Text } from "react-native";
 import { Body, BodyPart, bodyPartInfo, bodySets } from "../global";
 import { SvgProps } from "react-native-svg";
 import MoodContext from "../Contexts/MoodContext";
 import Node from "../assets/resources/Monsters/1/Nodenode.svg";
+import Animated, { Easing, Keyframe, runOnUI, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 /**
  * Moves the body part to the correct position, width, height, and scale. based on the nodes position.
@@ -119,13 +120,22 @@ export function setBodyPartStyles(
   // );
 }
 
-interface Props {
-  monsterBody: Body;
-  state?: string;
-  scaleFactor: number; // Changes in LockerRoom
+// Displays a +1 above the monster
+export interface IPerk {
+  attribute: string;
+  amount: number;
+  operation: string; // +, -
+  color: string;
 }
 
-const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
+interface Props {
+  monsterBody: Body;
+  scaleFactor: number; // Changes in LockerRoom
+  state?: string;
+  perk?: IPerk;
+}
+
+const Monster = ({ monsterBody, scaleFactor = 0.3, state = "", perk = undefined }: Props) => {
   const leftArmRef = useRef();
   const rightArmRef = useRef();
   const leftLegRef = useRef();
@@ -146,59 +156,35 @@ const Monster = ({ monsterBody, state = "", scaleFactor = 0.3 }: Props) => {
     Number.NEGATIVE_INFINITY
   );
 
-  // function checkBodyPart(part: string): boolean {
-  //   return (
-  //     part === "leftarm" ||
-  //     part === "rightarm" ||
-  //     part === "leftleg" ||
-  //     part === "rightleg" ||
-  //     part === "eyes" ||
-  //     part === "head" ||
-  //     part === "mouth"
-  //   );
-  // }
-
-  // useEffect(() => {
-  //   let i: number = 0;
-  //   Object.values(monsterBody.bodypartnodes).map((bodypart: bodyPartInfo) => {
-  //     // if (
-  //     //   bodypart !== undefined &&
-  //     //   bodypart.ref !== undefined &&
-  //     //   bodypart.ref !== null &&
-  //     //   bodypart.bodyPart.node !== undefined &&
-  //     //   typeof bodypart.ref === "object" &&
-  //     //   bodypart.ref.current !== undefined
-  //     // ) {
-  //     //     const combinedScaleFactor = (bodypart.bodyPart.node[2])? scaleFactor * bodypart.bodyPart.node[2] : scaleFactor
-
-  //     //   // if (checkBodyPart(potentialTitle)) {
-  //     //   // }
-  //     //   // Returning an array of the all the bodypart titles, as to match it with the current bodypart, and then finds the corresponding node that it should attach to on the body.
-  //     //   const partTitle = Object.keys(bodysInfo[1].bodyparts)[i] as
-  //     //     | "leftarm"
-  //     //     | "rightarm"
-  //     //     | "leftleg"
-  //     //     | "rightleg"
-  //     //     | "eyes"
-  //     //     | "head"
-  //     //     | "mouth";
-
-  //     //   const node = bodysInfo[1].body[partTitle];
-  //     //   const bodyNodeCoord: Array<number> = node !== undefined ? node : [0, 0];
-  //     //   console.log(bodyNodeCoord[1] * 1 - bodypart.bodyPart.node[1] * scaleFactor)
-
-  //     //   bodypart.ref.current.setNativeProps({ styles: updateNativeProps(bodypart, bodypart.ref, bodyNodeCoord, scaleFactor) })
-
-  //     // }
-
-  //     i++;
-  //   });
-  // }, [monsterBody]);
-
   const { mood, setMood } = useContext(MoodContext);
 
+  useEffect(() => {
+    console.log('perk changed')
+  }, [])
+
+  const perkStartKeyframe = new Keyframe({
+    0: {
+      easing: Easing.in(Easing.quad),
+      transform: [{ translateY: 0 }],
+      opacity: 0,
+    },
+    10: {
+      transform: [{ translateY: 0 }],
+      opacity: 1,
+    },
+    100: {
+      transform: [{ translateY: -200 }],
+      opacity: 0,
+    }
+  })
+
   return (
-    <View style={styles.room}>
+    <View style={styles.container}>
+      { perk !== undefined ? (
+        <Animated.View style={[styles.perkContainer]} entering={perkStartKeyframe.duration(1200)}>
+          <Text style={[styles.perk, { color: perk.color }]}>{perk.operation + "" + perk.amount}</Text>
+        </Animated.View>
+      ) : (<></>) }
       <View style={[styles.body, { paddingBottom: maxTop }]}>
         {monsterBody.bodyImage ? (
           <monsterBody.bodyImage
@@ -306,7 +292,9 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     position: "absolute",
   },
-  room: {},
+  container: {
+    position: "relative",
+  },
   body: {
     width: "100%",
     height: "100%",
@@ -321,12 +309,22 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   touchable: {
-    backgroundColor: "black",
     width: "auto",
     height: 20,
     justifyContent: "center",
     alignItems: "center",
   },
+  perkContainer: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 100,
+
+  },
+  perk: {
+    fontSize: 50,
+    fontFamily: "Poppins_900Black"
+  }
 });
 
 export default Monster;
@@ -346,3 +344,53 @@ export default Monster;
 //     }
 //   )
 // )}
+
+// Stuff
+// function checkBodyPart(part: string): boolean {
+  //   return (
+  //     part === "leftarm" ||
+  //     part === "rightarm" ||
+  //     part === "leftleg" ||
+  //     part === "rightleg" ||
+  //     part === "eyes" ||
+  //     part === "head" ||
+  //     part === "mouth"
+  //   );
+  // }
+
+  // useEffect(() => {
+  //   let i: number = 0;
+  //   Object.values(monsterBody.bodypartnodes).map((bodypart: bodyPartInfo) => {
+  //     // if (
+  //     //   bodypart !== undefined &&
+  //     //   bodypart.ref !== undefined &&
+  //     //   bodypart.ref !== null &&
+  //     //   bodypart.bodyPart.node !== undefined &&
+  //     //   typeof bodypart.ref === "object" &&
+  //     //   bodypart.ref.current !== undefined
+  //     // ) {
+  //     //     const combinedScaleFactor = (bodypart.bodyPart.node[2])? scaleFactor * bodypart.bodyPart.node[2] : scaleFactor
+
+  //     //   // if (checkBodyPart(potentialTitle)) {
+  //     //   // }
+  //     //   // Returning an array of the all the bodypart titles, as to match it with the current bodypart, and then finds the corresponding node that it should attach to on the body.
+  //     //   const partTitle = Object.keys(bodysInfo[1].bodyparts)[i] as
+  //     //     | "leftarm"
+  //     //     | "rightarm"
+  //     //     | "leftleg"
+  //     //     | "rightleg"
+  //     //     | "eyes"
+  //     //     | "head"
+  //     //     | "mouth";
+
+  //     //   const node = bodysInfo[1].body[partTitle];
+  //     //   const bodyNodeCoord: Array<number> = node !== undefined ? node : [0, 0];
+  //     //   console.log(bodyNodeCoord[1] * 1 - bodypart.bodyPart.node[1] * scaleFactor)
+
+  //     //   bodypart.ref.current.setNativeProps({ styles: updateNativeProps(bodypart, bodypart.ref, bodyNodeCoord, scaleFactor) })
+
+  //     // }
+
+  //     i++;
+  //   });
+  // }, [monsterBody]);

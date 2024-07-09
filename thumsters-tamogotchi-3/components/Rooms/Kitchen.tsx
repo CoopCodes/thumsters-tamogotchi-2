@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { MonsterContext } from "../../Contexts/MonsterContext";
 import { IFood, foodCategories, theme } from "../../global";
-import Monster from "../Monster";
+import Monster, { IPerk } from "../Monster";
 
 import clothesHanger from "../../assets/resources/images/ClothesHanger.svg";
 import KitchenBackground from "../../assets/resources/images/Kitchen.svg";
@@ -88,7 +88,8 @@ function Kitchen() {
 
   const foodDimensions = { width: 52, height: 22 }; // Dimensions of the food
   const panfood = Gesture.Pan()
-    .onBegin(() => {})
+    .onBegin(() => {
+    })
     .onChange((event) => {
       const foodCurrentX = onPressInfo.x + event.translationX;
       const foodCurrentY = onPressInfo.y + event.translationY;
@@ -100,29 +101,41 @@ function Kitchen() {
         foodCurrentY <= hitBoxPosition.y + hitBoxDimensions.height
       ) {
         runOnJS(setIsOverHitbox)(true);
+      } else {
+        runOnJS(setIsOverHitbox)(false);
       }
 
       foodTranslateX.value = onPressInfo.x + event.translationX;
       foodTranslateY.value = onPressInfo.y + event.translationY;
     })
     .onFinalize(() => {
+      foodPressed.value = false;
+      runOnJS(setSelectedFood)("");
       if (isOverHitbox) {
         runOnJS(eaten)(selectedFood);
       }
 
-      runOnJS(setSelectedFood)("");
       if (setMood) runOnJS(setMood)("");
-      foodTranslateX.value = withSpring(onPressInfo.x);
-      foodTranslateY.value = withSpring(onPressInfo.y);
-      foodPressed.value = false;
+      if (!isOverHitbox) {
+        foodTranslateX.value = withSpring(onPressInfo.x);
+        foodTranslateY.value = withSpring(onPressInfo.y);
+      }
   });
   
   function eaten(selectedFood: string) {
+    
     let newAllFoods = [...allFoods];
     const foodInstance = newAllFoods.filter(
       (food: IFood) => food.name === selectedFood
     )[0];
-    if (newAllFoods === undefined) return
+    if (foodInstance === undefined) return
+    
+    setPerk({
+      attribute: "hunger",
+      amount: foodInstance.perk,
+      operation: "+",
+      color: "#ffc800"
+    })
     
     foodInstance.numOwned -= 1;
 
@@ -132,31 +145,30 @@ function Kitchen() {
   }
 
   const animatedStyles = useAnimatedStyle(() => ({
-    top: foodTranslateY.value,
-    left: foodTranslateX.value,
+    top: foodTranslateY.value + 0,
+    left: foodTranslateX.value + 25,
     transform: [
       { translateX: foodPressed.value ? 25 : 0 },
       { translateY: foodPressed.value ? 25 : 0 },
-      { scale: withTiming(foodPressed.value ? 1.2 : 1) },
+      { scale: withTiming(foodPressed.value ? 1.2 : isOverHitbox ? 0 : 1) },
       { rotate: withTiming(foodPressed.value ? "10deg" : "0deg") },
     ],
   }));
 
-  // if (setMood) setMood("mouthopen");
+  const [perk, setPerk] = useState<IPerk | undefined>();
 
   return (
     <GestureHandlerRootView>
-      <GestureDetector gesture={panfood}>
+      <View>
         <View style={styles.container}>
-          {displayFood.map((food: IFood) => {
+          {allFoods.map((food: IFood) => { // Using displayFood doesn't work for some reason
             const Image = food.image;
             return (
               <Animated.View
                 key={food.name}
                 style={[
                   styles.renderedFoodContainer,
-                  animatedStyles,
-                  {
+                  animatedStyles, {
                     opacity: selectedFood === food.name ? 1 : 0,
                   },
                 ]}
@@ -186,7 +198,7 @@ function Kitchen() {
               }}
             >
               {monster ? (
-                <Monster scaleFactor={0.3} monsterBody={monster}  />
+                <Monster scaleFactor={0.3} monsterBody={monster} perk={perk} />
               ) : null}
             </Animated.View>
             <View style={[styles.background]}>
@@ -233,28 +245,31 @@ function Kitchen() {
                 const FoodImage = item.image;
                 return (
                   <View style={[styles.foodItem]}>
-                    <Pressable
-                      style={styles.foodItemImage}
-                      onLongPress={(e) => {
-                        if (item === undefined || item.numOwned === undefined ||item.numOwned < 1) return
+                    <GestureDetector gesture={panfood}>
+                      <Pressable
+                        style={styles.foodItemImage}
+                        onPressIn={(e) => {
+                          setPerk(undefined)
+                          if (item === undefined || item.numOwned === undefined ||item.numOwned < 1) return
 
-                        foodPressed.value = true;
-                        const [x, y] = [
-                          e.nativeEvent.pageX - 60,
-                          e.nativeEvent.pageY - 175,
-                        ];
+                          foodPressed.value = true;
+                          const [x, y] = [
+                            e.nativeEvent.pageX - 60,
+                            e.nativeEvent.pageY - 175,
+                          ];
 
-                        setSelectedFood(item.name);
+                          setSelectedFood(item.name);
 
-                        setOnPressInfo({ x: x, y: y });
+                          setOnPressInfo({ x: x, y: y });
 
-                        foodTranslateX.value = x;
-                        foodTranslateY.value = y;
-                        if (setMood) setMood("mouthopen")
-                      }}
-                    >
-                      <FoodImage />
-                    </Pressable>
+                          foodTranslateX.value = x;
+                          foodTranslateY.value = y;
+                          if (setMood) setMood("mouthopen")
+                        }}
+                      >
+                        <FoodImage />
+                      </Pressable>
+                    </GestureDetector>
                     <View style={styles.foodItemTagContainer}>
                       <View
                         style={[
@@ -265,6 +280,7 @@ function Kitchen() {
                             borderWidth: 3,
                             borderRightWidth: 0,
                             borderColor: theme.default.interactionShadow,
+                            width: item.numOwned >= 10 ? 50 : 35
                           },
                           styles.foodTag,
                         ]}
@@ -276,7 +292,12 @@ function Kitchen() {
                       <View
                         style={[
                           {
-                            backgroundColor: "#25D83A",
+                            backgroundColor: `hsl(${(
+                              (Math.abs(item.perk) /
+                              Math.max(...allFoods.map((food) => food.perk))) *
+                              127
+                            ).toString()}, 70%, 49%)`,
+                            // backgroundColor: `hsl(127, 70%, 49%)`,
                           },
                           styles.foodTag,
                         ]}
@@ -330,7 +351,7 @@ function Kitchen() {
             />
           </View>
         </View>
-      </GestureDetector>
+      </View>
     </GestureHandlerRootView>
   );
 }
@@ -343,10 +364,11 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height * 0.35,
     resizeMode: "contain",
     position: "relative",
+    elevation: 100,
   },
   container: {
     position: "relative",
-    height: "94.5%",
+    height: "96%",
   },
   top: {
     position: "relative",
@@ -356,6 +378,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   renderedFoodContainer: {
+    transformOrigin: "50%",
     position: "absolute",
     top: 0,
     left: 0,
@@ -369,7 +392,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 30,
     left: 0,
-    elevation: 10,
     zIndex: 100,
 
     backgroundColor: "#D8B125",
@@ -388,6 +410,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 3,
     borderBottomWidth: 3,
     borderColor: "#B79520",
+
+    elevation: 20,
   },
   thumbucksText: {
     color: "white",
