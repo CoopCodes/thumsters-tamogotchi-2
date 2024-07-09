@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+
 import {
   View,
   Image,
@@ -7,6 +8,7 @@ import {
   Dimensions,
   PanResponder,
   Pressable,
+
 } from "react-native";
 import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
 import { theme } from "../../global";
@@ -27,11 +29,12 @@ import Reflection from '../../assets/resources/images/ProgressReflection.svg'
 // Bedroom group stack provider:
 import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import LockerRoom from "./LockerRoom";
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import { useLoadFonts } from "../LoadFonts";
-
+import  Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming,  } from "react-native-reanimated";
 // Import or define your screen components
+
+
 
 
 const Bathroom = ({  }) => {
@@ -41,6 +44,14 @@ const Bathroom = ({  }) => {
   const [hitBoxPosition, setHitBoxPosition] = useState({ x: 0, y: 0 });
   const [hitBoxDimensions, setHitBoxDimensions] = useState({ width: 0, height: 0 });
   const sprongePressed = useSharedValue<boolean>(false);
+
+  //   const increaseProgress = () => {
+  //   ReactNativeAnimated.timing(progressWidth, {
+  //     toValue: maxProgressWidth,
+  //     duration: 10000, // Adjust the duration as needed
+  //     useNativeDriver: false,
+  //   }).start();
+  // };
 
   const  sprongeTranslateY = useSharedValue(0)
   const  sprongeTranslateX = useSharedValue(0)
@@ -56,9 +67,9 @@ const Bathroom = ({  }) => {
       const spongeCurrentY = initialSpongePosition.y + event.translationY;
 
       if (
-        spongeCurrentX + spongeDimensions.width >= hitBoxPosition.x &&
+         spongeCurrentX + spongeDimensions.width >= hitBoxPosition.x &&
         spongeCurrentX <= hitBoxPosition.x + hitBoxDimensions.width &&
-        spongeCurrentY + spongeDimensions.height >= hitBoxPosition.y &&
+        spongeCurrentY + spongeDimensions.height >= hitBoxPosition.y + 220 &&
         spongeCurrentY <= hitBoxPosition.y + hitBoxDimensions.height
       ) {
         console.log('hello'); // Log if the sponge is inside the hitbox
@@ -95,19 +106,13 @@ const Bathroom = ({  }) => {
     setIsSinkOn(!isSinkOn);
   };
 
-  const increaseProgress = () => {
-
-  }
-
-
-
   // const increaseProgress = () => {
-  //   Animated.timing(progressWidth, {
-  //     toValue: maxProgressWidth,
-  //     duration: 10000, // Adjust the duration as needed
-  //     useNativeDriver: false,
-  //   }).start();
-  // };
+
+  // }
+
+
+
+
 
   // const decreaseProgress = () => {
   //   Animated.timing(progressWidth, {
@@ -174,7 +179,7 @@ const Bathroom = ({  }) => {
             const layout = event.nativeEvent.layout;
             
             setHitBoxPosition({ x: layout.x, y: layout.y });
-            setHitBoxDimensions({ width: layout.width, height: layout.height });
+            setHitBoxDimensions({ width: layout.width, height: layout.height + 180 });
           }}
         >
           {monster ? (
