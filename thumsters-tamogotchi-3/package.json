@@ -14,7 +14,6 @@
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/stack": "^6.3.20",
     "deprecated-react-native-prop-types": "^4.2.1",
-    "eas-cli": "^10.0.0",
     "expo": "~49.0.8",
     "expo-dev-client": "~2.4.13",
     "expo-font": "~11.4.0",
