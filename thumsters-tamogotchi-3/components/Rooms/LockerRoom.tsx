@@ -40,16 +40,16 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
 
   // Monster Initialization
   const { monster, monsterDispatch } = useContext(MonsterContext);
-  useEffect(() => {
-    if (monsterDispatch) {
-      const action: monsterAction = {
-        bodyParts: bodySets[1].bodyparts,
-        bodyImage: bodyImage,
-        body: monster,
-      };
-      monsterDispatch(action);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (monsterDispatch) {
+  //     const action: monsterAction = {
+  //       bodyParts: bodySets[1].bodyparts,
+  //       bodyImage: bodyImage,
+  //       body: monster,
+  //     };
+  //     monsterDispatch(action);
+  //   }
+  // }, []);
 
   interface ListBodyPartType {
     key: string;

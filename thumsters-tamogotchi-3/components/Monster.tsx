@@ -29,7 +29,7 @@ export function updateNativeProps(
       // },
       { scaleX: bodypart.bodyPart.reflected ? -1 : 1 },
       {
-        scale: bodypart.bodyPart.scale,
+        scale: bodypart.bodyPart.scale+1,
       },
     ],
     // left: Math.abs((bodyNodeCoord[0] * combinedScaleFactor) - bodypart.bodyPart.node[0] * scaleFactor),
@@ -84,6 +84,8 @@ export function setBodyPartStyles(
 
     const node = bodySets[1].body[partTitle];
     const bodyNodeCoord: Array<number> = node !== undefined ? node : [0, 0];
+
+    console.log(bodypart)
 
     return {
       transform: [
@@ -157,10 +159,6 @@ const Monster = ({ monsterBody, scaleFactor = 0.3, state = "", perk = undefined 
   );
 
   const { mood, setMood } = useContext(MoodContext);
-
-  useEffect(() => {
-    console.log('perk changed')
-  }, [])
 
   const perkStartKeyframe = new Keyframe({
     0: {

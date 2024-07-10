@@ -95,6 +95,7 @@ export class BodyPart {
   ) {
     this.node = node;
     this.reflected = reflected === undefined ? false : true;
+    // this.reflected = true;
     this.zIndex = zIndex;
     this.category = category;
 
@@ -285,12 +286,12 @@ export const bodySets: {
   2: {
     bodyparts: {
       leftarm: {
-        bodyPart: new BodyPart([200, 600], arm2, -1, "Arm", [955, 984], 2),
+        bodyPart: new BodyPart([0, 600], arm2, -1, "Arm", [955, 984], 2, true),
         ref: undefined,
       },
       rightarm: {
-        // bodyPart: new BodyPart([400, 86], arm, 2, "Arm", [546, 413], 2),
-        bodyPart: new BodyPart([200, 600], arm2, -1, "Arm", [955, 984], 2),
+        bodyPart: new BodyPart([300, 86], arm, 2, "Arm", [546, 413], 2, true),
+        // bodyPart: new BodyPart([200, 600], arm2, -1, "Arm", [955, 984], 2),
         ref: undefined,
       },
       leftleg: {

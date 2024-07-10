@@ -17,7 +17,6 @@ import {
   bodySets,
   bodyImage,
 } from "../global";
-import Monster, { updateNativeProps } from "../components/Monster";
 import { SvgProps } from "react-native-svg";
 
 export type monsterAction = {
@@ -66,16 +65,17 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
         state.bodypartnodes[bodypartnode] = action.bodyPartToChange.newValue;
         console.log("updating props");
 
-        state.bodypartnodes[bodypartnode]!.ref!.current.setNativeProps({
-          styles: updateNativeProps(
-            state.bodypartnodes[bodypartnode]!,
-            state.bodypartnodes[bodypartnode]!.ref!,
-            state.bodypartnodes[bodypartnode]!.bodyPart.node !== undefined
-              ? state.bodypartnodes[bodypartnode]!.bodyPart.node!
-              : [0, 0],
-            0.3,
-          ),
-        });
+        // This didn't do anything dunno why
+        // state.bodypartnodes[bodypartnode]!.ref!.current.setNativeProps({
+        //   styles: updateNativeProps(
+        //     state.bodypartnodes[bodypartnode]!,
+        //     state.bodypartnodes[bodypartnode]!.ref!,
+        //     state.bodypartnodes[bodypartnode]!.bodyPart.node !== undefined
+        //       ? state.bodypartnodes[bodypartnode]!.bodyPart.node!
+        //       : [0, 0],
+        //     0.3,
+        //   ),
+        // });
       }
     }
 

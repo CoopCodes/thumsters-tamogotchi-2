@@ -129,12 +129,14 @@ function Kitchen() {
       (food: IFood) => food.name === selectedFood
     )[0];
     if (foodInstance === undefined) return
+
+    const color = calcFoodColor(foodInstance);
     
     setPerk({
       attribute: "hunger",
       amount: foodInstance.perk,
       operation: "+",
-      color: "#ffc800"
+      color: parseInt(color.split(",")[0].split("(")[1]) < 47 ? "#ffc800" : color,
     })
     
     foodInstance.numOwned -= 1;
@@ -156,6 +158,8 @@ function Kitchen() {
   }));
 
   const [perk, setPerk] = useState<IPerk | undefined>();
+
+  const calcFoodColor = (item: IFood) => `hsl(${((Math.abs(item.perk) / Math.max(...allFoods.map((food) => food.perk))) * 127).toString()}, 70%, 49%)`
 
   return (
     <GestureHandlerRootView>
@@ -292,11 +296,7 @@ function Kitchen() {
                       <View
                         style={[
                           {
-                            backgroundColor: `hsl(${(
-                              (Math.abs(item.perk) /
-                              Math.max(...allFoods.map((food) => food.perk))) *
-                              127
-                            ).toString()}, 70%, 49%)`,
+                            backgroundColor: calcFoodColor(item),
                             // backgroundColor: `hsl(127, 70%, 49%)`,
                           },
                           styles.foodTag,
