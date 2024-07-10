@@ -64,7 +64,7 @@ export const theme: ITheme = {
 
 export class BodyPart {
   node: number[]; // The Nodes position, this is where the body part connects to the body.
-  reflected: boolean; // Is the body part reflected (would be if was a left arm, and the image is for right)
+  // reflected: boolean; // Is the body part reflected (would be if was a left arm, and the image is for right)
   zIndex: number;
   category: "Body" | "Head" | "Eyes" | "Mouth" | "Arm" | "Leg" | undefined;
 
@@ -88,13 +88,12 @@ export class BodyPart {
     category: "Body" | "Head" | "Eyes" | "Mouth" | "Arm" | "Leg" | undefined,
     dimensions: Array<number>,
     bodySet: number,
-    reflected?: boolean | undefined,
     badContrast: boolean = false,
     imageBadContrast: React.FC<SvgProps> | undefined = undefined,
     moodsImages: { [key: string]: React.FC<SvgProps> }[] | undefined = undefined
   ) {
     this.node = node;
-    this.reflected = reflected === undefined ? false : true;
+    // this.reflected = reflected === undefined ? false : true;
     // this.reflected = true;
     this.zIndex = zIndex;
     this.category = category;
@@ -223,7 +222,7 @@ export const bodySets: {
   1: {
     bodyparts: {
       leftarm: {
-        bodyPart: new BodyPart([110, 86], arm, -1, "Arm", [546, 413], 1, true),
+        bodyPart: new BodyPart([110, 86, 1], arm, -1, "Arm", [546, 413], 1),
         ref: undefined,
       },
       rightarm: {
@@ -231,11 +230,11 @@ export const bodySets: {
         ref: undefined,
       },
       leftleg: {
-        bodyPart: new BodyPart([45, 34], foot, 0, "Leg", [144, 47], 1),
+        bodyPart: new BodyPart([45, 34, 1], foot, 0, "Leg", [144, 47], 1),
         ref: undefined,
       },
       rightleg: {
-        bodyPart: new BodyPart([45, 34], foot, 0, "Leg", [144, 47], 1, true),
+        bodyPart: new BodyPart([45, 34], foot, 0, "Leg", [144, 47], 1),
         ref: undefined,
       },
       eyes: {
@@ -246,7 +245,6 @@ export const bodySets: {
           "Eyes",
           [1000, 1000, 0.33],
           1,
-          true,
           true, undefined, [
             { "sleeping": eyesSleeping },
             { "happy": eyesHappy },
@@ -262,7 +260,7 @@ export const bodySets: {
           2,
           "Mouth",
           [375, 144, 0.85],
-          1, undefined, undefined, undefined, [
+          1, undefined, undefined, [
             { "sad": mouthSad },
             { "happy": mouthHappy },
           ]
@@ -286,11 +284,12 @@ export const bodySets: {
   2: {
     bodyparts: {
       leftarm: {
-        bodyPart: new BodyPart([0, 600], arm2, -1, "Arm", [955, 984], 2, true),
+        // bodyPart: new BodyPart([300, 86, 1], arm, 2, "Arm", [546, 413], 2),
+        bodyPart: new BodyPart([110, 86, 1], arm, -1, "Arm", [546, 413], 1),
         ref: undefined,
       },
       rightarm: {
-        bodyPart: new BodyPart([300, 86], arm, 2, "Arm", [546, 413], 2, true),
+        bodyPart: new BodyPart([200, 600, 1], arm2, -1, "Arm", [955, 984], 2),
         // bodyPart: new BodyPart([200, 600], arm2, -1, "Arm", [955, 984], 2),
         ref: undefined,
       },
@@ -299,7 +298,7 @@ export const bodySets: {
         ref: undefined,
       },
       rightleg: {
-        bodyPart: new BodyPart([45, 34], foot, 0, "Leg", [144, 47], 2, true),
+        bodyPart: new BodyPart([45, 34, 1], foot, 0, "Leg", [144, 47], 2),
         ref: undefined,
       },
       eyes: {
@@ -315,7 +314,7 @@ export const bodySets: {
       },
       head: undefined,
       mouth: {
-        bodyPart: new BodyPart([170, 138], mouth, 2, "Mouth", [375, 144], 2, undefined, undefined, undefined, [{ "sad": mouthSad }]),
+        bodyPart: new BodyPart([170, 138], mouth, 2, "Mouth", [375, 144], 2, undefined, undefined, [{ "sad": mouthSad }]),
         ref: undefined,
       },
     },

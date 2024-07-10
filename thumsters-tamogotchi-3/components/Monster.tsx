@@ -9,40 +9,40 @@ import Animated, { Easing, Keyframe, runOnUI, useAnimatedStyle, useSharedValue, 
 /**
  * Moves the body part to the correct position, width, height, and scale. based on the nodes position.
  */
-export function updateNativeProps(
-  bodypart: bodyPartInfo,
-  ref: React.RefObject<any>,
-  bodyNodeCoord: number[],
-  scaleFactor: number
-) {
-  // ref.current.setNativeProps({
-  //   style:
-  return {
-    transform: [
-      // {
-      //   translateX:
-      //     // bodyNodeCoord[0] - bodypart.bodyPart.node[0] * scaleFactor,
-      // },
-      // {
-      //   translateY:
-      //     // bodyNodeCoord[1] - bodypart.bodyPart.node[1] * scaleFactor,
-      // },
-      { scaleX: bodypart.bodyPart.reflected ? -1 : 1 },
-      {
-        scale: bodypart.bodyPart.scale+1,
-      },
-    ],
-    // left: Math.abs((bodyNodeCoord[0] * combinedScaleFactor) - bodypart.bodyPart.node[0] * scaleFactor),
-    // top: Math.abs((bodyNodeCoord[1] * combinedScaleFactor) - bodypart.bodyPart.node[1] * scaleFactor),
-    left:
-      bodyNodeCoord[0] * scaleFactor - bodypart.bodyPart.node[0] * scaleFactor,
-    top:
-      bodyNodeCoord[1] * scaleFactor - bodypart.bodyPart.node[1] * scaleFactor,
-    width: bodypart.bodyPart.width * scaleFactor,
-    height: bodypart.bodyPart.height * scaleFactor,
-    zIndex: bodypart.bodyPart.zIndex,
-  };
-}
+// export function updateNativeProps(
+//   bodypart: bodyPartInfo,
+//   ref: React.RefObject<any>,
+//   bodyNodeCoord: number[],
+//   scaleFactor: number
+// ) {
+//   // ref.current.setNativeProps({
+//   //   style:
+//   return {
+//     transform: [
+//       // {
+//       //   translateX:
+//       //     // bodyNodeCoord[0] - bodypart.bodyPart.node[0] * scaleFactor,
+//       // },
+//       // {
+//       //   translateY:
+//       //     // bodyNodeCoord[1] - bodypart.bodyPart.node[1] * scaleFactor,
+//       // },
+//       { scaleX: bodypart.bodyPart.reflected ? -1 : 1 },
+//       {
+//         scale: bodypart.bodyPart.scale+1,
+//       },
+//     ],
+//     // left: Math.abs((bodyNodeCoord[0] * combinedScaleFactor) - bodypart.bodyPart.node[0] * scaleFactor),
+//     // top: Math.abs((bodyNodeCoord[1] * combinedScaleFactor) - bodypart.bodyPart.node[1] * scaleFactor),
+//     left:
+//       bodyNodeCoord[0] * scaleFactor - bodypart.bodyPart.node[0] * scaleFactor,
+//     top:
+//       bodyNodeCoord[1] * scaleFactor - bodypart.bodyPart.node[1] * scaleFactor,
+//     width: bodypart.bodyPart.width * scaleFactor,
+//     height: bodypart.bodyPart.height * scaleFactor,
+//     zIndex: bodypart.bodyPart.zIndex,
+//   };
+// }
 
 /**
  * Sets the styles for a given body part based on the provided scale factor and index.
@@ -85,7 +85,7 @@ export function setBodyPartStyles(
     const node = bodySets[1].body[partTitle];
     const bodyNodeCoord: Array<number> = node !== undefined ? node : [0, 0];
 
-    console.log(bodypart)
+    // console.log(bodypart)
 
     return {
       transform: [
@@ -97,7 +97,7 @@ export function setBodyPartStyles(
         //   translateY:
         //     // bodyNodeCoord[1] - bodypart.bodyPart.node[1] * scaleFactor,
         // },
-        { scaleX: bodypart.bodyPart.reflected ? -1 : 1 },
+        { scaleX: bodypart.bodyPart.node.length >= 3 ? -1 : 1 },
         {
           scale: bodypart.bodyPart.scale,
         },

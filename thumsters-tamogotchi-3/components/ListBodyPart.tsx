@@ -17,7 +17,7 @@ const ListBodyPart = ({ bodypart, OnPress }: Props) => {
   //   100 * bodypart.aspectRatio[1],
   // ])
 
-  let bodyPartReflected: "left" | "right" | "" = (bodypart.category === undefined || ["Eyes", "Mouth", "Head", "Body"].includes(bodypart.category))? "" : (!bodypart.reflected)? "right" : "left";
+  let bodyPartReflected: "left" | "right" | "" = (bodypart.category === undefined || ["Eyes", "Mouth", "Head", "Body"].includes(bodypart.category))? "" : (!(bodypart.node.length <= 3 ? false : true))? "right" : "left";
   // console.log(bodyPartReflected)
 
   return (
@@ -31,7 +31,7 @@ const ListBodyPart = ({ bodypart, OnPress }: Props) => {
                   {
                     width: vw(33),
                     height: '100%',
-                    transform: [{ scaleX: (bodypart.reflected)? -1 : 1 }],
+                    transform: [{ scaleX: bodypart.node.length >= 3 ? -1 : 1 }],
                   },
                   styles.image,
                 ]}
