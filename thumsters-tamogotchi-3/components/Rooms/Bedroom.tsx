@@ -27,6 +27,7 @@ import { AttributesContext } from "../../Contexts/AttributeContext";
 import MoodContext from "../../Contexts/MoodContext";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useLoadFonts } from "../LoadFonts";
+import Rive from "rive-react-native";
 
 function Bedroom({navigation}: {navigation: any}) {
   const { monster, monsterDispatch } = useContext(MonsterContext);
@@ -85,14 +86,20 @@ function Bedroom({navigation}: {navigation: any}) {
     <View style={styles.container}>
       <View style={styles.top}>
         <Text style={[styles.title, { color: sleeping ? "white" : "#4D4752" }]}>Bedroom</Text>
-        <Animated.View style={[styles.monster, monsterAnimatedStyle]}>
+        {/* <Animated.View style={[styles.monster, monsterAnimatedStyle]}>
           {monster ? (
             <Monster scaleFactor={0.3} monsterBody={monster} state={`
               ${turned ? "turned" : ""}
               ${sleeping ? "sleeping" : ""}
               `} />
           ) : null}
-        </Animated.View>
+        </Animated.View> */}
+        <Rive
+          resourceName="Harold-Smile"
+          artboardName="Smile"
+          stateMachineName=""
+          style={{}}
+        />
         <Animated.View style={[styles.bedroomTopView, topViewAnimatedStyle]}>
           <BedroomTopView width="100%" height="100%" />
         </Animated.View>
