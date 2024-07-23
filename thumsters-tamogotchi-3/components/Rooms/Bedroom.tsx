@@ -9,7 +9,7 @@ import {
 import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
 import { theme } from "../../global";
 import { bodySets, Body, bodyImage } from "../../global";
-import Monster from "../Monster ";
+import Monster from "../Monster";
 
 import clothesHanger from "../../assets/resources/images/ClothesHanger.svg";
 
