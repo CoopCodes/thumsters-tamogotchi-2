@@ -8,7 +8,7 @@ export const HomeStack = createStackNavigator();
 function HomeStackScreen() {
   return (
     <NavigationContainer independent={true}>
-      <HomeStack.Navigator>
+      <HomeStack.Navigator initialRouteName="LockerRoom">
         <HomeStack.Screen name="Home" component={Bedroom} options={{
           headerShown: false
         }}/>

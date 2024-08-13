@@ -1,4 +1,4 @@
-import { Ref, RefObject, useEffect } from "react";
+import { Ref, RefObject, useEffect, useRef } from "react";
 import { Dimensions } from "react-native";
 
 import { useFonts } from "expo-font";
@@ -29,6 +29,7 @@ import Banana from "./assets/resources/images/Food/banana.svg";
 
 import { SvgProps } from "react-native-svg";
 import { Poppins_900Black } from "@expo-google-fonts/poppins";
+import { RiveRef } from "rive-react-native";
 
 export const bodyImage = body;
 
@@ -60,6 +61,17 @@ export const theme: ITheme = {
   },
 };
 
+// Usually a boolean, but if number specified, then will add an offset to the left/right/top/bottom/center, if undefined then will do nothing. If number 0, will be taken as undefined.
+export interface IAlignments { 
+  leftAlign?: boolean | number | undefined;
+  rightAlign?: boolean | number | undefined;
+  topAlign?: boolean | number | undefined;
+  bottomAlign?: boolean | number | undefined;
+  
+  centerHorizontalAlign?: boolean | number | undefined;
+  centerVerticalAlign?: boolean | number | undefined;
+}
+
 // Types:
 
 export class BodyPart {
@@ -74,23 +86,28 @@ export class BodyPart {
   aspectRatio: number[];
   badContrast: boolean; // IF listed as a ListBodyPart: adds a white background to increase contrast.
 
-  image: React.FC<SvgProps>; // Image path, can
-  imageBadContrast: React.FC<SvgProps> | undefined; // IF listed as a ListBodyPart: if specified replaces the default image with this, to increase contrast. Must have the same dimension.
+  image: string | React.FC<SvgProps>; // Image path, if it is a string, then its rive
+  imageBadContrast: string | React.FC<SvgProps> | undefined; // IF listed as a ListBodyPart: if specified replaces the default image with this, to increase contrast. Must have the same dimension.
 
   bodySet: number; // What bodySet it belongs too, (one bodySet could be the harold)
 
-  moodsImages: { [key: string]: React.FC<SvgProps> }[] | undefined;
+  alignments: IAlignments;
+
+  // moodsImages: { [key: string]: React.FC<SvgProps> }[] | undefined;
 
   constructor(
     node: number[],
-    image: React.FC<SvgProps>,
+    image: string | React.FC<SvgProps>,
     zIndex: number,
     category: "Body" | "Head" | "Eyes" | "Mouth" | "Arm" | "Leg" | undefined,
     dimensions: Array<number>,
     bodySet: number,
-    badContrast: boolean = false,
-    imageBadContrast: React.FC<SvgProps> | undefined = undefined,
-    moodsImages: { [key: string]: React.FC<SvgProps> }[] | undefined = undefined
+    options?: {
+      badContrast?: boolean | undefined,
+      imageBadContrast?: string | React.FC<SvgProps> | undefined,
+      alignments?: IAlignments | undefined
+    }
+    // moodsImages: { [key: string]: string | React.FC<SvgProps> }[] | undefined = undefined
   ) {
     this.node = node;
     // this.reflected = reflected === undefined ? false : true;
@@ -102,14 +119,22 @@ export class BodyPart {
     this.height = dimensions[1];
     this.scale = dimensions[2] ? dimensions[2] : 1;
     this.aspectRatio = [this.width / this.height, this.height / this.width];
-    this.badContrast = badContrast;
-
     this.image = image;
-    this.imageBadContrast = imageBadContrast;
-
     this.bodySet = bodySet;
+    
+    if (options !== undefined) {
+      this.badContrast = options.badContrast || false;
 
-    this.moodsImages = moodsImages;
+      this.imageBadContrast = options.imageBadContrast;
+
+      this.alignments = options.alignments ? options.alignments : { leftAlign: undefined, rightAlign: undefined, topAlign: undefined, bottomAlign: undefined, centerHorizontalAlign: undefined, centerVerticalAlign: undefined };
+    } else {
+      this.badContrast = false;
+      this.imageBadContrast = undefined;
+      this.alignments = { leftAlign: undefined, rightAlign: undefined, topAlign: undefined, bottomAlign: undefined, centerHorizontalAlign: undefined, centerVerticalAlign: undefined };
+    }
+
+    // this.moodsImages = moodsImages;
 
     // Object.values(bodysInfo).map((body, index) => {
     //   // Object.values(body.bodyparts).filter((bodypart) => { bodypart ===  })
@@ -130,6 +155,7 @@ export type bodyPartInfo = {
   moodBodyParts?: { [key: string]: BodyPart }[];
   onPress?: OnNodePress;
   ref: RefObject<any> | undefined; //  User defined
+  riveRef: RefObject<RiveRef> | undefined
 };
 
 export interface IBodyPartNodes {
@@ -174,18 +200,22 @@ export const bodySets: {
           1,
           undefined,
           [50, 50],
-          0,
-          true
+          0, {
+            badContrast: true,
+          }
         ),
         ref: undefined,
+        riveRef: undefined
       },
       rightarm: {
         bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], 0),
         ref: undefined,
+        riveRef: undefined
       },
       leftleg: {
         bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], 0),
         ref: undefined,
+        riveRef: undefined
       },
       rightleg: {
         bodyPart: new BodyPart(
@@ -194,19 +224,23 @@ export const bodySets: {
           1,
           undefined,
           [50, 50],
-          0,
-          true
+          0, {
+            badContrast: true,
+          }
         ),
         ref: undefined,
+        riveRef: undefined
       },
       eyes: {
         bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], 0),
         ref: undefined,
+        riveRef: undefined
       },
       head: undefined,
       mouth: {
         bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], 0),
         ref: undefined,
+        riveRef: undefined
       },
     },
     body: {
@@ -222,20 +256,26 @@ export const bodySets: {
   1: {
     bodyparts: {
       leftarm: {
-        bodyPart: new BodyPart([110, 86, 1], arm, -1, "Arm", [546, 413], 1),
+        // bodyPart: new BodyPart([110, 86, 1], arm, -1, "Arm", [546, 413], 1),
+        bodyPart: new BodyPart([30, 189.99 * 1.8, 1], "Arm", -1, "Arm", [265 * 1.8, 404 * 1.8], 1),
         ref: undefined,
+        riveRef: undefined
       },
       rightarm: {
-        bodyPart: new BodyPart([400, 86], arm, -1, "Arm", [546, 413], 1),
+        // bodyPart: new BodyPart([400, 86], "Arm", -1, "Arm", [546, 413], 1),
+        bodyPart: new BodyPart([30, 189.99 * 1.8], "Arm", -1, "Arm", [265 * 1.8, 404 * 1.8], 1),
         ref: undefined,
+        riveRef: undefined
       },
       leftleg: {
-        bodyPart: new BodyPart([45, 34, 1], foot, 0, "Leg", [144, 47], 1),
+        bodyPart: new BodyPart([45, 34], foot, 0, "Leg", [144, 47], 1),
         ref: undefined,
+        riveRef: undefined
       },
       rightleg: {
         bodyPart: new BodyPart([45, 34], foot, 0, "Leg", [144, 47], 1),
         ref: undefined,
+        riveRef: undefined
       },
       eyes: {
         bodyPart: new BodyPart(
@@ -245,30 +285,46 @@ export const bodySets: {
           "Eyes",
           [1000, 1000, 0.33],
           1,
-          true, undefined, [
-            { "sleeping": eyesSleeping },
-            { "happy": eyesHappy },
-            { "blinking": eyesSleeping }
-          ]),
+          {
+            badContrast: true,
+            alignments: { centerHorizontalAlign: true }
+          }
+        ),
         ref: undefined,
+        riveRef: undefined
       },
       head: undefined,
       mouth: {
+        // bodyPart: new BodyPart(
+        //   [25, 25],
+        //   mouth,
+        //   2,
+        //   "Mouth",
+        //   [375, 144, 0.85],
+        //   1, undefined, undefined, 
+        //   // [
+        //   //   { "sad": mouthSad },
+        //   //   { "happy": mouthHappy },
+        //   // ]
+        // ),
+        // moodBodyParts: [
+        //   { "mouthopen": new BodyPart([-50, -20], mouthOpen, 2, "Mouth", [199, 115, 1.8], 1) }
+        // ],
         bodyPart: new BodyPart(
-          [25, 25],
-          mouth,
-          2,
+          [93, 60],
           "Mouth",
-          [375, 144, 0.85],
-          1, undefined, undefined, [
-            { "sad": mouthSad },
-            { "happy": mouthHappy },
-          ]
+          3,
+          "Mouth",
+          [188 * 2, 165 * 2],
+          1,
+          {
+            alignments: {
+              centerHorizontalAlign: true
+            }
+          }
         ),
-        moodBodyParts: [
-          { "mouthopen": new BodyPart([-50, -20], mouthOpen, 2, "Mouth", [199, 115, 1.8], 1) }
-        ],
         ref: undefined,
+        riveRef: undefined
       },
     },
     body: {
@@ -287,19 +343,23 @@ export const bodySets: {
         // bodyPart: new BodyPart([300, 86, 1], arm, 2, "Arm", [546, 413], 2),
         bodyPart: new BodyPart([110, 86, 1], arm, -1, "Arm", [546, 413], 1),
         ref: undefined,
+        riveRef: undefined
       },
       rightarm: {
         bodyPart: new BodyPart([200, 600, 1], arm2, -1, "Arm", [955, 984], 2),
         // bodyPart: new BodyPart([200, 600], arm2, -1, "Arm", [955, 984], 2),
         ref: undefined,
+        riveRef: undefined
       },
       leftleg: {
         bodyPart: new BodyPart([45, 34], foot, 0, "Leg", [144, 47], 2),
         ref: undefined,
+        riveRef: undefined
       },
       rightleg: {
         bodyPart: new BodyPart([45, 34, 1], foot, 0, "Leg", [144, 47], 2),
         ref: undefined,
+        riveRef: undefined
       },
       eyes: {
         bodyPart: new BodyPart(
@@ -308,14 +368,23 @@ export const bodySets: {
           2,
           "Eyes",
           [99*3, 95*3, 1.2],
-          2
+          2, {
+            alignments: { centerHorizontalAlign: true }
+          }
         ),
         ref: undefined,
+        riveRef: undefined
       },
       head: undefined,
       mouth: {
-        bodyPart: new BodyPart([170, 138], mouth, 2, "Mouth", [375, 144], 2, undefined, undefined, [{ "sad": mouthSad }]),
+        bodyPart: new BodyPart([170, 138], mouth, 2, "Mouth", [375, 144], 2, {
+          alignments: {
+            centerHorizontalAlign: true,
+          }
+        }
+        ),
         ref: undefined,
+        riveRef: undefined
       },
     },
     body: {
@@ -420,7 +489,7 @@ export class Body {
   nodes: IBodyNodes;
   width: number;
   height: number;
-  bodyImage: React.FC<SvgProps> | undefined;
+  bodyImage: string | React.FC<SvgProps> | undefined;
   transforms: ITransforms;
 
   constructor(
@@ -428,7 +497,7 @@ export class Body {
     nodes: IBodyNodes = emptyNodes,
     dimensions: Array<number>,
     transforms: ITransforms,
-    bodyImage: React.FC<SvgProps> | undefined
+    bodyImage: string | React.FC<SvgProps> | undefined
   ) {
     this.bodypartnodes = bodypartnodes;
     this.nodes = nodes;
@@ -531,3 +600,11 @@ export const AllFoods: IFood[] = [
 
 export const vw = (vw: number) => Dimensions.get("window").width * (vw / 100);
 export const vh = (vh: number) => Dimensions.get("window").height * (vh / 100);
+
+export function usePrevious(value: string) {
+  const ref = useRef<string>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}

@@ -149,8 +149,7 @@ export default function App() {
   const [ showAttributesBar, setShowAttributeBar ] = useState(true);
   const [ thumbucks, setThumbucks ] = useState(thumbucksInitial.thumbucks);
   const [ allFoods, setAllFoods ] = useState(allFoodsInitial.allFoods);
-
-
+  
   return (
     <MonsterProvider>
       <MoodContext.Provider value={{mood, setMood}}>

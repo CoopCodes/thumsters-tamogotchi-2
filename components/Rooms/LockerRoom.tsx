@@ -88,6 +88,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
               newValue: {
                 bodyPart: bodyPart,
                 ref: monster.bodypartnodes[bodyPartName]?.ref,
+                riveRef : monster.bodypartnodes[bodyPartName]?.riveRef
               },
             },
           };
