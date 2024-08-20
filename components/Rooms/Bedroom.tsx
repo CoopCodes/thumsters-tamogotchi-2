@@ -123,7 +123,7 @@ function Bedroom({navigation}: {navigation: any}) {
                 if (!sleeping) {
                   AnimateTopView(0, -50)
                   setTimeout(() => {
-                    setMood("sleeping");
+                    setMood("Sleeping");
                     setTimeout(() => {
                       setSleeping(!sleeping);
                     }, 2000);

@@ -268,7 +268,8 @@ function Kitchen() {
 
                           foodTranslateX.value = x;
                           foodTranslateY.value = y;
-                          if (setMood) setMood("mouthopen")
+                          if (setMood) setMood("Open")
+                          console.log("AAAAH")
                         }}
                       >
                         <FoodImage />

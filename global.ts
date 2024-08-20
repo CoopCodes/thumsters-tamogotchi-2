@@ -197,9 +197,9 @@ export const bodySets: {
         bodyPart: new BodyPart(
           [25, 25, 2],
           node,
-          1,
-          undefined,
-          [50, 50],
+          5,
+          "Arm",
+          [150, 150],
           0, {
             badContrast: true,
           }
@@ -208,12 +208,12 @@ export const bodySets: {
         riveRef: undefined
       },
       rightarm: {
-        bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], 0),
+        bodyPart: new BodyPart([25, 25, 2], node, 5, "Arm", [150, 150], 0),
         ref: undefined,
         riveRef: undefined
       },
       leftleg: {
-        bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], 0),
+        bodyPart: new BodyPart([25, 25, 2], node, 5, "Leg", [150, 150], 0),
         ref: undefined,
         riveRef: undefined
       },
@@ -221,9 +221,9 @@ export const bodySets: {
         bodyPart: new BodyPart(
           [25, 25, 2],
           node,
-          1,
-          undefined,
-          [50, 50],
+          5,
+          "Leg",
+          [150, 150],
           0, {
             badContrast: true,
           }
@@ -232,13 +232,21 @@ export const bodySets: {
         riveRef: undefined
       },
       eyes: {
-        bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], 0),
+        bodyPart: new BodyPart([0, 100], node, 5, "Eyes", [250, 250], 0,{
+          alignments: {
+            centerHorizontalAlign: true,
+          }
+        }),
         ref: undefined,
         riveRef: undefined
       },
       head: undefined,
       mouth: {
-        bodyPart: new BodyPart([25, 25, 2], node, 1, undefined, [50, 50], 0),
+        bodyPart: new BodyPart([0, 0], node, 5, "Mouth", [250, 250], 0, {
+          alignments: {
+            centerHorizontalAlign: true,
+          }
+        }),
         ref: undefined,
         riveRef: undefined
       },
@@ -280,7 +288,7 @@ export const bodySets: {
       eyes: {
         bodyPart: new BodyPart(
           [500, 500],
-          eyes,
+          "Eye",
           2,
           "Eyes",
           [1000, 1000, 0.33],
@@ -311,11 +319,11 @@ export const bodySets: {
         //   { "mouthopen": new BodyPart([-50, -20], mouthOpen, 2, "Mouth", [199, 115, 1.8], 1) }
         // ],
         bodyPart: new BodyPart(
-          [93, 60],
+          [93, 80],
           "Mouth",
           3,
           "Mouth",
-          [188 * 2, 165 * 2],
+          [188 * 2, 133 * 2],
           1,
           {
             alignments: {
@@ -439,7 +447,7 @@ Object.values(bodySets).forEach((bodyInfo, index) => {
   for (const bodyPartKey in bodyInfo.bodyparts) {
     const bodyPartInfo =
       bodyInfo.bodyparts[bodyPartKey as keyof IBodyPartNodes];
-    if (bodyPartInfo !== undefined) {
+    if (bodyPartInfo !== undefined && index !== 0) {
       // bodyPartInfo might be undefined
       allBodyParts.push({
         key: ``,
@@ -601,10 +609,16 @@ export const AllFoods: IFood[] = [
 export const vw = (vw: number) => Dimensions.get("window").width * (vw / 100);
 export const vh = (vh: number) => Dimensions.get("window").height * (vh / 100);
 
-export function usePrevious(value: string) {
-  const ref = useRef<string>();
+export function usePrevious(value: any) {
+  const ref = useRef<any>();
   useEffect(() => {
     ref.current = value;
   });
   return ref.current;
+}
+
+export type bodyPartCategoriesSide = "eyes" | "head" | "leftarm" | "leftleg" | "mouth" | "rightarm" | "rightleg";
+
+export function isBodyPartCategorySide(value: string): value is bodyPartCategoriesSide {
+  return ["eyes", "head", "leftarm", "leftleg", "mouth", "rightarm", "rightleg"].includes(value);
 }

@@ -226,8 +226,9 @@ const Monster = ({ monsterBody, scaleFactor = 0.3, state = "", perk = undefined 
 
   const [stateMachines, setStateMachines] = useState<string[]>([]);
   const stateMachinesStatic = {
-    "Mouth": ["mouthopen"],
-    "Arm": ["happy", "sad"]
+    "Mouth": ["Open"],
+    "Eye": ["Sleeping"],
+    "Arm": ["Happy", "Sad"]
   }
 
   const prevMood = usePrevious(mood);
@@ -293,6 +294,12 @@ const Monster = ({ monsterBody, scaleFactor = 0.3, state = "", perk = undefined 
   const [containerHeight, setContainerHeight] = useState(0);
 
   let containerHeightOriginal: number = 0;
+
+  // eyesRiveRef.current?.setInputState(
+  //   "Eyes",
+  //   "Sleeping",
+  //   true
+  // );
 
   return (
     <View style={[styles.container, { bottom: 10 }]} onLayout={(event) => {
@@ -421,6 +428,8 @@ const Monster = ({ monsterBody, scaleFactor = 0.3, state = "", perk = undefined 
                       resourceName="body1"
                       artboardName={BodyPartImage}
                       stateMachineName={bodypart.bodyPart.category}
+                      autoplay
+                      animationName={mood === "" ? "Idle" : ""}
                     />
                   )}
                 </View>
