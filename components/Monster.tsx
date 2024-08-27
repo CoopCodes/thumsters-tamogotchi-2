@@ -227,7 +227,7 @@ const Monster = ({ monsterBody, scaleFactor = 0.3, state = "", perk = undefined 
   const [stateMachines, setStateMachines] = useState<string[]>([]);
   const stateMachinesStatic = {
     "Mouth": ["Open"],
-    "Eye": ["Sleeping"],
+    "Eyes": ["Sleeping"],
     "Arm": ["Happy", "Sad"]
   }
 
@@ -247,7 +247,6 @@ const Monster = ({ monsterBody, scaleFactor = 0.3, state = "", perk = undefined 
           Object.keys(stateMachinesStatic).includes(bodypart.bodyPart.category) &&
           Object.values(stateMachinesStatic)[Object.keys(stateMachinesStatic).indexOf(bodypart.bodyPart.category)].includes(mood)
         ) {
-          // console.log(bodypart.bodyPart.category, "  ", stateMachinesStatic[stateMachinesStatic.indexOf(bodypart.bodyPart.category)]);
           mood.split(" ").map((m: string) => {
             if (bodypart.bodyPart.category !== undefined)
               bodypart.riveRef?.current?.setInputState(
@@ -390,7 +389,9 @@ const Monster = ({ monsterBody, scaleFactor = 0.3, state = "", perk = undefined 
             //     onPress: bodypart.onPress,
             //     ref: bodypart.ref
             //   }
-            // }
+            // }    
+
+            if (bodypart.bodyPart === undefined) return;
 
             BodyPartImage = bodypart.bodyPart.image;
             

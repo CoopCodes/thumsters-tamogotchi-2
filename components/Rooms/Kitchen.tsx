@@ -259,7 +259,7 @@ function Kitchen() {
                           foodPressed.value = true;
                           const [x, y] = [
                             e.nativeEvent.pageX - 60,
-                            e.nativeEvent.pageY - 175,
+                            e.nativeEvent.pageY - 50,
                           ];
 
                           setSelectedFood(item.name);
@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   renderedFoodContainer: {
-    transformOrigin: "50%",
+    // transformOrigin: "50% 50%",
     position: "absolute",
     top: 0,
     left: 0,

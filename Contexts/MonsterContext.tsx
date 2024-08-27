@@ -29,7 +29,7 @@ export type monsterAction = {
 
 type monsterInformation = {
   monster: Body;
-  monsterDispatch: Dispatch<monsterAction> | undefined;
+  monsterDispatch: Dispatch<monsterAction | undefined> | undefined;
 };
 
 const initial: monsterInformation = {
@@ -44,7 +44,8 @@ interface MonsterContextProps {
 }
 
 export const MonsterProvider = ({ children }: MonsterContextProps) => {
-  const monsterReducer = (state: Body, action: monsterAction) => {
+  const monsterReducer = (state: Body, action: monsterAction | undefined) => {
+    if (action === undefined) return state;
     if (action.bodyParts) state.bodypartnodes = action.bodyParts;
     if (action.bodyImage) state.bodyImage = action.bodyImage;
     else state.bodyImage = state.bodyImage;
@@ -54,7 +55,7 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
       // x would be leftarm, righarm, etc...
       Object.keys(state.bodypartnodes).map((x: string, index: number) => {
         // Checking if the passed in bodypart to change is on the body
-        // if bodyppart is enetered bodypart, then will set i to index
+        // if bodypart is the entered bodypart, then will set i to index
         if (x === action.bodyPartToChange?.bodyPartName) i = index;
       });
 
@@ -63,6 +64,8 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
         const bodypartnode = action.bodyPartToChange
           ?.bodyPartName as BodyPartNodes;
         state.bodypartnodes[bodypartnode] = action.bodyPartToChange.newValue;
+        // console.log(action.bodyPartToChange.newValue)
+        // console.log(state.bodypartnodes[bodypartnode])
         console.log("updating props");
 
         // This didn't do anything dunno why

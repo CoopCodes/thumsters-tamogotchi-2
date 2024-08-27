@@ -93,6 +93,8 @@ export class BodyPart {
 
   alignments: IAlignments;
 
+  // id: string;
+
   // moodsImages: { [key: string]: React.FC<SvgProps> }[] | undefined;
 
   constructor(
@@ -121,6 +123,8 @@ export class BodyPart {
     this.aspectRatio = [this.width / this.height, this.height / this.width];
     this.image = image;
     this.bodySet = bodySet;
+
+    // this.id = Math.random().toString(36).substring(2, 10) + (Math.random() * 100000000).toString(36);
     
     if (options !== undefined) {
       this.badContrast = options.badContrast || false;
