@@ -14,14 +14,12 @@ import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
 import {
   BodyPart,
   AllBodyParts,
-  bodyPartInfo,
   categories,
   theme,
-  emptyFunction,
-  emptyBody,
   isBodyPartCategorySide,
   bodyPartCategoriesSide,
   usePrevious,
+  nodeBodyPart,
 } from "../../global";
 import { bodySets, Body, bodyImage } from "../../global";
 import Monster from "../Monster";
@@ -66,12 +64,9 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   //   }
   // }, []);
 
-  interface ListBodyPartType {
-    key: string;
-    bodyPart: BodyPart;
-  }
 
-  const [displayBodyParts, setDisplayBodyParts] = useState<ListBodyPartType[]>(
+
+  const [displayBodyParts, setDisplayBodyParts] = useState<BodyPart[]>(
     []
   );
 
@@ -79,8 +74,9 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   const [pressedBodyPart, setPressedBodyPart] = useState<BodyPart>();
   function changeBodyPart(bodyPart: BodyPart, side: "left" | "right" | "") {
     setPressedBodyPart(bodyPart);
-
-    if (pressedBodyPart !== null && bodyPart.category) {
+    
+    console.log(bodyPart)
+    if (bodyPart !== undefined && bodyPart.category) {
       const bodyPartNameTemp: string =
         side.toLowerCase() + bodyPart.category.toLowerCase();
 
@@ -88,28 +84,37 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
         // Checking was it is of type bodyPartCatogiersseafasdfafd
         const bodyPartName: bodyPartCategoriesSide = bodyPartNameTemp;
 
-        if (monster.bodypartnodes[bodyPartName] === undefined)
+        if (monster.Body.bodyparts[bodyPartName] === undefined)
           // If the body does not have this body part
           return;
 
         if (monsterDispatch) {
-          const action: monsterAction = {
-            bodyPartToChange: {
-              bodyPartName: bodyPartName, // Getting the bodypart name and side
-              newValue: {
-                bodyPart: bodyPart,
-                ref: monster.bodypartnodes[bodyPartName]?.ref,
-                riveRef: monster.bodypartnodes[bodyPartName]?.riveRef,
-              },
-            },
-          };
+          
+          let action: monsterAction = {}
+
+          if (bodyPart.category !== "Body") {
+            action = {
+              bodyPartToChange: {
+                bodyPartName: bodyPartName, // Getting the bodypart name and side
+                newValue: bodyPart
+              }
+            }
+          } else { // If it is a body
+            action = {
+              bodyArtboard: {
+                newValue: bodyPart.artboardName,
+                transitionInputName: "To " + bodyPart.bodySet
+              }
+            }
+          }
+          console.log(action);
           monsterDispatch(action);
         }
       }
     }
   }
 
-  function removeBodyPart(bodyPartToRemove: ListBodyPartType) {
+  function removeBodyPart(bodyPartToRemove: BodyPart) {
     setDisplayBodyParts(
       displayBodyParts.filter((bodyPart) => bodyPart !== bodyPartToRemove)
     );
@@ -121,28 +126,24 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   // Function when conditions are pressed
   const CategoryClick = (category: Categories) => {
     // Clearing the current array
-    let newBodyParts: ListBodyPartType[] = [];
+    let newBodyParts: BodyPart[] = [];
     // Getting all bodyparts, given the category,
     // and updating the displayBodyParts array.
-    let i = 0;
 
     AllBodyParts.filter(
-      (bodyPartToTest: ListBodyPartType) =>
-        bodyPartToTest.bodyPart.category === category
-    ).map((bodyPart: ListBodyPartType) => {
-      let modBodyPart = bodyPart;
-      modBodyPart.key = `${i}`;
+      (bodyPartToTest: BodyPart) =>
+        bodyPartToTest.category === category
+    ).map((bodyPart: BodyPart) => {
       newBodyParts.push(bodyPart);
-      i++;
     });
     setDisplayBodyParts(newBodyParts);
   };
 
   useEffect(() => {
-    CategoryClick("Mouth"); // Calling function to actually show the bodyparts
+    CategoryClick("Body"); // Calling function to actually show the bodyparts
   }, []);
 
-  const preChangeSelectedBodyPart = useRef<bodyPartInfo>();
+  const preChangeSelectedBodyPart = useRef<BodyPart>();
   // let preChangeSelectedBodyPart = monster;
 
   const back = () => {
@@ -150,7 +151,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
     navigation.goBack();
   };
 
-  const [activeCategoryIndex, setActiveCategoryIndex] = useState<number>(3);
+  const [activeCategoryIndex, setActiveCategoryIndex] = useState<number>(0);
 
   // ** Drag and drop stuff ** //
 
@@ -210,7 +211,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
 
       // Will be running only if the bodypart does not change
       if (isOverHitbox) {
-        runOnJS(droppedBodyPartInHitbox)(selectedBodyPart);
+        runOnJS(droppedBodyPartInHitbox)();
       }
 
       if (!isOverHitbox) {
@@ -242,10 +243,10 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   }, [isOverHitbox]);
 
   function enterHitbox() {
-    if (monsterDispatch)
-      monsterDispatch(replaceSelectedBodyPart(false, selectedBodyPart))
+    // if (monsterDispatch)
+      // monsterDispatch(replaceSelectedBodyPart(false, selectedBodyPart))
 
-    forceUpdate();
+    // forceUpdate();
   }
 
   function exitHitbox() {
@@ -255,11 +256,17 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
     forceUpdate();
   }
   
-  function droppedBodyPartInHitbox(currBodyPart?: BodyPart) {
-    if (!currBodyPart) return;
-    let bodyPartReflected: "left" | "right" | "" = (currBodyPart.category === undefined || ["Eyes", "Mouth", "Head", "Body"].includes(currBodyPart.category))? "" : (!(currBodyPart.node.length <= 3 ? false : true))? "right" : "left";
+  function droppedBodyPartInHitbox() {
+    console.log("Dropped Inside Hitbox")
+    let currBodyPart = selectedBodyPart;
 
-    changeBodyPart(currBodyPart, bodyPartReflected);
+    if (!currBodyPart) return;
+    let bodyPartReflected: "left" | "right" | "" = (currBodyPart.category === undefined || ["Eyes", "Mouth", "Head", "Body"].includes(currBodyPart.category))? "" : !currBodyPart.reflected? "right" : "left";
+
+    // changeBodyPart(currBodyPart, bodyPartReflected);
+
+    if (monsterDispatch)
+      monsterDispatch(replaceSelectedBodyPart(false, currBodyPart))
   }
 
   function droppedOutsideHitbox() {
@@ -273,14 +280,11 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
       // console.log(monster.bodypartnodes.mouth.bodyPart.aspectRatio)
 
       // monsterDispatch(replaceSelectedBodyPart(false, preChangeSelectedBodyPart.current?.bodyPart))
+      console.log("Dropped Outside Hitbox")
       monsterDispatch({
         bodyPartToChange: {
           bodyPartName: "mouth",
-          newValue: {
-            bodyPart: bodySets[0].bodyparts.mouth.bodyPart,
-            ref: monster.bodypartnodes["mouth"]?.ref,
-            riveRef: monster.bodypartnodes["mouth"]?.riveRef,
-          }
+          newValue: new BodyPart(...nodeBodyPart, preChangeSelectedBodyPart.current?.bodySet || "Node")
         }
       })
     }
@@ -295,14 +299,10 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   function onBegin() {
     // Change the bodyparts that are of the selectedBodypart type to a node.
 
-    console.log("AAAAAH OOOO AAAH HELP ME")
+    const values = Object.values(monster.Body.bodyparts);
 
-    // if (!selectedBodyPart) return;
-
-    const keys = Object.keys(monster.bodypartnodes);
-    const values = Object.values(monster.bodypartnodes);
-
-    const sbpIndex = values.findIndex((bodypart: bodyPartInfo) => (bodypart && bodypart.bodyPart.category === categories[activeCategoryIndex]));
+    // Selected Body Part Index
+    const sbpIndex = values.findIndex((bodypart: BodyPart) => (bodypart && bodypart.category === categories[activeCategoryIndex]));
 
     preChangeSelectedBodyPart.current = values[sbpIndex];
     // console.log(preChangeSelectedBodyPart.current?.bodyPart.aspectRatio);
@@ -315,103 +315,110 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
 
     // if (correspondantBodyPartIndex !== -1) {
 
-    const action = replaceSelectedBodyPart(true);
-    console.log(action)
+    // const action = replaceSelectedBodyPart(true);
+    // console.log(action)
       
-    if (monsterDispatch)  
-      monsterDispatch(action);
+    // if (monsterDispatch)  
+    //   monsterDispatch(action);
   }
 
+  
+  /**
+   * Given currBodyPart and reflected, it will find the correspoding bodypart on the current body (e.g. currBodyPart is a "leftarm", so it finds the corresponding "leftarm" on the CURRENT body). Then changes that corresponding bodypart to the currBodyPart, which is the selected body part.
+   */
   function replaceSelectedBodyPart(justNode: boolean, bodyPart?: BodyPart): monsterAction | undefined {
     // Filters all the bodyparts that are of the selectedBodypart type
-    let keys = Object.keys(monster.bodypartnodes);
-    // if (justNode === false) console.log(Object.values(monster.bodypartnodes), Object.keys(monster.bodypartnodes))
-
-    const filteredValues = Object.values(monster.bodypartnodes).filter(
-      (bodypart: bodyPartInfo, index: number) => {
-        // if (justNode === false) console.log(bodypart.bodyPart.category, categories[activeCategoryIndex])
-        if (
-          bodypart !== undefined &&
-          bodypart.bodyPart.category === categories[activeCategoryIndex]
-        ) {
-          return true;
-        } else {
-          keys.splice(index, 1, "");
-          return false;
-        }
-      }
-    );
-
-    const filteredKeys = keys.filter((key: string) => key !== "");
-
+    
     let action = {}
+    
+    let bodyPartKeys = Object.keys(monster.Body.bodyparts);
+    
+    if (categories[activeCategoryIndex] !== "Body") {
+      Object.values(monster.Body.bodyparts).map(
+        (bodypart: BodyPart, index: number) => {
+          if (!(
+            bodypart !== undefined &&
+            bodypart.category === categories[activeCategoryIndex]
+          )) {
+            bodyPartKeys.splice(index, 1, "");
+            return false;
+          }
+        }
+      );
+  
+      const filteredKeys = bodyPartKeys.filter((key: string) => key !== "");
 
-    filteredValues.map((_: bodyPartInfo, index: number) => {
-      const bodyPartNameTemp = filteredKeys[index].toLowerCase();
-
+      console.log(filteredKeys);
+        
+      const bodyPartNameTemp = filteredKeys[0].toLowerCase();
+      
       if (!bodyPartNameTemp || !isBodyPartCategorySide(bodyPartNameTemp))
         return;
       
-      
       const bodyPartName: bodyPartCategoriesSide = bodyPartNameTemp;
 
-      if (monster.bodypartnodes[bodyPartName] === undefined) return;
-
-
+      console.log(monster.Body.bodyparts[bodyPartName]);
+  
+      if (monster.Body.bodyparts[bodyPartName] === undefined) return;
+            
       action = {
         bodyPartToChange: {
           bodyPartName: bodyPartName,
-          newValue: {
-            bodyPart: justNode ? 
-              bodySets[0].bodyparts[bodyPartName]?.bodyPart || bodySets[0].bodyparts.mouth.bodyPart 
-              : 
-              bodyPart,
-            ref: monster.bodypartnodes[bodyPartName]?.ref,
-            riveRef: monster.bodypartnodes[bodyPartName]?.riveRef,
-          },
+          newValue: justNode ? 
+            new BodyPart(categories[activeCategoryIndex], "Node", "Nodes") 
+            : bodyPart
         },
-      };
-    });
+      };            
+    } else {
+      if (!selectedBodyPart) return;
+
+      action = {
+        bodyArtboard: {
+          newValue: bodySets[selectedBodyPart?.bodySet].body.bodyArtboard,
+          transitionInputName: bodySets[selectedBodyPart?.bodySet].body.bodyTransitionInput,
+          bodyColor: bodySets[selectedBodyPart?.bodySet].body.bodyColor 
+        }
+      }
+    }
+    
+    console.log(JSON.stringify(action, null, 2))
     return action;
   }
 
   // ** End of drag and drop stuff ** //
 
+  const [color, setColor] = useState<string>("");
+
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
-        {displayBodyParts.map((bodypart: ListBodyPartType) => {
-          const Image = bodypart.bodyPart.image;
+        {displayBodyParts.map((bodypart: BodyPart) => {
+          const artboardName = bodypart.artboardName;
           return (
             <Animated.View
-              key={bodypart.key}
+              key={bodypart.id}
               style={[
                 styles.renderedBodyPartContainer,
                 animatedStyles,
                 {
                   opacity:
-                    selectedBodyPart &&
-                    selectedBodyPart.bodySet === bodypart.bodyPart.bodySet && selectedBodyPart.alignments === bodypart.bodyPart.alignments
+                    selectedBodyPart && selectedBodyPart.id === bodypart.id
                       ? 1
                       : 0,
                 },
               ]}
             >
-              {!(typeof Image === "string") ? (
-                <Image height={50} style={styles.renderedBodyPart} />
-              ) : (
-                <Rive
-                  style={{
-                    width: 50,
-                    height: 50,
-                  }}
-                  fit={Fit.Contain}
-                  resourceName="body1"
-                  artboardName={Image}
-                  autoplay={true}
-                  animationName="Idle"
-                  />
-              )}
+              <Rive
+                style={{
+                  width: bodypart.category === "Body" ? 200 : 50,
+                  height: bodypart.category === "Body" ? 200 : 50,
+                }}
+                fit={Fit.Contain}
+                resourceName="monster"
+                artboardName={artboardName}
+                autoplay={true}
+                animationName="Idle"
+                />
             </Animated.View>
           );
         })}
@@ -438,7 +445,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
             }}
             >
             {monster ? (
-              <Monster monsterBody={monster} scaleFactor={0.2} />
+              <Monster scaleFactor={0.2}/>
             ) : null}
           </View>
         </View>
@@ -473,13 +480,15 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
             style={styles.bodyPartList}
             data={displayBodyParts}
             horizontal={true}
-            keyExtractor={(item) => item.key}
+            keyExtractor={(item) => item.id}
             contentContainerStyle={{ alignItems: "flex-end" }}
             renderItem={({ item }) => {
+              if (item.transitionInputName === undefined || item.transitionInputName === "" || item.bodySet === "Nodes") return <></>
+
               return (
               <GestureDetector gesture={panBodyPart}>
                 <ListBodyPart
-                  bodypart={item.bodyPart}
+                  bodypart={item}
                   OnRemove={() => removeBodyPart(item)}
                   OnPressIn={(e) => {
                     bodyPartPressed.value = true;
@@ -487,7 +496,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
                       e.nativeEvent.pageX - 60,
                       e.nativeEvent.pageY - 60,
                     ];
-                    setSelectedBodyPart(item.bodyPart);
+                    setSelectedBodyPart(item);
                     setOnPressInfo({ x: x, y: y });
                     bodyPartTranslateX.value = x;
                     bodyPartTranslateY.value = y;
@@ -530,8 +539,6 @@ const styles = StyleSheet.create({
   },
   container: {
     height: "100%", // 109
-    backgroundColor: "blue",
-    // flex: ,
   },
   top: {
     position: "relative",
@@ -551,9 +558,9 @@ const styles = StyleSheet.create({
   },
   monster: {
     marginTop: "auto",
-    transform: [{ translateY: 70 }],
     height: Dimensions.get("window").height * 0.35,
-    resizeMode: "contain", // change as needed
+    width: "100%",
+    resizeMode: "contain",
     // backgroundColor: 'black',
   },
   bottom: {
@@ -611,3 +618,32 @@ export default LockerRoom;
 // >
 
 // </TouchableOpacity>
+
+// const filteredValues = Object.values(monster.Body.bodyparts).filter(
+//   (bodypart: BodyPart, index: number) => {
+//     // console.log(bodypart?.category, categories[activeCategoryIndex]);
+//     if (
+//       bodypart !== undefined &&
+//       bodypart.category === categories[activeCategoryIndex]
+//     ) {
+//       return true;
+//     } else {
+//       bodyPartKeys.splice(index, 1, "");
+//       return false;
+//     }
+//   }
+// );
+
+// const filteredValues = Object.values(monster.Body.bodyparts).filter(
+//   (bodypart: BodyPart, index: number) => {
+//     if (
+//       bodypart !== undefined &&
+//       bodypart.category === categories[activeCategoryIndex]
+//     ) {
+//       return true;
+//     } else {
+//       bodyPartKeys.splice(index, 1, "");
+//       return false;
+//     }
+//   }
+// );

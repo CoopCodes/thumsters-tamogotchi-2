@@ -88,7 +88,7 @@ function Bedroom({navigation}: {navigation: any}) {
         <Text style={[styles.title, { color: sleeping ? "white" : "#4D4752" }]}>Bedroom</Text>
         <Animated.View style={[styles.monster, monsterAnimatedStyle]}>
           {monster ? (
-            <Monster scaleFactor={0.3} monsterBody={monster} state={`
+            <Monster scaleFactor={0.3} state={`
               ${turned ? "turned" : ""}
               ${sleeping ? "sleeping" : ""}
               `} />

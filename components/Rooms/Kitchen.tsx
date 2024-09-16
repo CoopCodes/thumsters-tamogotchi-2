@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { RefObject, useCallback, useContext, useEffect, useState } from "react";
 import {
   View,
   Image,
@@ -11,7 +11,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { MonsterContext } from "../../Contexts/MonsterContext";
-import { IFood, foodCategories, theme } from "../../global";
+import { BodyPart, IFood, foodCategories, stateMachineName, theme } from "../../global";
 import Monster, { IPerk } from "../Monster";
 
 import clothesHanger from "../../assets/resources/images/ClothesHanger.svg";
@@ -38,6 +38,7 @@ import {
 } from "react-native-gesture-handler";
 import ThumbucksContext from "../../Contexts/ThumbucksContext";
 import AllFoodsContext from "../../Contexts/AllFoodsContext";
+import { RiveRef } from "rive-react-native";
 
 function Kitchen() {
   const { monster, monsterDispatch } = useContext(MonsterContext);
@@ -202,7 +203,7 @@ function Kitchen() {
               }}
             >
               {monster ? (
-                <Monster scaleFactor={0.3} monsterBody={monster} perk={perk} />
+                <Monster scaleFactor={0.3} perk={perk} />
               ) : null}
             </Animated.View>
             <View style={[styles.background]}>
@@ -268,8 +269,7 @@ function Kitchen() {
 
                           foodTranslateX.value = x;
                           foodTranslateY.value = y;
-                          if (setMood) setMood("Open")
-                          console.log("AAAAH")
+                          if (setMood) setMood("Eat")
                         }}
                       >
                         <FoodImage />
@@ -359,10 +359,10 @@ function Kitchen() {
 
 const styles = StyleSheet.create({
   monster: {
-    transform: [{ scale: 0.7 }, { translateY: 20 }],
+    height: Dimensions.get("window").height * 0.35,
     zIndex: 2,
     marginTop: "auto",
-    height: Dimensions.get("window").height * 0.35,
+    width: "100%",
     resizeMode: "contain",
     position: "relative",
     elevation: 100,

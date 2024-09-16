@@ -30,6 +30,7 @@ import Banana from "./assets/resources/images/Food/banana.svg";
 import { SvgProps } from "react-native-svg";
 import { Poppins_900Black } from "@expo-google-fonts/poppins";
 import { RiveRef } from "rive-react-native";
+import { MonsterInfo } from "./Contexts/MonsterContext";
 
 export const bodyImage = body;
 
@@ -62,56 +63,72 @@ export const theme: ITheme = {
 };
 
 // Usually a boolean, but if number specified, then will add an offset to the left/right/top/bottom/center, if undefined then will do nothing. If number 0, will be taken as undefined.
-export interface IAlignments { 
-  leftAlign?: boolean | number | undefined;
-  rightAlign?: boolean | number | undefined;
-  topAlign?: boolean | number | undefined;
-  bottomAlign?: boolean | number | undefined;
-  
-  centerHorizontalAlign?: boolean | number | undefined;
-  centerVerticalAlign?: boolean | number | undefined;
+export interface BodyPartOptions { 
+  colorInputs?: string[];
+  reflected?: boolean;
+  badContrast?: boolean;
 }
 
 // Types:
+type Categories = "Body" | "Head" | "Eyes" | "Mouth" | "Arm" | "Leg" | undefined;
 
 export class BodyPart {
-  category: "Body" | "Head" | "Eyes" | "Mouth" | "Arm" | "Leg" | undefined;
+  category: Categories;
+  bodySet: string; // What bodySet it belongs too, (one bodySet could be the harold)
+  artboardName: string;
+  colorInputs: string[] = [];
+  transitionInputName: string | undefined = undefined; // "Lips Mouth" for example
+  
+  reflected: boolean = false;
+  badContrast: boolean = false; // IF listed as a ListBodyPart: adds a white background to increase contrast.
 
-  badContrast: boolean; // IF listed as a ListBodyPart: adds a white background to increase contrast.
-
-  bodySet: number; // What bodySet it belongs too, (one bodySet could be the harold)
+  id: string;
 
 
   constructor(
-    category: "Body" | "Head" | "Eyes" | "Mouth" | "Arm" | "Leg" | undefined,
-    bodySet: number,
-    badContrast: boolean
+    category: Categories,
+    artboardName: string,
+    bodySet: string,
+    options: BodyPartOptions = {},
+    transitionInputName: string | undefined = undefined,
   ) {
     this.category = category;
-
     this.bodySet = bodySet;
+    this.transitionInputName = transitionInputName || "";
 
-    // this.id = Math.random().toString(36).substring(2, 10) + (Math.random() * 100000000).toString(36);
+    if (options) {
+      this.colorInputs = options.colorInputs || [];
+      this.reflected = options.reflected || false;
+      this.badContrast = options.badContrast || false;
+    }
+
+    this.artboardName = artboardName;
     
-    this.badContrast = badContrast || false;
+    this.id = makeid(6);
   }
 }
 
 export class Body {
-  bodypartnodes: IBodyPartNodes;
-  bodyArtboard: string
+  bodyparts: IBodyParts;
+  bodyArtboard: string;
+  bodyColor: string; // Changes all the bodyparts to this color
+  bodyTransitionInput: string;
 
   constructor(
-    bodypartnodes: IBodyPartNodes = emptyBodyPartNodes,
-    bodyArtboard: string
-  ) {
-    this.bodypartnodes = bodypartnodes;
+    bodyparts: IBodyParts = emptybodyparts,
+    bodyArtboard: string,
+    bodyColor: string,
+    bodyTransitionInput: string
+  ) { 
+    this.bodyparts = bodyparts;
     this.bodyArtboard = bodyArtboard;
+    this.bodyColor = bodyColor;
+    this.bodyTransitionInput = bodyTransitionInput;
   }
 }
 
 
-export interface IBodyPartNodes {
+export interface IBodyParts {
   leftarm: BodyPart;
   rightarm: BodyPart;
   leftleg: BodyPart;
@@ -121,41 +138,124 @@ export interface IBodyPartNodes {
   mouth: BodyPart;
 }
 
+export const moodInputs: string[] = [
+  "Happy",
+  "Sad",
+  "Eat",
+]
+
+export const stateMachineName = "State Machine 1";
+
+
+export type Colors = "Pink" | "Yellow" | "Green" | "Blue" | "Brown"
+
+const standardColors = [
+  "Pink",
+  "Yellow",
+  "Green",
+  "Blue",
+  "Brown",
+];
+
+//   colorInputs?: string[] = [];
+//   transitionInputName?: string = undefined;
+//   reflected?: boolean = undefined;
+//   badContrast?: boolean = undefined;
+
+export const nodeBodyPart: [Categories, string] = [undefined, "Node"]
+
+// If multiple bodysets are using the same bodypart
+const defaultMouth: [Categories, string] = ["Mouth", "Mouth"]
+const singleEye: [Categories, string] = ["Eyes", "Eye"]
+
+
 export const bodySets: {
-  [key: string]: { bodyparts: IBodyPartNodes };
+  [key: string]: { body: Body };
 } = {
-  "Harold": {
-    bodyparts: {
-      leftarm: ,
-      rightarm: ,
-      leftleg: ,
-      rightleg: ,
-      eyes: ,
+  "Nodes": {
+    body: new Body({
+      leftarm: new BodyPart("Arm", "Node", "Nodes"),
+      rightarm: new BodyPart("Arm", "Node", "Nodes"),
+      leftleg: new BodyPart("Leg", "Node", "Nodes"),
+      rightleg: new BodyPart("Leg", "Node", "Nodes"),
+      eyes: new BodyPart("Eyes", "Node", "Nodes"),
       head: undefined,
-      mouth: ,
-    },
+      mouth: new BodyPart("Eyes", "Node", "Nodes"),
+    }, "Nodes Torso", "", "")
+  },
+  "Harold": {
+    body: new Body({
+      leftarm: new BodyPart("Arm", "Harold Arm", "Harold"),
+      rightarm: new BodyPart("Arm", "Harold Arm", "Harold", { reflected: true }),
+      leftleg: new BodyPart("Leg", "Harold Leg", "Harold"),
+      rightleg: new BodyPart("Leg", "Harold Leg", "Harold", { reflected: true }),
+      eyes: new BodyPart(...singleEye, "Harold", {
+        colorInputs: standardColors,
+      }, "Default Eye"),
+      head: undefined,
+      mouth: new BodyPart(...defaultMouth, "Harold", {
+        colorInputs: standardColors,
+      }, "Default Mouth"),
+    }, "Harold Torso", "Blue", "")
   },
   "Toddler": {
-    bodyparts: {
-      leftarm: ,
-      rightarm: ,
-      leftleg: ,
-      rightleg: ,
-      eyes: ,
+    body: new Body({
+      leftarm: new BodyPart("Arm", "Harold Arm", "Toddler"),
+      rightarm: new BodyPart("Arm", "Harold Arm", "Toddler", { reflected: true }),
+      leftleg: new BodyPart("Leg", "Harold Leg", "Toddler"),
+      rightleg: new BodyPart("Leg", "Harold Leg", "Toddler", { reflected: true }),
+      eyes: new BodyPart(...singleEye, "Toddler", {
+        colorInputs: standardColors,
+      }, "Default Eye"),
       head: undefined,
-      mouth: ,
-    },
+      mouth: new BodyPart("Mouth", "Many Teeth Mouth", "Toddler", {
+        colorInputs: standardColors,
+      }, "Many Teeth Mouth"),    }, "Yellow Todler Torso", "Yellow", "To Todler")
   },
-  "AAAH": {
-    bodyparts: {
-      leftarm: ,
-      rightarm: ,
-      leftleg: ,
-      rightleg: ,
-      eyes: ,
+  "Pinky": {
+    body: new Body({
+      leftarm: new BodyPart("Arm", "Harold Arm", "Pinky"),
+      rightarm: new BodyPart("Arm", "Harold Arm", "Pinky", { reflected: true }),
+      leftleg: new BodyPart("Leg", "Harold Leg", "Pinky"),
+      rightleg: new BodyPart("Leg", "Harold Leg", "Pinky", { reflected: true }),
+      eyes: new BodyPart("Eyes", "Double Eyes", "Pinky", {
+        colorInputs: standardColors,
+      }, "Double Eyes"),
       head: undefined,
-      mouth: ,
-    },
+      mouth: new BodyPart("Mouth", "Double Teeth Mouth", "Pinky", {
+        colorInputs: standardColors,
+      }, "Double Teeth Mouth"),    
+    }, "Pinky Torso", "Pink", "To Pinky")
+  },
+  "Fat Blue": {
+    body: new Body({
+      leftarm: new BodyPart("Arm", "Harold Arm", "Fat Blue"),
+      rightarm: new BodyPart("Arm", "Harold Arm", "Fat Blue", { reflected: true }),
+      leftleg: new BodyPart("Leg", "Harold Leg", "Fat Blue"),
+      rightleg: new BodyPart("Leg", "Harold Leg", "Fat Blue", { reflected: true }),
+      eyes: new BodyPart("Eyes", "Big Glasses", "Fat Blue", {
+        colorInputs: standardColors,
+      }, "Big Glasses"),
+      head: undefined,
+      mouth: new BodyPart("Mouth", "Lips Mouth", "Fat Blue", {
+        colorInputs: standardColors,
+      }, "Lips Mouth"),    
+    }, "Fat Blue Torso", "Blue", "To Fat Blue")
+  },
+  "Long Blue": {
+    body: new Body({
+      leftarm: new BodyPart("Arm", "Long Blue Arm", "Long Blue"),
+      rightarm: new BodyPart("Arm", "Long Blue Arm", "Long Blue", { reflected: true }),
+      leftleg: new BodyPart("Leg", "Long Blue Leg", "Long Blue"),
+      rightleg: new BodyPart("Leg", "Long Blue Leg", "Long Blue", { reflected: true }),
+      eyes: new BodyPart("Eyes", "EyeBrow Eyes", "Long Blue", {
+        colorInputs: standardColors,
+      }, "EyeBrow Eyes"),
+      head: undefined,
+      mouth: new BodyPart(...defaultMouth, "Long Blue", {
+        colorInputs: standardColors,
+      }, "Default Mouth"),   
+    }, "Long Blue Torso", "Blue", "To Long Blue")
   },
 };
 
@@ -171,45 +271,25 @@ export function useLoadFonts() {
     }, [loaded, error]);
 }
 
-interface ListBodyPartType {
-  key: string;
-  bodyPart: BodyPart;
-}
 
-const allBodyParts: ListBodyPartType[] = [];
+const allBodyParts: BodyPart[] = [];
 
-// Traverse through each body
-Object.values(bodySets).forEach((bodyInfo, index) => {
-  // Traverse through bodyparts of each body
-  for (const bodyPartKey in bodyInfo.bodyparts) {
-    const bodyPartInfo =
-      bodyInfo.bodyparts[bodyPartKey as keyof IBodyPartNodes];
-    if (bodyPartInfo !== undefined && index !== 0) {
-      // bodyPartInfo might be undefined
-      allBodyParts.push({
-        key: ``,
-        bodyPart: bodyPartInfo.bodyPart,
-      });
-    }
-  }
-});
+let keys = Object.keys(bodySets)
 
-allBodyParts.map((part, index) => {
-  part.key = `${index}`;
+Object.values(bodySets).forEach((body, i) => {
+  Object.values(body.body.bodyparts).map((bodyPart: BodyPart) => {
+    if (bodyPart !== undefined)
+      allBodyParts.push(bodyPart)
+  });
+
+  // Creating the body as a bodypart
+  allBodyParts.push(new BodyPart("Body", body.body.bodyArtboard, keys[i], {}, body.body.bodyTransitionInput));
 });
 
 export const AllBodyParts = allBodyParts;
 
 // Default value for nodes in a Body class, if parameter is undefined
-const emptyBodyPartNodes: IBodyPartNodes = {
-  leftarm: bodySets[1].bodyparts.leftarm,
-  rightarm: bodySets[1].bodyparts.rightarm,
-  leftleg: bodySets[1].bodyparts.leftleg,
-  rightleg: bodySets[1].bodyparts.rightleg,
-  eyes: bodySets[1].bodyparts.eyes,
-  head: bodySets[1].bodyparts.head,
-  mouth: bodySets[1].bodyparts.mouth,
-};
+const emptybodyparts: IBodyParts = bodySets["Nodes"].body.bodyparts;
 
 export interface ITransforms {
   x: number;
@@ -221,13 +301,11 @@ export const nodeRangeThreshold = 0;
 
 export type OnRemoveType = (bodyPartToRemove: BodyPart) => void;
 
-// export const emptyBody: Body = new Body(
-//   undefined,
-//   undefined,
-//   [0, 0],
-//   { x: 0, y: 0, scale: 1 },
-//   undefined
-// );
+export const emptyBody: MonsterInfo = {
+  Body: bodySets["Nodes"].body,
+  RiveRef: undefined,
+}
+
 
 export type emptyFunction = () => void;
 
@@ -257,7 +335,7 @@ export const AllFoods: IFood[] = [
     price: 1,
     category: "Misc",
     image: Egg,
-    numOwned: 0,
+    numOwned: 2,
   },
   {
     name: "Cheese",
@@ -308,4 +386,16 @@ export type bodyPartCategoriesSide = "eyes" | "head" | "leftarm" | "leftleg" | "
 
 export function isBodyPartCategorySide(value: string): value is bodyPartCategoriesSide {
   return ["eyes", "head", "leftarm", "leftleg", "mouth", "rightarm", "rightleg"].includes(value);
+}
+
+function makeid(length: number) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
 }

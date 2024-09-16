@@ -4,37 +4,53 @@ import {
   Ref,
   Dispatch,
   ReactNode,
-  useState,
   useReducer,
+  RefObject,
+  useContext,
+  useEffect,
+  useState
 } from "react";
 import { Image, View } from "react-native";
 import {
-  IBodyPartNodes,
+  IBodyParts,
   Body,
-  OnNodePress,
-  bodyPartInfo,
   emptyBody,
   bodySets,
   bodyImage,
+  BodyPart,
+  stateMachineName,
+  Colors,
 } from "../global";
 import { SvgProps } from "react-native-svg";
+import Rive, { RiveRef } from "rive-react-native";
+import ColorContext from "./ColorContext";
+
+export interface MonsterInfo {
+  Body: Body;
+  RiveRef: Ref<RiveRef> | undefined;
+}
 
 export type monsterAction = {
-  bodyParts?: IBodyPartNodes | undefined;
-  bodyPartToChange?: { bodyPartName: string; newValue: bodyPartInfo };
-  bodyImage?: React.FC<SvgProps> | undefined;
+  bodyParts?: IBodyParts | undefined;
+  bodyPartToChange?: { bodyPartName: string; newValue: BodyPart };
+  bodyArtboard?: { newValue: string, transitionInputName: string, bodyColor: string };
+  ref?: Ref<RiveRef> | undefined;
   body?: Body | undefined;
-  OnNodePress?: OnNodePress;
 };
 
 type monsterInformation = {
-  monster: Body;
+  monster: MonsterInfo;
   monsterDispatch: Dispatch<monsterAction | undefined> | undefined;
+  monsterUpdated: boolean;
+  setMonsterUpdated: Dispatch<React.SetStateAction<boolean>>
 };
 
 const initial: monsterInformation = {
   monster: emptyBody,
   monsterDispatch: undefined,
+  monsterUpdated: false,
+  setMonsterUpdated: () => {},
+
 };
 
 export const MonsterContext = createContext<monsterInformation>(initial);
@@ -43,83 +59,97 @@ interface MonsterContextProps {
   children: ReactNode;
 }
 
+
 export const MonsterProvider = ({ children }: MonsterContextProps) => {
-  const monsterReducer = (state: Body, action: monsterAction | undefined) => {
+  const { color, setColor } = useContext(ColorContext);
+
+  const [monsterUpdated, setMonsterUpdated] = useState(false);
+
+  const monsterReducer = (state: MonsterInfo, action: monsterAction | undefined) => {
     if (action === undefined) return state;
-    if (action.bodyParts) state.bodypartnodes = action.bodyParts;
-    if (action.bodyImage) state.bodyImage = action.bodyImage;
-    else state.bodyImage = state.bodyImage;
+    if (action.bodyParts) state.Body.bodyparts = action.bodyParts;
+    if (action.ref) {
+      state.RiveRef = action.ref
+    }
+
+    if (action.bodyArtboard) {
+      state.Body.bodyArtboard = action.bodyArtboard.newValue;
+      state.Body.bodyTransitionInput = action.bodyArtboard.transitionInputName;
+      state.Body.bodyColor = action.bodyArtboard.bodyColor;
+      
+
+      (state.RiveRef as RefObject<RiveRef>).current?.setInputState(stateMachineName,
+        action.bodyArtboard.transitionInputName, true);
+        
+      setTimeout(() => {
+        // Update color
+        console.log("COlor:", action.bodyArtboard?.bodyColor);
+        if (setColor)
+          setColor(action.bodyArtboard?.bodyColor as Colors);
+      });
+    }
 
     if (action.bodyPartToChange) {
+      const bodypartToChange = action.bodyPartToChange;
+
       let i;
       // x would be leftarm, righarm, etc...
-      Object.keys(state.bodypartnodes).map((x: string, index: number) => {
+      Object.keys(state.Body.bodyparts).map((x: string, index: number) => {
         // Checking if the passed in bodypart to change is on the body
         // if bodypart is the entered bodypart, then will set i to index
-        if (x === action.bodyPartToChange?.bodyPartName) i = index;
+        if (x === bodypartToChange?.bodyPartName) i = index;
+        // i is the index of the bodypart to change, in the keys of IBodyParts, for example, leftarm would be i=0.
       });
 
       if (i) {
-        type BodyPartNodes = keyof typeof state.bodypartnodes;
-        const bodypartnode = action.bodyPartToChange
-          ?.bodyPartName as BodyPartNodes;
-        state.bodypartnodes[bodypartnode] = action.bodyPartToChange.newValue;
-        // console.log(action.bodyPartToChange.newValue)
-        // console.log(state.bodypartnodes[bodypartnode])
-        console.log("updating props");
 
-        // This didn't do anything dunno why
-        // state.bodypartnodes[bodypartnode]!.ref!.current.setNativeProps({
-        //   styles: updateNativeProps(
-        //     state.bodypartnodes[bodypartnode]!,
-        //     state.bodypartnodes[bodypartnode]!.ref!,
-        //     state.bodypartnodes[bodypartnode]!.bodyPart.node !== undefined
-        //       ? state.bodypartnodes[bodypartnode]!.bodyPart.node!
-        //       : [0, 0],
-        //     0.3,
-        //   ),
-        // });
+        // This line is getting the type of the keys of the state.Body.bodyparts object.
+        // For example, if the object is { leftarm: BodyPart, rightarm: BodyPart, etc... }
+        // Then the type would be 'leftarm' | 'rightarm' | etc...
+        type BodyPartNodes = keyof typeof state.Body.bodyparts;
+
+        const bodyPartToChange = bodypartToChange;
+
+        const bodypartnode = bodyPartToChange.bodyPartName as BodyPartNodes;
+        
+        console.log("Changing", state.Body.bodyparts[bodypartnode]?.artboardName, "to", bodyPartToChange.newValue.artboardName);
+
+        state.Body.bodyparts[bodypartnode] = bodyPartToChange.newValue;
+
+        // This will trigger a re-render, and thus update the Rive animation to be in sync with the new state.
+        
+        // Set color on the bodypart as the same as the current body
+
+        const colorInput = bodyPartToChange.newValue.colorInputs.find((c: string) => c === color) as Colors;
+
+
+        
+        (state.RiveRef as RefObject<RiveRef>)?.current?.setInputStateAtPath(
+          colorInput, // "Blue" for example
+          true,
+          bodypartToChange.newValue.artboardName // The path to the nested artboard
+        );
       }
     }
 
-    if (action.body) state = action.body;
-
-    if (action.OnNodePress) {
-      Object.values(state.bodypartnodes).map((bodypart: bodyPartInfo) => {
-        if (bodypart) bodypart.onPress = action.OnNodePress;
-      });
-    }
+    if (action.body) state.Body = action.body;
+    
+    setMonsterUpdated(true)
+    
     return state;
   };
 
   const [monster, monsterDispatch] = useReducer(
-    monsterReducer,
-    new Body(
-      {
-        leftarm: bodySets[1].bodyparts.leftarm,
-        rightarm: bodySets[1].bodyparts.rightarm,
-        leftleg: bodySets[1].bodyparts.leftleg,
-        rightleg: bodySets[1].bodyparts.rightleg,
-        eyes: bodySets[1].bodyparts.eyes,
-        head: undefined,
-        mouth: bodySets[1].bodyparts.mouth,
-      },
-      bodySets[1].body,
-      [757, 1200],
-      {
-        x: 0,
-        y: -200,
-        scale: 1.05,
-      },
-      bodyImage
-    )
+    monsterReducer, { Body: bodySets["Harold"].body, RiveRef: undefined }
   );
 
   return (
     <MonsterContext.Provider
       value={{
         monster: monster,
+        monsterUpdated: monsterUpdated,
         monsterDispatch: monsterDispatch,
+        setMonsterUpdated: setMonsterUpdated
       }}
     >
       {children}

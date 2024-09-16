@@ -17,77 +17,46 @@ interface Props {
 }
 
 const ListBodyPart = ({ bodypart, OnPressIn }: Props) => {
-  // console.log([
-  //   100 * bodypart.aspectRatio[0],
-  //   100 * bodypart.aspectRatio[1],
-  // ])
-
-  let bodyPartReflected: "left" | "right" | "" = (bodypart.category === undefined || ["Eyes", "Mouth", "Head", "Body"].includes(bodypart.category))? "" : (!(bodypart.node.length <= 3 ? false : true))? "right" : "left";
+  let bodyPartReflected: "left" | "right" | "" = (bodypart.category === undefined || ["Eyes", "Mouth", "Head", "Body"].includes(bodypart.category))? "" : !bodypart.reflected ? "right" : "left";
 
   return (
     <Pressable
       style={[
         styles.parent,
         {
-          height: 100 * bodypart.aspectRatio[1],
-        },
+          backgroundColor: bodypart.badContrast ? "white" : "transparent",
+        }
       ]}
       onPressIn={(e: GestureResponderEvent) => {
         OnPressIn(e)
       }}
     >
-      {/* Checks whether it is on the left or right */}
-      {(typeof bodypart.image === "string") ? (
-        <Rive
-          style={
-            {
-              width: vw(33),
-              height: "100%",
-              transform: [{ scaleX: bodypart.node.length >= 3 ? -1 : 1 }],
-              
-              position: 'relative',
-              zIndex: 10,
-              overflow: "visible",
-              top: 'auto',
-              bottom: 0,
-              pointerEvents: "none" // DO NOT REMOVE, TRIBULATIONS WILL OCCUR
-            }
+      <Rive
+        style={
+          {
+            width: vw(33),
+            height: "100%",
+            transform: [{ scaleX: bodypart.reflected ? -1 : 1 }],
+            
+            position: 'relative',
+            zIndex: 10,
+            overflow: "visible",
+            top: 'auto',
+            bottom: 0,
+            pointerEvents: "none" // DO NOT REMOVE, YOU WILL BE ANNIHILATED
           }
-          fit={Fit.Contain}
-          resourceName="body1"
-          artboardName={bodypart.image}
-          autoplay={false}
-        />
-        // <Node
-        //   style={[
-        //     {
-        //       width: vw(33),
-        //       height: "100%",
-        //       transform: [{ scaleX: bodypart.node.length >= 3 ? -1 : 1 }],
-        //     },
-        //     styles.image,
-        //   ]}
-        // />
-        
-      ) : (
-        <bodypart.image
-          style={[
-            {
-              width: vw(33),
-              height: "100%",
-              transform: [{ scaleX: bodypart.node.length >= 3 ? -1 : 1 }],
-            },
-            styles.image,
-          ]}
-        />
-      )}
+        }
+        fit={Fit.Contain}
+        resourceName="monster"
+        artboardName={bodypart.artboardName}
+        autoplay={false}
+      />
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   parent: {
-    backgroundColor: "white",
     borderRadius: 20,
     marginRight: 20,
     overflow: "visible",

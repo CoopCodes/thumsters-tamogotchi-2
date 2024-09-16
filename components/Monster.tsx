@@ -1,11 +1,14 @@
-import React, { ReactHTMLElement, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { ReactHTMLElement, RefObject, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { View, Image, StyleSheet, Text, LayoutChangeEvent } from "react-native";
-import { Body, BodyPart, bodySets, categories, usePrevious } from "../global";
+import { Body, BodyPart, bodySets, categories, moodInputs, stateMachineName, usePrevious } from "../global";
 import { SvgProps } from "react-native-svg";
 import MoodContext from "../Contexts/MoodContext";
 import Node from "../assets/resources/Monsters/1/Nodenode.svg";
 import Animated, { Easing, Keyframe, runOnJS, runOnUI, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import Rive, { Fit, RiveRef } from "rive-react-native";
+import ColorContext from "../Contexts/ColorContext";
+import { MonsterContext, MonsterInfo } from "../Contexts/MonsterContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 // Displays a +1 above the monster
@@ -17,14 +20,18 @@ export interface IPerk {
 }
 
 interface Props {
-  monsterBody: Body;
   scaleFactor: number; // Changes in LockerRoom
   state?: string;
   perk?: IPerk;
 }
 
-const Monster = ({ monsterBody, scaleFactor = 0.3, state = "", perk = undefined }: Props) => {
+const Monster = ({ scaleFactor = 0.3, state = "", perk = undefined }: Props) => {
+
+  const { color, setColor } = useContext(ColorContext);
+
   const { mood, setMood } = useContext(MoodContext);
+
+  const { monster, monsterDispatch, monsterUpdated, setMonsterUpdated} = useContext(MonsterContext);
 
   const perkStartKeyframe = new Keyframe({
     0: {
@@ -51,61 +58,114 @@ const Monster = ({ monsterBody, scaleFactor = 0.3, state = "", perk = undefined 
 
   const prevMood = usePrevious(mood);
 
+  const MonsterRef = useRef<RiveRef>(null);
+
   useEffect(() => {
-    if (mood !== "") {
-      Object.values(monsterBody.bodypartnodes).map((bodypart: bodyPartInfo, index: number) => {
+    if (monsterDispatch)
+      monsterDispatch({ ref: MonsterRef })
+  }, []);
+
+  const [updateVal, forceUpdate] = useReducer(x => x + 1, 0);
+
+  // * On re-render * // 
+
+  let toggle = useRef(false);
+  
+  function syncBodyParts() {
+    setTimeout(() => {
+      // console.log("syncing bodyparts")
+      if (MonsterRef === undefined || MonsterRef.current === null) return;
+
+      Object.values(monster.Body.bodyparts).map((bodypart: BodyPart) => {
+        if (bodypart === undefined) return;
+        
+        
+        if (bodypart.transitionInputName === undefined || bodypart.transitionInputName === "") return;
+        
+        const inputName = bodypart.transitionInputName;
+        
+        // console.log("updating", bodypart.transitionInputName);
+
+        MonsterRef.current!.setInputState(
+          stateMachineName, 
+          inputName, 
+          true
+        ); // For bodyparts
+      });
+      
+      // console.log('Monster Body Sync', monster.Body.bodyTransitionInput);
+      
+      if (monster.Body.bodyTransitionInput === undefined || monster.Body.bodyTransitionInput === "") return;
+      
+      
+      MonsterRef.current!.setInputState(
+        stateMachineName, monster.Body.bodyTransitionInput, true
+      ); // For the body
+      
+      console.log('toggle.current', toggle.current)
+      if (toggle.current === false) {
+        forceUpdate();
+      }
+      
+      toggle.current = !toggle.current;
+      
+    });
+  }
+
+  requestAnimationFrame(syncBodyParts)
+  // useEffect(() => {
+  //   requestAnimationFrame(syncBodyParts)
+  // }, [])
+
+  // useEffect(() => {
+  //   requestAnimationFrame(syncBodyParts)
+  // }, [monsterUpdated]);
+
+  // * End Section * //
+
+  // Set color
+  useEffect(() => {
+    Object.values(monster.Body.bodyparts).map((bodypart: BodyPart, index: number) => {
+      if (bodypart !== undefined) {
+        let colorInput = bodypart.colorInputs.find((c: string) => c === color);
+  
         if (
-          bodypart !== undefined &&
-          bodypart.bodyPart.category !== undefined &&
-          bodypart.riveRef !== undefined &&
-          bodypart.riveRef !== null &&
-          typeof bodypart.riveRef === "object" &&
-          bodypart.riveRef.current !== undefined && 
-          bodypart.riveRef.current !== null &&
-          Object.keys(stateMachinesStatic).includes(bodypart.bodyPart.category) &&
-          Object.values(stateMachinesStatic)[Object.keys(stateMachinesStatic).indexOf(bodypart.bodyPart.category)].includes(mood)
+          bodypart.category !== undefined &&
+          bodypart.colorInputs.length >= 1,
+          colorInput !== undefined
         ) {
-          mood.split(" ").map((m: string) => {
-            if (bodypart.bodyPart.category !== undefined)
-              bodypart.riveRef?.current?.setInputState(
-                bodypart.bodyPart.category,
-                m,
-                true
-              );
-          })
+          if (bodypart.category !== undefined) {            
+            MonsterRef?.current?.setInputStateAtPath(
+              colorInput, // "Blue" for example
+              true,
+              bodypart.artboardName // The path to the nested artboard
+            );
+          }
+        }
+      }
+    })
+  }, [color])
+
+  // Set Mood
+  useEffect(() => {
+    if (MonsterRef === undefined || MonsterRef.current === null) return;
+
+    if (mood !== undefined) {
+      mood.split(" ").map((m: string) => {
+        if (moodInputs.includes(m)) {
+          MonsterRef.current?.setInputState(stateMachineName, m, true);
         }
       })
-
-      // riveRef.current?.setInputState("Mouth", mood, true);
-
-    } else if (prevMood !== undefined && mood !== prevMood) { // Runs if mood === ""
-      Object.values(monsterBody.bodypartnodes).map((bodypart: bodyPartInfo, index: number) => {
-        if (
-          bodypart !== undefined &&
-          bodypart.bodyPart.category !== undefined &&
-          bodypart.riveRef !== undefined &&
-          bodypart.riveRef !== null &&
-          typeof bodypart.riveRef === "object" &&
-          bodypart.riveRef.current !== undefined && 
-          bodypart.riveRef.current !== null &&
-          Object.keys(stateMachinesStatic).includes(bodypart.bodyPart.category) &&
-          Object.values(stateMachinesStatic)[Object.keys(stateMachinesStatic).indexOf(bodypart.bodyPart.category)].includes(prevMood)
-        ) {
-          prevMood.split(" ").map((m: string) => {
-            if (bodypart.bodyPart.category !== undefined)
-              bodypart.riveRef?.current?.setInputState(
-                bodypart.bodyPart.category,
-                m,
-                false
-              );
-          })
+    } 
+    if (prevMood !== undefined && mood !== prevMood) {
+      prevMood.split(" ").map((m: string) => {
+        if (moodInputs.includes(m)) {
+          MonsterRef.current?.setInputState(stateMachineName, m, false);
+          setMonsterUpdated(true);
         }
-      })
-    }
+      })  
+    }    
   }, [mood])
-
-  const [, updateState] = React.useState(0);
-  const forceUpdate = React.useCallback(() => updateState(1), []);
 
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
@@ -118,28 +178,39 @@ const Monster = ({ monsterBody, scaleFactor = 0.3, state = "", perk = undefined 
       setContainerHeight(event.nativeEvent.layout.height);
       containerHeightOriginal = event.nativeEvent.layout.height;
     }}>
+      <Text style={{display: "none"}}>{updateVal}</Text>
       { perk !== undefined ? (
         <Animated.View style={[styles.perkContainer]} entering={perkStartKeyframe.duration(1200)}>
           <Text style={[styles.perk, { color: perk.color }]}>{perk.operation + "" + perk.amount}</Text>
         </Animated.View>
       ) : (<></>) }
-
+      <Rive
+        style={styles.body}
+        artboardName="Monster"
+        resourceName="monster"
+        stateMachineName={stateMachineName}
+        autoplay={true}
+        animationName="Idle"
+        ref={MonsterRef}
+        fit={Fit.Contain}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  bodyPart: {
-    backgroundColor: "transparent",
-    position: "absolute",
-  },
   container: {
+    transform: [{ translateY: 10 }],
     position: "relative",
+    width: "100%",
+    height: "100%",
   },
   body: {
     width: "100%",
     height: "100%",
     flex: 1,
+    // height: 500,
+    // width: 500
   },
   bodyImage: {
     height: "100%",
