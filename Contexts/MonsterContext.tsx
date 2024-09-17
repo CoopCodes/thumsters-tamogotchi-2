@@ -43,14 +43,14 @@ export type monsterAction = {
 };
 
 type monsterInformation = {
-  monster: MonsterInfo;
+  monster: IMonsterProp;
   monsterDispatch: Dispatch<monsterAction | undefined> | undefined;
   monsterUpdated: boolean;
   setMonsterUpdated: Dispatch<React.SetStateAction<boolean>>;
   // RiveAnimation: React.JSX.Element | undefined;
 };
 
-const initial: monsterInformation = {
+const initial: IMonsterProprmation = {
   monster: emptyBody,
   monsterDispatch: undefined,
   monsterUpdated: false,
@@ -70,7 +70,7 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
 
   const [monsterUpdated, setMonsterUpdated] = useState(false);
 
-  const monsterReducer = (state: MonsterInfo, action: monsterAction | undefined) => {
+  const monsterReducer = (state: IMonsterProp, action: monsterAction | undefined) => {
     if (action === undefined) return state;
     if (action.bodyParts) state.Body.bodyparts = action.bodyParts;
     if (action.ref) {
@@ -241,7 +241,7 @@ export const RiveAnimation = React.forwardRef(({}, ref: React.Ref<RiveRef>) => {
 
   // const { monster } = useContext(MonsterContext);
 
-  console.log("IAM RERENDERING BITCH")
+  console.log("I'M A LITTLE BITCH")
 
   return (
     <Rive

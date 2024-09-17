@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from "react-native";
 import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
-import { theme } from "../../global";
+import { IMonsterProp, theme } from "../../global";
 import { bodySets, Body, bodyImage } from "../../global";
 import Monster from "../Monster";
 
@@ -29,7 +29,12 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "
 import { useLoadFonts } from "../LoadFonts";
 import Rive, { } from "rive-react-native";
 
-function Bedroom({navigation}: {navigation: any}) {
+interface Props {
+  navigation: any;
+  monsterProp: IMonsterProp;
+}
+
+function Bedroom({ navigation, monsterProp }: Props) {
   const { monster, monsterDispatch } = useContext(MonsterContext);
   const { attributes, attributesDispatch } = useContext(AttributesContext);
   const { mood, setMood } = useContext(MoodContext);

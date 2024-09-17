@@ -20,6 +20,7 @@ import {
   bodyPartCategoriesSide,
   usePrevious,
   nodeBodyPart,
+  IMonsterProp,
 } from "../../global";
 import { bodySets, Body, bodyImage } from "../../global";
 // import Monster from "../Monster";
@@ -43,7 +44,12 @@ import Animated, {
 import Rive, { Fit } from "rive-react-native";
 import Monster from "../Monster";
 
-const LockerRoom = ({ navigation }: { navigation: any }) => {
+interface Props {
+  navigation: any;
+  monsterProp: IMonsterProp;
+}
+
+const LockerRoom = ({ navigation, monsterProp }: Props) => {
   const { showAttributesBar, setShowAttributeBar } = useContext(
     ShowAttributesContext
   );
@@ -53,7 +59,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   }, []);
 
   // Monster Initialization
-  const { monster, monsterDispatch } = useContext(MonsterContext);
+  const { monster, monsterDispatch } = monsterProp;
   // useEffect(() => {
   //   if (monsterDispatch) {
   //     const action: monsterAction = {
@@ -252,10 +258,8 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   }
 
   function exitHitbox() {
-    if (monsterDispatch)
-      monsterDispatch(replaceSelectedBodyPart(true))
-
-    forceUpdate();
+    // if (monsterDispatch)
+    //   monsterDispatch(replaceSelectedBodyPart(true))
   }
   
   function droppedBodyPartInHitbox() {
@@ -275,7 +279,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
     // console.log(preChangeSelectedBodyPart.current?.bodyPart.aspectRatio);
 
     // Set body to old body, before the nodes were added, but not working.
-    if (monsterDispatch) {
+    // if (monsterDispatch) {
       // const keys = Object.keys(preChangeSelectedBodyPart.current.bodypartnodes);
       // const correspondantBodyPartIndex = keys.findIndex(key => key === selectedBodyPart?.category);
       // console.log(replaceSelectedBodyPart(false, preChangeSelectedBodyPart.current?.bodyPart));
@@ -283,13 +287,13 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
 
       // monsterDispatch(replaceSelectedBodyPart(false, preChangeSelectedBodyPart.current?.bodyPart))
       console.log("Dropped Outside Hitbox")
-      monsterDispatch({
-        bodyPartToChange: {
-          bodyPartName: "mouth",
-          newValue: new BodyPart(...nodeBodyPart, preChangeSelectedBodyPart.current?.bodySet || "Node")
-        }
-      })
-    }
+      // monsterDispatch({
+      //   bodyPartToChange: {
+      //     bodyPartName: "mouth",
+      //     newValue: new BodyPart(...nodeBodyPart, preChangeSelectedBodyPart.current?.bodySet || "Node")
+      //   }
+      // })
+    // }
 
   }
 
@@ -334,10 +338,14 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
     let action = {}
     
     let bodyPartKeys = Object.keys(monster.Body.bodyparts);
+
     
     if (categories[activeCategoryIndex] !== "Body") {
       Object.values(monster.Body.bodyparts).map(
         (bodypart: BodyPart, index: number) => {
+          if (bodypart !== undefined)
+            console.log("wenis:", categories[activeCategoryIndex], bodypart, bodypart.category)
+          
           if (!(
             bodypart !== undefined &&
             bodypart.category === categories[activeCategoryIndex]
@@ -449,7 +457,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
             }}
             >
             {monster ? (
-              <Monster scaleFactor={.2}/>
+              <Monster scaleFactor={.2} monsterProp={monsterProp}/>
             ) : null}
           </View>
         </View>

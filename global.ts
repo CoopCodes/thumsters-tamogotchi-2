@@ -30,7 +30,7 @@ import Banana from "./assets/resources/images/Food/banana.svg";
 import { SvgProps } from "react-native-svg";
 import { Poppins_900Black } from "@expo-google-fonts/poppins";
 import { RiveRef } from "rive-react-native";
-import { MonsterInfo } from "./Contexts/MonsterContext";
+import { monsterAction, MonsterInfo } from "./Contexts/MonsterContext";
 
 export const bodyImage = body;
 
@@ -398,4 +398,9 @@ function makeid(length: number) {
     counter += 1;
   }
   return result;
+}
+
+export interface IMonsterProp {
+  monster: MonsterInfo;
+  monsterDispatch: React.Dispatch<monsterAction | undefined>;
 }

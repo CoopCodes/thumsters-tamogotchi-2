@@ -5,7 +5,7 @@ import { Image, View, StyleSheet } from "react-native";
 
 import Bedroom from "./Rooms/Bedroom";
 import { NavigationContainer } from "@react-navigation/native";
-import { theme } from "../global";
+import { IMonsterProp, theme } from "../global";
 import LockerRoom from "./Rooms/LockerRoom";
 import HomeStackScreen from "./Navigators/HomeStackScreen";
 import Bathroom from "./Rooms/Bathroom";
@@ -13,8 +13,11 @@ import Kitchen from "./Rooms/Kitchen";
 
 const Tab = createMaterialBottomTabNavigator();
 
+interface Props {
+  monsterProp: IMonsterProp;
+}
 
-function BottomTabs() {
+function BottomTabs({ monsterProp }: Props) {
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -30,7 +33,7 @@ function BottomTabs() {
       >
         <Tab.Screen
           name="Bedroom"
-          component={HomeStackScreen}
+          component={() => <HomeStackScreen monsterProp={monsterProp}/>}
           options={{
             tabBarIcon: () => (
               <View style={styles.tabIcon}>
@@ -47,6 +50,7 @@ function BottomTabs() {
         <Tab.Screen
           name="Bathroom"
           component={Bathroom}
+          initialParams={{ monsterProp: monsterProp }}
           options={{
             tabBarIcon: () => (
               <View style={styles.tabIcon}>
@@ -62,7 +66,8 @@ function BottomTabs() {
         />
         <Tab.Screen
           name="Kitchen"
-          component={Kitchen}
+          component={() => <Kitchen monsterProp={monsterProp}/>}
+          initialParams={{ monsterProp: monsterProp }}
           options={{
             tabBarIcon: () => (
               <View style={styles.tabIcon}>

@@ -1,13 +1,13 @@
 import React, { ReactHTMLElement, RefObject, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { View, Image, StyleSheet, Text, LayoutChangeEvent } from "react-native";
-import { Body, BodyPart, bodySets, categories, moodInputs, stateMachineName, usePrevious } from "../global";
+import { Body, BodyPart, bodySets, categories, IMonsterProp, moodInputs, stateMachineName, usePrevious } from "../global";
 import { SvgProps } from "react-native-svg";
 import MoodContext from "../Contexts/MoodContext";
 import Node from "../assets/resources/Monsters/1/Nodenode.svg";
 import Animated, { Easing, Keyframe, runOnJS, runOnUI, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import Rive, { Fit, RiveRef } from "rive-react-native";
 import ColorContext from "../Contexts/ColorContext";
-import { MonsterContext, MonsterInfo, RiveAnimation } from "../Contexts/MonsterContext";
+import { MonsterContext, RiveAnimation } from "../Contexts/MonsterContext";
 import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 
 
@@ -20,18 +20,19 @@ export interface IPerk {
 }
 
 interface Props {
+  monsterProp: IMonsterProp;
   scaleFactor: number; // Changes in LockerRoom
   state?: string;
   perk?: IPerk;
 }
 
-const Monster = ({ scaleFactor = 0.3, state = "", perk = undefined }: Props) => {
+const Monster = ({ scaleFactor = 0.3, state = "", perk = undefined, monsterProp }: Props) => {
 
   const { color, setColor } = useContext(ColorContext);
 
   const { mood, setMood } = useContext(MoodContext);
 
-  // const { monster, monsterDispatch, monsterUpdated, setMonsterUpdated } = useContext(MonsterContext);
+  // const { monster,dmonsterDispatch, monsterUpdated, setMonsterUpdated } = useContext(MonsterContext);
 
   const perkStartKeyframe = new Keyframe({
     0: {
@@ -58,6 +59,8 @@ const Monster = ({ scaleFactor = 0.3, state = "", perk = undefined }: Props) => 
 
   const prevMood = usePrevious(mood);
 
+  const monster = monsterProp.monster;
+
   const MonsterRef = (monster.RiveRef as RefObject<RiveRef>)
 
   const [, forceUpdate] = useReducer(x => x + 1, 0);
@@ -76,6 +79,7 @@ const Monster = ({ scaleFactor = 0.3, state = "", perk = undefined }: Props) => 
     // forceUpdate();
   }, [isFocused]);
 
+
   // Set color
   useEffect(() => {
     Object.values(monster.Body.bodyparts).map((bodypart: BodyPart, index: number) => {
@@ -88,7 +92,7 @@ const Monster = ({ scaleFactor = 0.3, state = "", perk = undefined }: Props) => 
           colorInput !== undefined
         ) {
           if (bodypart.category !== undefined) {            
-            MonsterRef?.current?.setInputStateAtPath(
+            (monsterProp.monster.RiveRef as RefObject<RiveRef>)?.current?.setInputStateAtPath(
               colorInput, // "Blue" for example
               true,
               bodypart.artboardName // The path to the nested artboard
@@ -101,20 +105,19 @@ const Monster = ({ scaleFactor = 0.3, state = "", perk = undefined }: Props) => 
 
   // Set Mood
   useEffect(() => {
-    if (MonsterRef === undefined || MonsterRef.current === null) return;
+    if ((monsterProp.monster.RiveRef as RefObject<RiveRef>) === undefined || (monsterProp.monster.RiveRef as RefObject<RiveRef>).current === null) return;
 
     if (mood !== undefined) {
       mood.split(" ").map((m: string) => {
         if (moodInputs.includes(m)) {
-          MonsterRef.current?.setInputState(stateMachineName, m, true);
+          (monsterProp.monster.RiveRef as RefObject<RiveRef>).current?.setInputState(stateMachineName, m, true);
         }
       })
     } 
     if (prevMood !== undefined && mood !== prevMood) {
       prevMood.split(" ").map((m: string) => {
         if (moodInputs.includes(m)) {
-          MonsterRef.current?.setInputState(stateMachineName, m, false);
-          setMonsterUpdated(true);
+          (monsterProp.monster.RiveRef as RefObject<RiveRef>).current?.setInputState(stateMachineName, m, false);
         }
       })  
     }    
@@ -137,7 +140,7 @@ const Monster = ({ scaleFactor = 0.3, state = "", perk = undefined }: Props) => 
           <Text style={[styles.perk, { color: perk.color }]}>{perk.operation + "" + perk.amount}</Text>
         </Animated.View>
       ) : (<></>) }
-        <RiveAnimation ref={monster.RiveRef} />
+        <RiveAnimation ref={monsterProp.monster.RiveRef} />
     </View>
   );
 };

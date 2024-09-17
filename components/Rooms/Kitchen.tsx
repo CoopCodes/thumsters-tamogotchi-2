@@ -11,7 +11,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { MonsterContext } from "../../Contexts/MonsterContext";
-import { BodyPart, IFood, foodCategories, stateMachineName, theme } from "../../global";
+import { BodyPart, IFood, IMonsterProp, foodCategories, stateMachineName, theme } from "../../global";
 import Monster, { IPerk } from "../Monster";
 
 import clothesHanger from "../../assets/resources/images/ClothesHanger.svg";
@@ -40,8 +40,15 @@ import ThumbucksContext from "../../Contexts/ThumbucksContext";
 import AllFoodsContext from "../../Contexts/AllFoodsContext";
 import { RiveRef } from "rive-react-native";
 
-function Kitchen() {
-  const { monster, monsterDispatch } = useContext(MonsterContext);
+interface Props {
+  monsterProp: IMonsterProp;
+}
+
+function Kitchen({ monsterProp }: Props) {
+  console.log('monster', monsterProp)
+  const { monster, monsterDispatch } = monsterProp;
+
+
   const { attributes, attributesDispatch } = useContext(AttributesContext);
   const { mood, setMood } = useContext(MoodContext);
   const { thumbucks, setThumbucks } = useContext(ThumbucksContext);
@@ -203,7 +210,7 @@ function Kitchen() {
               }}
             >
               {monster ? (
-                <Monster scaleFactor={0.3} perk={perk} />
+                <Monster scaleFactor={0.3} perk={perk} monsterProp={monsterProp} />
               ) : null}
             </Animated.View>
             <View style={[styles.background]}>
