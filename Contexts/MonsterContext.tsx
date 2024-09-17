@@ -1,4 +1,4 @@
-import {
+import React, {
   createContext,
   Reducer,
   Ref,
@@ -8,7 +8,9 @@ import {
   RefObject,
   useContext,
   useEffect,
-  useState
+  useState,
+  useRef,
+  useMemo
 } from "react";
 import { Image, View } from "react-native";
 import {
@@ -22,8 +24,10 @@ import {
   Colors,
 } from "../global";
 import { SvgProps } from "react-native-svg";
-import Rive, { RiveRef } from "rive-react-native";
+import Rive, { Fit, RiveRef } from "rive-react-native";
 import ColorContext from "./ColorContext";
+import { styles } from "../components/Monster";
+import { useIsFocused } from "@react-navigation/native";
 
 export interface MonsterInfo {
   Body: Body;
@@ -42,7 +46,8 @@ type monsterInformation = {
   monster: MonsterInfo;
   monsterDispatch: Dispatch<monsterAction | undefined> | undefined;
   monsterUpdated: boolean;
-  setMonsterUpdated: Dispatch<React.SetStateAction<boolean>>
+  setMonsterUpdated: Dispatch<React.SetStateAction<boolean>>;
+  // RiveAnimation: React.JSX.Element | undefined;
 };
 
 const initial: monsterInformation = {
@@ -50,7 +55,7 @@ const initial: monsterInformation = {
   monsterDispatch: undefined,
   monsterUpdated: false,
   setMonsterUpdated: () => {},
-
+  // RiveAnimation: undefined
 };
 
 export const MonsterContext = createContext<monsterInformation>(initial);
@@ -78,10 +83,14 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
       state.Body.bodyColor = action.bodyArtboard.bodyColor;
       
 
-      (state.RiveRef as RefObject<RiveRef>).current?.setInputState(stateMachineName,
-        action.bodyArtboard.transitionInputName, true);
-        
+      
       setTimeout(() => {
+        if (!action.bodyArtboard) return
+
+        (state.RiveRef as RefObject<RiveRef>).current?.setInputState(stateMachineName,
+          action.bodyArtboard.transitionInputName, true);
+
+        
         // Update color
         console.log("COlor:", action.bodyArtboard?.bodyColor);
         if (setColor)
@@ -123,24 +132,95 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
         const colorInput = bodyPartToChange.newValue.colorInputs.find((c: string) => c === color) as Colors;
 
 
-        
-        (state.RiveRef as RefObject<RiveRef>)?.current?.setInputStateAtPath(
-          colorInput, // "Blue" for example
-          true,
-          bodypartToChange.newValue.artboardName // The path to the nested artboard
-        );
+        setTimeout(() => {
+          if (bodyPartToChange.newValue.transitionInputName) {
+            (state.RiveRef as RefObject<RiveRef>)?.current?.setInputState(
+              stateMachineName,
+              bodyPartToChange.newValue.transitionInputName,
+              true
+            );
+          }
+          
+          // Changing Color
+          (state.RiveRef as RefObject<RiveRef>)?.current?.setInputStateAtPath(
+            colorInput, // "Blue" for example
+            true,
+            bodypartToChange.newValue.artboardName // The path to the nested artboard
+          );
+        }, 100)
       }
     }
 
     if (action.body) state.Body = action.body;
     
+    console.log("uPDATINGGGG")
     setMonsterUpdated(true)
     
     return state;
   };
 
+  // * On re-render * // 
+
+  // const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+  // let toggle = useRef(false);
+  
+  // function syncBodyParts() {
+  //   setTimeout(() => {
+  //     // console.log("syncing bodyparts")
+  //     if ((monster.RiveRef as RefObject<RiveRef>) === undefined || (monster.RiveRef as RefObject<RiveRef>).current === null) return;
+
+  //     Object.values(monster.Body.bodyparts).map((bodypart: BodyPart) => {
+  //       setTimeout(() => {
+  //         if (bodypart === undefined) return;
+          
+          
+  //         if (bodypart.transitionInputName === undefined || bodypart.transitionInputName === "") return;
+          
+  //         const inputName = bodypart.transitionInputName;
+          
+  //         // console.log("updating", bodypart.transitionInputName);
+  
+  //         (monster.RiveRef as RefObject<RiveRef>).current!.setInputState(
+  //           stateMachineName, 
+  //           inputName, 
+  //           true
+  //         ); // For bodyparts
+  //       }, 100)
+  //     });
+      
+  //     // console.log('Monster Body Sync', monster.Body.bodyTransitionInput);
+      
+  //     if (monster.Body.bodyTransitionInput === undefined || monster.Body.bodyTransitionInput === "") return;
+      
+  //     setTimeout(() => {
+  //       (monster.RiveRef as RefObject<RiveRef>).current!.setInputState(
+  //         stateMachineName, monster.Body.bodyTransitionInput, true
+  //       ); // For the body
+  //     }, 100)
+
+      
+  //     console.log('toggle.current', toggle.current)
+  //     if (toggle.current === false) {
+  //       forceUpdate();
+  //     }
+      
+  //     toggle.current = !toggle.current;
+  //   });
+  // }
+
+  // requestAnimationFrame(syncBodyParts)
+  // * End Section * //
+
+  useEffect(()=> {
+    console.log("monster udpated")
+  }, [monsterUpdated])  
+
+  const MonsterRef = useRef<RiveRef>(null)
+  
+  
   const [monster, monsterDispatch] = useReducer(
-    monsterReducer, { Body: bodySets["Harold"].body, RiveRef: undefined }
+    monsterReducer, { Body: bodySets["Harold"].body, RiveRef: MonsterRef }
   );
 
   return (
@@ -149,10 +229,30 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
         monster: monster,
         monsterUpdated: monsterUpdated,
         monsterDispatch: monsterDispatch,
-        setMonsterUpdated: setMonsterUpdated
+        setMonsterUpdated: setMonsterUpdated,
       }}
     >
       {children}
     </MonsterContext.Provider>
   );
 };
+
+export const RiveAnimation = React.forwardRef(({}, ref: React.Ref<RiveRef>) => {
+
+  // const { monster } = useContext(MonsterContext);
+
+  console.log("IAM RERENDERING BITCH")
+
+  return (
+    <Rive
+      style={styles.body}
+      artboardName="Monster"
+      resourceName="monster"
+      stateMachineName={stateMachineName}
+      autoplay={true}
+      animationName="Idle"
+      ref={ref}
+      fit={Fit.Contain}
+    />
+  )
+})

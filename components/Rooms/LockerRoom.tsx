@@ -22,7 +22,7 @@ import {
   nodeBodyPart,
 } from "../../global";
 import { bodySets, Body, bodyImage } from "../../global";
-import Monster from "../Monster";
+// import Monster from "../Monster";
 import ListBodyPart from "../ListBodyPart";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import {
@@ -41,6 +41,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import Rive, { Fit } from "rive-react-native";
+import Monster from "../Monster";
 
 const LockerRoom = ({ navigation }: { navigation: any }) => {
   const { showAttributesBar, setShowAttributeBar } = useContext(
@@ -63,6 +64,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   //     monsterDispatch(action);
   //   }
   // }, []);
+
 
 
 
@@ -426,7 +428,9 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
           <View style={styles.backButtonContainer}>
             <TouchableOpacity
               style={{ backgroundColor: "transparent", padding: 5 }}
-              onPress={back}
+              onPress={() => {
+                forceUpdate()
+              }}
             >
               <Text style={styles.backButton}>{"<"}</Text>
             </TouchableOpacity>
@@ -445,7 +449,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
             }}
             >
             {monster ? (
-              <Monster scaleFactor={0.2}/>
+              <Monster scaleFactor={.2}/>
             ) : null}
           </View>
         </View>

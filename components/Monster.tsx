@@ -7,8 +7,8 @@ import Node from "../assets/resources/Monsters/1/Nodenode.svg";
 import Animated, { Easing, Keyframe, runOnJS, runOnUI, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import Rive, { Fit, RiveRef } from "rive-react-native";
 import ColorContext from "../Contexts/ColorContext";
-import { MonsterContext, MonsterInfo } from "../Contexts/MonsterContext";
-import { useFocusEffect } from "@react-navigation/native";
+import { MonsterContext, MonsterInfo, RiveAnimation } from "../Contexts/MonsterContext";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 
 
 // Displays a +1 above the monster
@@ -31,7 +31,7 @@ const Monster = ({ scaleFactor = 0.3, state = "", perk = undefined }: Props) => 
 
   const { mood, setMood } = useContext(MoodContext);
 
-  const { monster, monsterDispatch, monsterUpdated, setMonsterUpdated} = useContext(MonsterContext);
+  // const { monster, monsterDispatch, monsterUpdated, setMonsterUpdated } = useContext(MonsterContext);
 
   const perkStartKeyframe = new Keyframe({
     0: {
@@ -58,70 +58,23 @@ const Monster = ({ scaleFactor = 0.3, state = "", perk = undefined }: Props) => 
 
   const prevMood = usePrevious(mood);
 
-  const MonsterRef = useRef<RiveRef>(null);
+  const MonsterRef = (monster.RiveRef as RefObject<RiveRef>)
 
-  useEffect(() => {
-    if (monsterDispatch)
-      monsterDispatch({ ref: MonsterRef })
-  }, []);
+  const [, forceUpdate] = useReducer(x => x + 1, 0);
 
-  const [updateVal, forceUpdate] = useReducer(x => x + 1, 0);
-
-  // * On re-render * // 
-
-  let toggle = useRef(false);
+  // useEffect(() => {
+  //   if (monsterUpdated) {
+  //     console.log('monsterUpdated', monsterUpdated)
+  //     forceUpdate();
+  //   }
+  // }, [monsterUpdated])
   
-  function syncBodyParts() {
-    setTimeout(() => {
-      // console.log("syncing bodyparts")
-      if (MonsterRef === undefined || MonsterRef.current === null) return;
-
-      Object.values(monster.Body.bodyparts).map((bodypart: BodyPart) => {
-        if (bodypart === undefined) return;
-        
-        
-        if (bodypart.transitionInputName === undefined || bodypart.transitionInputName === "") return;
-        
-        const inputName = bodypart.transitionInputName;
-        
-        // console.log("updating", bodypart.transitionInputName);
-
-        MonsterRef.current!.setInputState(
-          stateMachineName, 
-          inputName, 
-          true
-        ); // For bodyparts
-      });
-      
-      // console.log('Monster Body Sync', monster.Body.bodyTransitionInput);
-      
-      if (monster.Body.bodyTransitionInput === undefined || monster.Body.bodyTransitionInput === "") return;
-      
-      
-      MonsterRef.current!.setInputState(
-        stateMachineName, monster.Body.bodyTransitionInput, true
-      ); // For the body
-      
-      console.log('toggle.current', toggle.current)
-      if (toggle.current === false) {
-        forceUpdate();
-      }
-      
-      toggle.current = !toggle.current;
-      
-    });
-  }
-
-  requestAnimationFrame(syncBodyParts)
-  // useEffect(() => {
-  //   requestAnimationFrame(syncBodyParts)
-  // }, [])
-
-  // useEffect(() => {
-  //   requestAnimationFrame(syncBodyParts)
-  // }, [monsterUpdated]);
-
-  // * End Section * //
+  const isFocused = useIsFocused();
+  
+  useEffect(() => {
+    console.log("stuff changed")
+    // forceUpdate();
+  }, [isFocused]);
 
   // Set color
   useEffect(() => {
@@ -178,27 +131,18 @@ const Monster = ({ scaleFactor = 0.3, state = "", perk = undefined }: Props) => 
       setContainerHeight(event.nativeEvent.layout.height);
       containerHeightOriginal = event.nativeEvent.layout.height;
     }}>
-      <Text style={{display: "none"}}>{updateVal}</Text>
+      {/* <Text style={{display: "none"}}>{updateVal}</Text> */}
       { perk !== undefined ? (
         <Animated.View style={[styles.perkContainer]} entering={perkStartKeyframe.duration(1200)}>
           <Text style={[styles.perk, { color: perk.color }]}>{perk.operation + "" + perk.amount}</Text>
         </Animated.View>
       ) : (<></>) }
-      <Rive
-        style={styles.body}
-        artboardName="Monster"
-        resourceName="monster"
-        stateMachineName={stateMachineName}
-        autoplay={true}
-        animationName="Idle"
-        ref={MonsterRef}
-        fit={Fit.Contain}
-      />
+        <RiveAnimation ref={monster.RiveRef} />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     transform: [{ translateY: 10 }],
     position: "relative",

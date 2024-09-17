@@ -11,6 +11,8 @@ import {
   Text,
   StyleSheet,
   Dimensions,
+  LogBox,
+  AppRegistry,
 } from "react-native";
 
 import HeartIcon from "./assets/resources/images/Heart.svg";
@@ -47,28 +49,11 @@ import { Poppins_700Bold, Poppins_900Black } from "@expo-google-fonts/poppins";
 import ThumbucksContext, { thumbucksInitial } from "./Contexts/ThumbucksContext";
 import AllFoodsContext, { allFoodsInitial } from "./Contexts/AllFoodsContext";
 import ColorContext from "./Contexts/ColorContext";
+import { expo }from './app.json';
 
-// const breakpoints = {
-//   s: 700,
-//   xs: 580,
-// };
+LogBox.ignoreLogs(['Require cycle:']);
 
-// const devices = {
-//   s: `max-width: ${breakpoints.s}px`,
-//   xs: `max-width: ${breakpoints.xs}px`,
-// };
-
-// const Media = StyleSheet.create({
-//   media: {
-//     '@media only screen and (max-width: 700px)': {
-//       transform: [{ scale: 0.9 }],
-//     },
-//     '@media only screen and (max-width: 580px)': {
-//       transform: [{ scale: 0.6 }],
-//     },
-//   },
-// });
-
+AppRegistry.registerComponent(expo.name, () => App);
 
 
 export default function App() {
@@ -144,7 +129,7 @@ export default function App() {
   //   }
   // }, []);
 
-  // Monster Logic TODO: change the way body is accessed
+  // * Global Monster State * //
 
   const [ showAttributesBar, setShowAttributeBar ] = useState(true);
   const [ thumbucks, setThumbucks ] = useState(thumbucksInitial.thumbucks);
