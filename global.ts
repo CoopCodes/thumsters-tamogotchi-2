@@ -5,21 +5,9 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
 // Body parts
-import arm from "./assets/resources/Monsters/1/Arm.svg";
-import body from "./assets/resources/Monsters/1/Body.svg";
-import eyes from "./assets/resources/Monsters/1/Eye.svg";
-import eyesSleeping from "./assets/resources/Monsters/1/EyesSleeping.svg";
-// import eyesBadContrast from "./assets/resources/Monsters/1/Eye_BadContrast.svg";
-import foot from "./assets/resources/Monsters/1/Foot.svg";
-import eyes2 from "./assets/resources/Monsters/2/eyes.svg";
-import mouth from "./assets/resources/Monsters/1/Mouth.svg";
-import node from "./assets/resources/Monsters/1/Nodenode.svg";
-import arm2 from "./assets/resources/Monsters/2/arm.svg";
 
-import mouthSad from "./assets/resources/Monsters/1/MouthSad.svg";
-import eyesHappy from "./assets/resources/Monsters/1/EyesHappy.svg";
-import mouthHappy from "./assets/resources/Monsters/1/MouthHappy.svg";
-import mouthOpen from "./assets/resources/Monsters/1/MouthEating.svg";
+import body from "./assets/resources/Monsters/1/Body.svg";
+
 
 import Egg from "./assets/resources/images/Food/egg.svg";
 import Bread from "./assets/resources/images/Food/bread.svg";
@@ -61,6 +49,7 @@ export const theme: ITheme = {
     energy: "rgba(245, 216, 0, 1)",
   },
 };
+
 
 // Usually a boolean, but if number specified, then will add an offset to the left/right/top/bottom/center, if undefined then will do nothing. If number 0, will be taken as undefined.
 export interface BodyPartOptions { 
@@ -399,3 +388,5 @@ function makeid(length: number) {
   }
   return result;
 }
+
+export const intervalDuration = 1000

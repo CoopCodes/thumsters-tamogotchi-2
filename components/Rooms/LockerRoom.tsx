@@ -42,6 +42,7 @@ import Animated, {
 } from "react-native-reanimated";
 import Rive, { Fit } from "rive-react-native";
 import Monster from "../Monster";
+import { ColorContext } from "../../Contexts/ColorContext";
 
 const LockerRoom = ({ navigation }: { navigation: any }) => {
   const { showAttributesBar, setShowAttributeBar } = useContext(
@@ -101,14 +102,15 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
                 newValue: bodyPart
               }
             }
-          } else { // If it is a body
-            action = {
-              bodyArtboard: {
-                newValue: bodyPart.artboardName,
-                transitionInputName: "To " + bodyPart.bodySet
-              }
-            }
-          }
+          } 
+          // else { // If it is a body
+          //   action = {
+          //     bodyArtboard: {
+          //       newValue: bodyPart.artboardName,
+          //       transitionInputName: "To " + bodyPart.bodySet
+          //     }
+          //   }
+          // }
           console.log(action);
           monsterDispatch(action);
         }
@@ -252,10 +254,8 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   }
 
   function exitHitbox() {
-    if (monsterDispatch)
-      monsterDispatch(replaceSelectedBodyPart(true))
-
-    forceUpdate();
+    // if (monsterDispatch)
+    //   monsterDispatch(replaceSelectedBodyPart(true))
   }
   
   function droppedBodyPartInHitbox() {
@@ -283,12 +283,12 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
 
       // monsterDispatch(replaceSelectedBodyPart(false, preChangeSelectedBodyPart.current?.bodyPart))
       console.log("Dropped Outside Hitbox")
-      monsterDispatch({
-        bodyPartToChange: {
-          bodyPartName: "mouth",
-          newValue: new BodyPart(...nodeBodyPart, preChangeSelectedBodyPart.current?.bodySet || "Node")
-        }
-      })
+      // monsterDispatch({
+      //   bodyPartToChange: {
+      //     bodyPartName: "mouth",
+      //     newValue: new BodyPart(...nodeBodyPart, preChangeSelectedBodyPart.current?.bodySet || "Node")
+      //   }
+      // })
     }
 
   }
@@ -338,6 +338,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
     if (categories[activeCategoryIndex] !== "Body") {
       Object.values(monster.Body.bodyparts).map(
         (bodypart: BodyPart, index: number) => {
+          console.log(bodypart?.category, categories[activeCategoryIndex]);
           if (!(
             bodypart !== undefined &&
             bodypart.category === categories[activeCategoryIndex]
@@ -389,7 +390,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
 
   // ** End of drag and drop stuff ** //
 
-  const [color, setColor] = useState<string>("");
+  const { color, setColor, colorTheme } = useContext(ColorContext); 
 
   return (
     <GestureHandlerRootView>
@@ -424,15 +425,17 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
             </Animated.View>
           );
         })}
-        <View style={styles.top}>
+        <View style={[styles.top, {backgroundColor: colorTheme.theme.backgroundColor,}]}>
           <View style={styles.backButtonContainer}>
             <TouchableOpacity
-              style={{ backgroundColor: "transparent", padding: 5 }}
+              style={{ backgroundColor: "transparent", padding: 5
+              }}
               onPress={() => {
                 forceUpdate()
               }}
             >
-              <Text style={styles.backButton}>{"<"}</Text>
+              <Text style={[styles.backButton, { color: colorTheme.theme.interactionPrimary
+              }]}>{"<"}</Text>
             </TouchableOpacity>
           </View>
           <Text style={styles.header}>Customise {"\n"} your thumster</Text>
@@ -453,9 +456,9 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
             ) : null}
           </View>
         </View>
-        <View style={styles.bottom}>
+        <View style={[styles.bottom, {backgroundColor: colorTheme.theme.customizationBar}]}>
           <FlatList
-            style={styles.categoryBar}
+            style={[styles.categoryBar, {borderColor: colorTheme.theme.customizationBarStroke}]}
             data={categories}
             contentContainerStyle={{ alignItems: "center" }}
             horizontal={true}
@@ -539,7 +542,6 @@ const styles = StyleSheet.create({
   backButton: {
     fontWeight: "800",
     fontSize: 25,
-    color: theme.default.interactionPrimary,
   },
   container: {
     height: "100%", // 109
@@ -547,7 +549,6 @@ const styles = StyleSheet.create({
   top: {
     position: "relative",
     flex: 1.5,
-    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -569,7 +570,6 @@ const styles = StyleSheet.create({
   },
   bottom: {
     flex: 1,
-    backgroundColor: "#F3F4F6",
     paddingBottom: 100,
   },
   categoryBar: {

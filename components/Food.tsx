@@ -37,13 +37,13 @@ const FoodPerkContainer = styled.View`
     height: 20px;
     border-radius: 30px;
     overflow: hidden;
-    background-color: ${(props) => props.theme.default.interactionShadow};
+    background-color: ${(props) => props.colorTheme.default.interactionShadow};
     `
 
 const FoodPerk = styled.View<{perk: number}>`
     width: ${(props) => ((props.perk / 30) * 100)}%; // Making the bar as wide as proportional to 30
     background-color: #F3AD61;
-    background-color: ${(props) => props.theme.default.hunger};
+    background-color: ${(props) => props.colorTheme.default.hunger};
     height: 100%;
     border-radius: 0 20px 20px 0;
 `

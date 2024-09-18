@@ -39,11 +39,13 @@ import {
 import ThumbucksContext from "../../Contexts/ThumbucksContext";
 import AllFoodsContext from "../../Contexts/AllFoodsContext";
 import { RiveRef } from "rive-react-native";
+import { ColorContext } from "../../Contexts/ColorContext";
 
 function Kitchen() {
   const { monster, monsterDispatch } = useContext(MonsterContext);
   const { attributes, attributesDispatch } = useContext(AttributesContext);
   const { mood, setMood } = useContext(MoodContext);
+  const { color, setColor, colorTheme } = useContext(ColorContext); 
   const { thumbucks, setThumbucks } = useContext(ThumbucksContext);
   const { allFoods, setAllFoods } = useContext(AllFoodsContext);
 
@@ -214,9 +216,9 @@ function Kitchen() {
               />
             </View>
           </View>
-          <View style={styles.bottom}>
+          <View style={[styles.bottom, { backgroundColor: colorTheme.theme.customizationBar }]}>
             <FlatList
-              style={styles.categoryBar}
+              style={[styles.categoryBar, { borderColor: colorTheme.theme.customizationBarStroke }]}
               data={foodCategories}
               contentContainerStyle={{ alignItems: "center" }}
               horizontal={true}
@@ -242,7 +244,7 @@ function Kitchen() {
               )}
             />
             <FlatList
-              style={styles.foodList}
+              style={[styles.foodList]}
               data={displayFood}
               horizontal={true}
               contentContainerStyle={{ alignItems: "center", gap: 10 }}
@@ -284,7 +286,7 @@ function Kitchen() {
                             backgroundColor: "white",
                             borderWidth: 3,
                             borderRightWidth: 0,
-                            borderColor: theme.default.interactionShadow,
+                            borderColor: colorTheme.theme.interactionShadow,
                             width: item.numOwned >= 10 ? 50 : 35
                           },
                           styles.foodTag,

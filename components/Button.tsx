@@ -20,6 +20,7 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import { SvgProps } from "react-native-svg";
+import { ColorContext } from "../Contexts/ColorContext";
 
 interface Props {
   title?: string;
@@ -50,6 +51,8 @@ const PrimaryButton = ({
   fill = ""
 }: Props) => {
   const [active, setActive] = useState(false);
+
+  const { color, setColor, colorTheme } = useContext(ColorContext); 
 
   const buttonOffset = useSharedValue(-5.5);
   const animatedStyle = useAnimatedStyle(() => {
@@ -99,14 +102,14 @@ const PrimaryButton = ({
     shadow: {
       ...StyleSheet.absoluteFillObject,
       borderRadius: 5,
-      backgroundColor: theme.default.interactionShadow,
+      backgroundColor: colorTheme.theme.interactionShadow,
     },
     main: {
       ...StyleSheet.absoluteFillObject,
       position: "relative",
       borderRadius: 5,
       // top: (!active)? -5.5 : 0,
-      backgroundColor: theme.default.backgroundColor,
+      backgroundColor: "#FFF",
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
@@ -114,7 +117,7 @@ const PrimaryButton = ({
     buttonText: {
       fontSize: 16,
       textAlign: "center",
-      color: theme.default.interactionShadow,
+      color: colorTheme.theme.interactionShadow,
       fontFamily: "Poppins_900Black",
     },
   });

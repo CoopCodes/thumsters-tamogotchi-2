@@ -10,17 +10,21 @@ import LockerRoom from "./Rooms/LockerRoom";
 import HomeStackScreen from "./Navigators/HomeStackScreen";
 import Bathroom from "./Rooms/Bathroom";
 import Kitchen from "./Rooms/Kitchen";
+import { ColorContext } from "../Contexts/ColorContext";
+import { useContext } from "react";
 
 const Tab = createMaterialBottomTabNavigator();
 
 
 function BottomTabs() {
+  const { color, setColor, colorTheme } = useContext(ColorContext); 
+
   return (
     <NavigationContainer>
       <Tab.Navigator
         style={styles.bar}
         initialRouteName="Bedroom"
-        activeColor={theme.default.interactionPrimary}
+        activeColor={colorTheme.theme.interactionPrimary}
         barStyle={{
           backgroundColor: "white",
           position: "absolute",

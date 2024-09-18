@@ -48,10 +48,10 @@ import MoodContext from "./Contexts/MoodContext";
 import { Poppins_700Bold, Poppins_900Black } from "@expo-google-fonts/poppins";
 import ThumbucksContext, { thumbucksInitial } from "./Contexts/ThumbucksContext";
 import AllFoodsContext, { allFoodsInitial } from "./Contexts/AllFoodsContext";
-import ColorContext from "./Contexts/ColorContext";
 import { expo }from './app.json';
+import { ColorProvider } from "./Contexts/ColorContext";
 
-LogBox.ignoreLogs(['Require cycle:']);
+LogBox.ignoreLogs(['Require cycle:', 'Cannot update a component']);
 
 AppRegistry.registerComponent(expo.name, () => App);
 
@@ -134,10 +134,9 @@ export default function App() {
   const [ showAttributesBar, setShowAttributeBar ] = useState(true);
   const [ thumbucks, setThumbucks ] = useState(thumbucksInitial.thumbucks);
   const [ allFoods, setAllFoods ] = useState(allFoodsInitial.allFoods);
-  const [ color, setColor ] = useState<Colors>("Blue");
   
   return (
-    <ColorContext.Provider value={{color: color, setColor: setColor}}>
+    <ColorProvider>
       <MonsterProvider>
         <MoodContext.Provider value={{mood, setMood}}>
           <AttributesContext.Provider
@@ -209,7 +208,7 @@ export default function App() {
           </AttributesContext.Provider>
         </MoodContext.Provider>
       </MonsterProvider>
-    </ColorContext.Provider>
+    </ColorProvider>
   );
 }
 

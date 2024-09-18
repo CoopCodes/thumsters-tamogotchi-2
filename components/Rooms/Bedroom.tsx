@@ -28,11 +28,14 @@ import MoodContext from "../../Contexts/MoodContext";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useLoadFonts } from "../LoadFonts";
 import Rive, { } from "rive-react-native";
+import { ColorContext } from "../../Contexts/ColorContext";
 
 function Bedroom({navigation}: {navigation: any}) {
   const { monster, monsterDispatch } = useContext(MonsterContext);
   const { attributes, attributesDispatch } = useContext(AttributesContext);
   const { mood, setMood } = useContext(MoodContext);
+
+  const { color, setColor, colorTheme } = useContext(ColorContext); 
   
   // useEffect(() => {
   //   if (setMood)
@@ -143,7 +146,7 @@ function Bedroom({navigation}: {navigation: any}) {
               //   setSleeping(!sleeping);
               // }, 2000);
             }}
-            fill={theme.default.interactionShadow}
+            fill={colorTheme.theme.interactionShadow}
           />
           <Text style={styles.buttonText}>Sleep</Text>
         </View>
@@ -158,7 +161,7 @@ function Bedroom({navigation}: {navigation: any}) {
               console.log('Navigating...')
               navigation.navigate("LockerRoom");
             }}
-            fill={theme.default.interactionShadow}
+            fill={colorTheme.theme.interactionShadow}
           />
           <Text style={styles.buttonText}>Dressing{"\n"} Room</Text>
         </View>

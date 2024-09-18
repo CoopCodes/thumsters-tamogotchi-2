@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Image, Text, StyleSheet,  } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { theme } from '../global';
 import { SvgProps } from 'react-native-svg';
+import { ColorContext } from '../Contexts/ColorContext';
 
 interface Props {
   attrName: string;
@@ -13,6 +14,8 @@ interface Props {
 const Attribute = ({ attrName, Image, progress }: Props) => {
   const [progressState, setProgressState] = useState(progress);
 
+  const { color, setColor, colorTheme } = useContext(ColorContext); 
+
   return (
 
     <View style={styles.attributeMain}>
@@ -20,7 +23,7 @@ const Attribute = ({ attrName, Image, progress }: Props) => {
             size={105}
             width={9}
             fill={progress}
-            tintColor={theme.default[attrName]}
+            tintColor={theme.default  [attrName]}
             backgroundColor={theme.default.interactionShadow}>
                 {
                     () => (

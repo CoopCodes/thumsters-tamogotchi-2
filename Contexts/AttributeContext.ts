@@ -1,6 +1,5 @@
 import { createContext, Reducer, Ref, Dispatch } from 'react';
 import { Image } from 'react-native'
-import { IBodyPartNodes } from '../global';
 
 type attributesAction = {
     attribute: string;

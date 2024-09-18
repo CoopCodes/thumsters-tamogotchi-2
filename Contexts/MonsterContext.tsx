@@ -22,10 +22,11 @@ import {
   BodyPart,
   stateMachineName,
   Colors,
+  intervalDuration,
 } from "../global";
 import { SvgProps } from "react-native-svg";
 import Rive, { Fit, RiveRef } from "rive-react-native";
-import ColorContext from "./ColorContext";
+import { ColorContext } from "./ColorContext";
 import { styles } from "../components/Monster";
 import { useIsFocused } from "@react-navigation/native";
 
@@ -47,7 +48,6 @@ type monsterInformation = {
   monsterDispatch: Dispatch<monsterAction | undefined> | undefined;
   monsterUpdated: boolean;
   setMonsterUpdated: Dispatch<React.SetStateAction<boolean>>;
-  // RiveAnimation: React.JSX.Element | undefined;
 };
 
 const initial: monsterInformation = {
@@ -55,7 +55,6 @@ const initial: monsterInformation = {
   monsterDispatch: undefined,
   monsterUpdated: false,
   setMonsterUpdated: () => {},
-  // RiveAnimation: undefined
 };
 
 export const MonsterContext = createContext<monsterInformation>(initial);
@@ -64,12 +63,23 @@ interface MonsterContextProps {
   children: ReactNode;
 }
 
+export let updatingRiveAnimation = false;
+
+export function setUpdatingAnimation(value: boolean) {
+  updatingRiveAnimation = value;
+}
 
 export const MonsterProvider = ({ children }: MonsterContextProps) => {
   const { color, setColor } = useContext(ColorContext);
 
   const [monsterUpdated, setMonsterUpdated] = useState(false);
+  // const [updatingRiveAnimation, setUpdatingAnimation] = useState(false);
+  
+  // useEffect(() => {
+  //   console.log("UPDATING ANIMATION", updatingRiveAnimation)
+  // }, [updatingRiveAnimation])
 
+  
   const monsterReducer = (state: MonsterInfo, action: monsterAction | undefined) => {
     if (action === undefined) return state;
     if (action.bodyParts) state.Body.bodyparts = action.bodyParts;
@@ -77,25 +87,34 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
       state.RiveRef = action.ref
     }
 
+    // let intervalId: NodeJS.Timeout;
+    
     if (action.bodyArtboard) {
       state.Body.bodyArtboard = action.bodyArtboard.newValue;
       state.Body.bodyTransitionInput = action.bodyArtboard.transitionInputName;
       state.Body.bodyColor = action.bodyArtboard.bodyColor;
       
-
-      
-      setTimeout(() => {
-        if (!action.bodyArtboard) return
-
-        (state.RiveRef as RefObject<RiveRef>).current?.setInputState(stateMachineName,
-          action.bodyArtboard.transitionInputName, true);
-
+      let intervalId0 = setInterval(() => {
+        console.log("102", updatingRiveAnimation)
+        if (updatingRiveAnimation) return;
         
-        // Update color
-        console.log("COlor:", action.bodyArtboard?.bodyColor);
-        if (setColor)
-          setColor(action.bodyArtboard?.bodyColor as Colors);
-      });
+        setUpdatingAnimation(true);
+        
+        if (action.bodyArtboard) {
+          (state.RiveRef as RefObject<RiveRef>).current?.setInputState(stateMachineName,
+            action.bodyArtboard.transitionInputName, true);
+        }
+
+        console.log("106", intervalId0)
+        clearInterval(intervalId0)
+        setUpdatingAnimation(false)
+      }, intervalDuration)
+
+      console.log("110", intervalId0)
+      
+      console.log(" COlor:", action.bodyArtboard?.bodyColor);
+      if (setColor)
+        setColor(action.bodyArtboard?.bodyColor as Colors);
     }
 
     if (action.bodyPartToChange) {
@@ -131,97 +150,58 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
 
         const colorInput = bodyPartToChange.newValue.colorInputs.find((c: string) => c === color) as Colors;
 
+        // CHANGING BODYPARTS IDIOT
+        let intervalId2 = setInterval(() => {
+          console.log("171", intervalId2)
+          if (updatingRiveAnimation || bodyPartToChange.newValue.transitionInputName === undefined) return;
 
-        setTimeout(() => {
-          if (bodyPartToChange.newValue.transitionInputName) {
-            (state.RiveRef as RefObject<RiveRef>)?.current?.setInputState(
-              stateMachineName,
-              bodyPartToChange.newValue.transitionInputName,
-              true
-            );
-          }
+          setUpdatingAnimation(true);
+
+          (state.RiveRef as RefObject<RiveRef>)?.current?.setInputState(
+            stateMachineName,
+            bodypartToChange.newValue.transitionInputName!, // Checking beforehand if undeinfed
+            true,
+          );
           
-          // Changing Color
+          setTimeout(() => {
+            setUpdatingAnimation(false)
+            clearInterval(intervalId2);
+          }, 500) // Cuz shit cant change at the same time for no reason
+        }, intervalDuration)
+
+        // JUST CHANGING COLOR DUMBASS LOOK
+        let intervalId3 = setInterval(() => {
+          if (updatingRiveAnimation) return;
+
+          setUpdatingAnimation(true);
+
           (state.RiveRef as RefObject<RiveRef>)?.current?.setInputStateAtPath(
-            colorInput, // "Blue" for example
+            colorInput,  // "Blue" for example
             true,
             bodypartToChange.newValue.artboardName // The path to the nested artboard
           );
-        }, 100)
+          
+          setUpdatingAnimation(false)
+          clearInterval(intervalId3);
+          console.log("188", intervalId3)
+        }, intervalDuration)
       }
     }
 
     if (action.body) state.Body = action.body;
     
-    console.log("uPDATINGGGG")
     setMonsterUpdated(true)
     
     return state;
   };
 
-  // * On re-render * // 
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  // const [, forceUpdate] = useReducer(x => x + 1, 0);
-
-  // let toggle = useRef(false);
-  
-  // function syncBodyParts() {
-  //   setTimeout(() => {
-  //     // console.log("syncing bodyparts")
-  //     if ((monster.RiveRef as RefObject<RiveRef>) === undefined || (monster.RiveRef as RefObject<RiveRef>).current === null) return;
-
-  //     Object.values(monster.Body.bodyparts).map((bodypart: BodyPart) => {
-  //       setTimeout(() => {
-  //         if (bodypart === undefined) return;
-          
-          
-  //         if (bodypart.transitionInputName === undefined || bodypart.transitionInputName === "") return;
-          
-  //         const inputName = bodypart.transitionInputName;
-          
-  //         // console.log("updating", bodypart.transitionInputName);
-  
-  //         (monster.RiveRef as RefObject<RiveRef>).current!.setInputState(
-  //           stateMachineName, 
-  //           inputName, 
-  //           true
-  //         ); // For bodyparts
-  //       }, 100)
-  //     });
-      
-  //     // console.log('Monster Body Sync', monster.Body.bodyTransitionInput);
-      
-  //     if (monster.Body.bodyTransitionInput === undefined || monster.Body.bodyTransitionInput === "") return;
-      
-  //     setTimeout(() => {
-  //       (monster.RiveRef as RefObject<RiveRef>).current!.setInputState(
-  //         stateMachineName, monster.Body.bodyTransitionInput, true
-  //       ); // For the body
-  //     }, 100)
-
-      
-  //     console.log('toggle.current', toggle.current)
-  //     if (toggle.current === false) {
-  //       forceUpdate();
-  //     }
-      
-  //     toggle.current = !toggle.current;
-  //   });
-  // }
-
-  // requestAnimationFrame(syncBodyParts)
-  // * End Section * //
-
-  useEffect(()=> {
-    console.log("monster udpated")
-  }, [monsterUpdated])  
-
-  const MonsterRef = useRef<RiveRef>(null)
-  
   
   const [monster, monsterDispatch] = useReducer(
-    monsterReducer, { Body: bodySets["Harold"].body, RiveRef: MonsterRef }
+    monsterReducer, { Body: bodySets["Harold"].body, RiveRef: undefined }
   );
+
 
   return (
     <MonsterContext.Provider
@@ -236,23 +216,3 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
     </MonsterContext.Provider>
   );
 };
-
-export const RiveAnimation = React.forwardRef(({}, ref: React.Ref<RiveRef>) => {
-
-  // const { monster } = useContext(MonsterContext);
-
-  console.log("IAM RERENDERING BITCH")
-
-  return (
-    <Rive
-      style={styles.body}
-      artboardName="Monster"
-      resourceName="monster"
-      stateMachineName={stateMachineName}
-      autoplay={true}
-      animationName="Idle"
-      ref={ref}
-      fit={Fit.Contain}
-    />
-  )
-})
