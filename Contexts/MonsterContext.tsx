@@ -33,8 +33,8 @@ import { useIsFocused } from "@react-navigation/native";
 export interface MonsterInfo {
   Body: Body;
   RiveRef: Ref<RiveRef> | undefined;
+  
 }
-
 export type monsterAction = {
   bodyParts?: IBodyParts | undefined;
   bodyPartToChange?: { bodyPartName: string; newValue: BodyPart };
@@ -100,10 +100,11 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
         
         setUpdatingAnimation(true);
         
-        if (action.bodyArtboard) {
-          (state.RiveRef as RefObject<RiveRef>).current?.setInputState(stateMachineName,
-            action.bodyArtboard.transitionInputName, true);
-        }
+        setTimeout(() => {
+            if (action.bodyArtboard) {
+              (state.RiveRef as RefObject<RiveRef>).current?.setInputState(stateMachineName, action.bodyArtboard.transitionInputName, true);
+            }
+        }, 400) // Leave time for the animation to finish
 
         console.log("106", intervalId0)
         clearInterval(intervalId0)
@@ -207,8 +208,8 @@ export const MonsterProvider = ({ children }: MonsterContextProps) => {
     <MonsterContext.Provider
       value={{
         monster: monster,
-        monsterUpdated: monsterUpdated,
         monsterDispatch: monsterDispatch,
+        monsterUpdated: monsterUpdated,
         setMonsterUpdated: setMonsterUpdated,
       }}
     >

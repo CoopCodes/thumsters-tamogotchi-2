@@ -13,34 +13,34 @@ export const colorThemes: IColorThemes = {
       customizationBarStroke: "#E5E7EB",
     }
   },
-  Blue: {
+  Blue: { // hsl(208.5, 100%, 68.62745098039215%)
     theme: {
-      backgroundColor: "#FFFFFF",
-      interactionPrimary: "#9F53FF",
-      interactionShadow: "#713BB2",
+      backgroundColor: "hsl(208, 100%, 97.09803921568627%)",
+      interactionPrimary: "hsl(208, 100%, 66.54901960784314%)",
+      interactionShadow: "hsl(208, 100%, 40.54901960784314%)",
       typographyDark: "#4D4752",
-      customizationBar: "#F3F4F6",
-      customizationBarStroke: "#E5E7EB",
+      customizationBar: "hsl(208, 100%, 95.09803921568627%)",
+      customizationBarStroke: "hsl(208, 100%, 89.99999999999999%)",
     }
   },
   Pink: {
     theme: { // #FF85FF
-      backgroundColor: "#EBDFF0",
+      backgroundColor: "hsl(282.35294117647055, 36.17021276595744%, 98.7843137254902%)",
       interactionPrimary: "hsl(300, 100%, 66.07843137254902%)",
       interactionShadow: "hsl(300, 70%, 40.07843137254902%)",
       typographyDark: "hsl(300, 7%, 30%)",
-      customizationBar: "hsl(300, 100%, 85.88235294117646%)",
-      customizationBarStroke: "hsl(300, 100%, 80.98039215686275%)",
+      customizationBar: "hsl(300, 100%, 95.88235294117646%)",
+      customizationBarStroke: "hsl(300, 100%, 90.98039215686275%)",
     }
   },
   Yellow: { // #FFF385
     theme: {
-      backgroundColor: "#FFFFFF",
-      interactionPrimary: "#hsl(54.0983606557377, 100%, 66.07843137254902%)",
-      interactionShadow: "hsl(54.0983606557377, 100%, 46.07843137254902%)",
+      backgroundColor: "hsl(54, 100%, 95.88235294117646%)",
+      interactionPrimary: "hsl(54, 100%, 66.07843137254902%)",
+      interactionShadow: "hsl(54, 100%, 40.07843137254902%)",
       typographyDark: "#4D4752",
-      customizationBar: "#F3F4F6",
-      customizationBarStroke: "#E5E7EB",
+      customizationBar: "hsl(54, 100%, 90.88235294117646%)",
+      customizationBarStroke: "hsl(54, 100%, 65.98039215686275%)",
     }
   },
   Green: {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, useRef, useState } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import {
   View,
   Image,
@@ -7,9 +7,9 @@ import {
   Platform,
   ScrollView,
   Button,
-  FlatList,
   Dimensions,
 } from "react-native";
+import { FlatList, gestureHandlerRootHOC } from "react-native-gesture-handler"
 import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
 import {
   BodyPart,
@@ -20,6 +20,7 @@ import {
   bodyPartCategoriesSide,
   usePrevious,
   nodeBodyPart,
+  stateMachineName,
 } from "../../global";
 import { bodySets, Body, bodyImage } from "../../global";
 // import Monster from "../Monster";
@@ -40,9 +41,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import Rive, { Fit } from "rive-react-native";
+import Rive, { Fit, RiveRef } from "rive-react-native";
 import Monster from "../Monster";
 import { ColorContext } from "../../Contexts/ColorContext";
+import { PanGesture } from "react-native-gesture-handler/lib/typescript/handlers/gestures/panGesture";
 
 const LockerRoom = ({ navigation }: { navigation: any }) => {
   const { showAttributesBar, setShowAttributeBar } = useContext(
@@ -128,7 +130,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   type Categories = (typeof categories)[number];
 
   // Function when conditions are pressed
-  const CategoryClick = (category: Categories) => {
+  const UpdateDisplayBodyParts = (category: Categories, monsterBody = monster.Body) => {
     // Clearing the current array
     let newBodyParts: BodyPart[] = [];
     // Getting all bodyparts, given the category,
@@ -136,15 +138,16 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
 
     AllBodyParts.filter(
       (bodyPartToTest: BodyPart) =>
-        bodyPartToTest.category === category
+        bodyPartToTest?.category === category
     ).map((bodyPart: BodyPart) => {
-      newBodyParts.push(bodyPart);
+      if (!monsterBody.bodyPartOnBody(bodyPart)) // if bodyPart exists on body
+        newBodyParts.push(bodyPart);
     });
     setDisplayBodyParts(newBodyParts);
   };
 
   useEffect(() => {
-    CategoryClick("Body"); // Calling function to actually show the bodyparts
+    UpdateDisplayBodyParts("Body"); // Calling function to actually show the bodyparts
   }, []);
 
   const preChangeSelectedBodyPart = useRef<BodyPart>();
@@ -212,26 +215,24 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
     .onFinalize(() => {
       bodyPartPressed.value = false;
       runOnJS(setSelectedBodyPart)(undefined);
-
+      
       // Will be running only if the bodypart does not change
       if (isOverHitbox) {
         runOnJS(droppedBodyPartInHitbox)();
       }
-
+      
       if (!isOverHitbox) {
         bodyPartTranslateX.value = withSpring(onPressInfo.x);
         bodyPartTranslateY.value = withSpring(onPressInfo.y);
         runOnJS(droppedOutsideHitbox)()
       }
-  });
+    });
 
   const animatedStyles = useAnimatedStyle(() => ({
     top: bodyPartTranslateY.value + 0,
     left: bodyPartTranslateX.value + 25,
     display: isOverHitbox ? "none" : "flex",
     transform: [
-      { translateX: bodyPartPressed.value ? 25 : 0 },
-      { translateY: bodyPartPressed.value ? 25 : 0 },
       { scale: withTiming(bodyPartPressed.value ? 1.2 : 1) },
       { rotate: withTiming(bodyPartPressed.value ? "10deg" : "0deg") },
     ],
@@ -259,6 +260,8 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   }
   
   function droppedBodyPartInHitbox() {
+    setIsHolding(false);
+    setIsOverHitbox(false);
     console.log("Dropped Inside Hitbox")
     let currBodyPart = selectedBodyPart;
 
@@ -269,9 +272,13 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
 
     if (monsterDispatch)
       monsterDispatch(replaceSelectedBodyPart(false, currBodyPart))
+
+    UpdateDisplayBodyParts(categories[activeCategoryIndex]);
   }
 
   function droppedOutsideHitbox() {
+    setIsHolding(false);
+    setIsOverHitbox(false);
     // console.log(preChangeSelectedBodyPart.current?.bodyPart.aspectRatio);
 
     // Set body to old body, before the nodes were added, but not working.
@@ -344,7 +351,6 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
             bodypart.category === categories[activeCategoryIndex]
           )) {
             bodyPartKeys.splice(index, 1, "");
-            return false;
           }
         }
       );
@@ -352,6 +358,11 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
       const filteredKeys = bodyPartKeys.filter((key: string) => key !== "");
 
       console.log(filteredKeys);
+
+      if (filteredKeys.length === 0) {
+        console.warn("Error: No Corresponding Bodypart on Body Found of category", "'" + categories[activeCategoryIndex] + "'"); 
+        return;
+      }
         
       const bodyPartNameTemp = filteredKeys[0].toLowerCase();
       
@@ -363,7 +374,13 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
       console.log(monster.Body.bodyparts[bodyPartName]);
   
       if (monster.Body.bodyparts[bodyPartName] === undefined) return;
-            
+      
+      if (!justNode) {
+        setTimeout(() => {
+          OverlayRef.current?.setInputState(stateMachineName, "Slide Up", true);
+        }, 200)
+      }
+
       action = {
         bodyPartToChange: {
           bodyPartName: bodyPartName,
@@ -374,6 +391,11 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
       };            
     } else {
       if (!selectedBodyPart) return;
+
+      // console.log('color', color)
+      
+      // setTimeout(() => {
+      // }, 400)
 
       action = {
         bodyArtboard: {
@@ -392,11 +414,37 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
 
   const { color, setColor, colorTheme } = useContext(ColorContext); 
 
+  const [isHolding, setIsHolding] = useState(false);
+
+  const [count, setCount] = useState(0);
+  
+  const isInitialMount = useRef(true);
+  
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      OverlayRef.current?.setInputState(stateMachineName, color, true);
+      OverlayRef.current?.setInputState(stateMachineName, "Slide Up", true);
+    }
+  }, [color]);
+
+  const OverlayRef = useRef<RiveRef>(null);
+
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
+        <Rive
+          style={styles.colorChangeAnimationOverlay}
+          artboardName="Body Change"
+          resourceName="thumsters_tamogotchi_animations"
+          autoplay
+          animationName="Idle"
+          fit={Fit.Cover}
+          ref={OverlayRef}
+        />
+
         {displayBodyParts.map((bodypart: BodyPart) => {
-          const artboardName = bodypart.artboardName;
           return (
             <Animated.View
               key={bodypart.id}
@@ -408,20 +456,14 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
                     selectedBodyPart && selectedBodyPart.id === bodypart.id
                       ? 1
                       : 0,
+                    transform: [
+                      { translateX: selectedBodyPart?.category === "Body"? -200 : 35 },
+                      { translateY: selectedBodyPart?.category === "Body"? -200 : 35 },                
+                    ]
                 },
               ]}
             >
-              <Rive
-                style={{
-                  width: bodypart.category === "Body" ? 200 : 50,
-                  height: bodypart.category === "Body" ? 200 : 50,
-                }}
-                fit={Fit.Contain}
-                resourceName="monster"
-                artboardName={artboardName}
-                autoplay={true}
-                animationName="Idle"
-                />
+              <RenderedBodyPart bodypart={bodypart}/>
             </Animated.View>
           );
         })}
@@ -474,7 +516,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
                   },
                 ]}
                 onPress={() => {
-                  CategoryClick(item);
+                  UpdateDisplayBodyParts(item);
                   setActiveCategoryIndex(index);
                 }}
                 activeIndex={activeCategoryIndex}
@@ -492,26 +534,42 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
             renderItem={({ item }) => {
               if (item.transitionInputName === undefined || item.transitionInputName === "" || item.bodySet === "Nodes") return <></>
 
-              return (
-              <GestureDetector gesture={panBodyPart}>
+              const ListBodyPartInstance = (
                 <ListBodyPart
                   bodypart={item}
                   OnRemove={() => removeBodyPart(item)}
                   OnPressIn={(e) => {
                     bodyPartPressed.value = true;
+                    setIsHolding(true);
                     const [x, y] = [
-                      e.nativeEvent.pageX - 60,
-                      e.nativeEvent.pageY - 60,
+                      e.nativeEvent.pageX - 100,
+                      e.nativeEvent.pageY - 100,
                     ];
+                    
+                    // const [x, y] = [
+                    //   e.absoluteX - (item.category === "Body" ? 100 : 55),
+                    //   e.absoluteY - (item.category === "Body" ? 100 : 0),
+                    // ];
+                    
                     setSelectedBodyPart(item);
                     setOnPressInfo({ x: x, y: y });
                     bodyPartTranslateX.value = x;
                     bodyPartTranslateY.value = y;
                   }}
+                  panGesture={panBodyPart}
                 />
-              </GestureDetector>
-              // <View style={{ backgroundColor: "red", height: 100, width: 100 }}></View>
-            )}}
+              )
+
+              if (isHolding) {
+                return (
+                  <GestureDetector gesture={panBodyPart}>
+                    {ListBodyPartInstance}
+                  </GestureDetector>
+                )
+              } else {
+                return ListBodyPartInstance
+              }
+            }}
           />
         </View>
       </View>
@@ -520,16 +578,29 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
 };
 
 const styles = StyleSheet.create({
+  colorChangeAnimationOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 100,
+    elevation: 100,
+    pointerEvents: "none",
+  },
   renderedBodyPartContainer: {
     transformOrigin: "50%",
     position: "absolute",
     top: 0,
     left: 0,
     zIndex: 50,
+    elevation: 50,
   },
   renderedBodyPart: {
     height: 50,
     width: 50,
+    zIndex: 50,
+    elevation: 50,
   },
   backButtonContainer: {
     position: "absolute",
@@ -545,6 +616,7 @@ const styles = StyleSheet.create({
   },
   container: {
     height: "100%", // 109
+    position: "relative"
   },
   top: {
     position: "relative",
@@ -553,7 +625,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   header: {
-    // You may use a responsive font utility or calculate the size dynamically
     fontSize: 25,
     color: "#4D4752",
     fontFamily: "Poppins_900Black",
@@ -605,6 +676,34 @@ const styles = StyleSheet.create({
   // },
 });
 export default LockerRoom;
+
+
+// Rendered Body Part
+const RenderedBodyPart = ({ bodypart }: { bodypart: BodyPart }) => {
+  const ref = useRef<RiveRef>(null);
+
+  const { color } = useContext(ColorContext);  
+  
+  if (ref.current && bodypart.colorInputs.includes(color) && bodypart.stateMachineName !== undefined) {
+    ref.current.setInputState(bodypart.stateMachineName, color, true);
+  }
+
+  return (
+    <Rive
+      style={{
+        width: bodypart.category === "Body" ? 200 : 70,
+        height: bodypart.category === "Body" ? 200 : 70,
+        pointerEvents: "none" // DO NOT REMOVE, YOU WILL BE ANNIHILATED
+
+      }}
+      fit={Fit.Contain}
+      ref={ref}
+      resourceName="monster"
+      artboardName={bodypart.artboardName}
+      autoplay={true}
+    />
+  )
+}
 
 {
   /* <View style={styles.shadow} />

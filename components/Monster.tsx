@@ -133,7 +133,7 @@ const Monster = ({
 
       setUpdatingAnimation(true);
 
-      const bodyPartsPromise = new Promise((resolve) => {
+      new Promise((resolve) => {
         if (
           (monster.RiveRef as RefObject<RiveRef>) === undefined ||
           (monster.RiveRef as RefObject<RiveRef>).current === null
@@ -196,26 +196,6 @@ const Monster = ({
 
   // * End Section * //
 
-
-  async function dick() {
-    // new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     MonsterRef.current?.setInputState(stateMachineName, "Many Teeth Mouth", true)
-    //     resolve(null);
-    //   }, 50)
-    // }).then(() => {
-    //   setTimeout(() => {
-    //     MonsterRef.current?.setInputState(stateMachineName, "Many Eyes", true);
-    //   }, 50)
-    // });
-    MonsterRef.current?.setInputState(stateMachineName, "Many Teeth Mouth", true)
-    MonsterRef.current?.setInputState(stateMachineName, "Many Eyes", true);
-  }
-
-  // useEffect(() => {
-  //   dick()
-  // }, [])
-
   // requestAnimationFrame(syncBodyParts);
 
   const isFocused = useIsFocused();
@@ -229,8 +209,6 @@ const Monster = ({
 
     if (monster !== undefined) {
       requestAnimationFrame(syncBodyParts);
-      // setTimeout(() => {
-      // }, 5000)
     }
   }, [isFocused]);
 
@@ -280,7 +258,7 @@ const Monster = ({
             if (updatingRiveAnimation) return;
 
             setUpdatingAnimation(true);
-
+            
             MonsterRef.current?.setInputState(stateMachineName, m, true);
 
             setUpdatingAnimation(false);
@@ -337,8 +315,10 @@ const Monster = ({
       )}
       <Rive
         style={styles.body}
-        artboardName="Monster"
-        resourceName="monster"
+        // artboardName="Monster"
+        artboardName="Layer Test"
+        resourceName="monster_test"
+        // resourceName="monster"
         stateMachineName={stateMachineName}
         autoplay={true}
         animationName="Idle"
@@ -380,7 +360,7 @@ export const styles = StyleSheet.create({
   perkContainer: {
     position: "absolute",
     top: 0,
-    right: 0,
+    right: 100,
     zIndex: 100,
   },
   perk: {

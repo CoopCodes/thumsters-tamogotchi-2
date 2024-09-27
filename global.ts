@@ -73,6 +73,8 @@ export class BodyPart {
 
   id: string;
 
+  stateMachineName: string | undefined = undefined;
+
 
   constructor(
     category: Categories,
@@ -97,6 +99,8 @@ export class BodyPart {
   }
 }
 
+
+
 export class Body {
   bodyparts: IBodyParts;
   bodyArtboard: string;
@@ -113,6 +117,15 @@ export class Body {
     this.bodyArtboard = bodyArtboard;
     this.bodyColor = bodyColor;
     this.bodyTransitionInput = bodyTransitionInput;
+  }
+  
+  bodyPartOnBody(bodypart: BodyPart): boolean {
+    if (bodypart.category === "Body") {
+      return this.bodyArtboard === bodySets[bodypart?.bodySet].body.bodyArtboard
+    } else {
+      return Object.values(this.bodyparts).filter((b: BodyPart) => b?.id === bodypart.id).length === 1;
+    }
+
   }
 }
 
@@ -226,9 +239,7 @@ export const bodySets: {
         colorInputs: standardColors,
       }, "Big Glasses"),
       head: undefined,
-      mouth: new BodyPart("Mouth", "Lips Mouth", "Fat Blue", {
-        colorInputs: standardColors,
-      }, "Lips Mouth"),    
+      mouth: new BodyPart("Mouth", "Lips Mouth", "Fat Blue", {}, "Lips Mouth"),    
     }, "Fat Blue Torso", "Blue", "To Fat Blue")
   },
   "Long Blue": {
@@ -260,19 +271,22 @@ export function useLoadFonts() {
     }, [loaded, error]);
 }
 
-
 const allBodyParts: BodyPart[] = [];
 
 let keys = Object.keys(bodySets)
 
 Object.values(bodySets).forEach((body, i) => {
   Object.values(body.body.bodyparts).map((bodyPart: BodyPart) => {
-    if (bodyPart !== undefined)
-      allBodyParts.push(bodyPart)
+    if (bodyPart !== undefined && bodyPart.bodySet !== "Nodes")
+      allBodyParts.push(
+        bodyPart,
+      )
   });
 
   // Creating the body as a bodypart
-  allBodyParts.push(new BodyPart("Body", body.body.bodyArtboard, keys[i], {}, body.body.bodyTransitionInput));
+  allBodyParts.push(
+    new BodyPart("Body", body.body.bodyArtboard, keys[i], {}, body.body.bodyTransitionInput),
+  );
 });
 
 export const AllBodyParts = allBodyParts;
