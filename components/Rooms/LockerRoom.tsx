@@ -10,7 +10,7 @@ import {
   Dimensions,
 } from "react-native";
 import { FlatList, gestureHandlerRootHOC } from "react-native-gesture-handler"
-import { MonsterContext, monsterAction } from "../../Contexts/MonsterContext";
+import { MonsterContext, MonsterInfo, monsterAction } from "../../Contexts/MonsterContext";
 import {
   BodyPart,
   AllBodyParts,
@@ -140,7 +140,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
       (bodyPartToTest: BodyPart) =>
         bodyPartToTest?.category === category
     ).map((bodyPart: BodyPart) => {
-      if (!monsterBody.bodyPartOnBody(bodyPart)) // if bodyPart exists on body
+      if (!monsterBody.isBodyPartOnBody(bodyPart)) // if bodyPart exists on body
         newBodyParts.push(bodyPart);
     });
     setDisplayBodyParts(newBodyParts);
@@ -218,7 +218,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
       
       // Will be running only if the bodypart does not change
       if (isOverHitbox) {
-        runOnJS(droppedBodyPartInHitbox)();
+        runOnJS(droppedInHitbox)();
       }
       
       if (!isOverHitbox) {
@@ -246,32 +246,53 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
       exitHitbox()
     }
   }, [isOverHitbox]);
+  
+  const prevMonster = useRef<Body | undefined>(undefined);
 
   function enterHitbox() {
-    // if (monsterDispatch)
-      // monsterDispatch(replaceSelectedBodyPart(false, selectedBodyPart))
+    // prevMonster.current = new Body(monster.Body.bodyparts, monster.Body.bodyArtboard, monster.Body.bodyTransitionInput, monster.Body.bodyTransitionInput);
+    // prevMonster.current = {...monster.Body, isBodyPartOnBody: monster.Body.isBodyPartOnBody};
+    prevMonster.current = {...JSON.parse(JSON.stringify(monster.Body)), isBodyPartOnBody: monster.Body.isBodyPartOnBody}
+    // prevMonster.current?.isBodyPartOnBody = monster.Body.isBodyPartOnBody;
+    // prevMonster.current = Object.create(monster.Body)
+    
+    // console.log(" AAAAH prevMonster", JSON.stringify(prevMonster, null, 2))
+    console.log(" AAAAH prevMonster", prevMonster.current?.bodyparts.eyes.artboardName)
+    
 
-    // forceUpdate();
+    if (monsterDispatch)
+        monsterDispatch(replaceSelectedBodyPart(false, selectedBodyPart))
   }
 
   function exitHitbox() {
-    // if (monsterDispatch)
-    //   monsterDispatch(replaceSelectedBodyPart(true))
+    // console.log("prevMonster", JSON.stringify(prevMonster, null, 2))
+    console.log("prevMonster", prevMonster.current?.bodyparts.eyes.artboardName)
+
+    if (monsterDispatch && prevMonster) {
+      monsterDispatch({ body: prevMonster.current })
+      
+      if (syncBodyParts.current) {
+        console.log("syncing body parts haha", monster.RiveRef)
+        syncBodyParts.current({Body: prevMonster.current!, RiveRef: monster.RiveRef});
+      }
+    }
+
+    prevMonster.current = undefined
   }
   
-  function droppedBodyPartInHitbox() {
+  function droppedInHitbox() {
     setIsHolding(false);
     setIsOverHitbox(false);
     console.log("Dropped Inside Hitbox")
-    let currBodyPart = selectedBodyPart;
+    // let currBodyPart = selectedBodyPart;
 
-    if (!currBodyPart) return;
-    let bodyPartReflected: "left" | "right" | "" = (currBodyPart.category === undefined || ["Eyes", "Mouth", "Head", "Body"].includes(currBodyPart.category))? "" : !currBodyPart.reflected? "right" : "left";
+    // if (!currBodyPart) return;
+    // let bodyPartReflected: "left" | "right" | "" = (currBodyPart.category === undefined || ["Eyes", "Mouth", "Head", "Body"].includes(currBodyPart.category))? "" : !currBodyPart.reflected? "right" : "left";
 
     // changeBodyPart(currBodyPart, bodyPartReflected);
 
-    if (monsterDispatch)
-      monsterDispatch(replaceSelectedBodyPart(false, currBodyPart))
+    // if (monsterDispatch)
+    //   monsterDispatch(replaceSelectedBodyPart(false, currBodyPart))
 
     UpdateDisplayBodyParts(categories[activeCategoryIndex]);
   }
@@ -279,6 +300,9 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   function droppedOutsideHitbox() {
     setIsHolding(false);
     setIsOverHitbox(false);
+    
+    UpdateDisplayBodyParts(categories[activeCategoryIndex]);
+
     // console.log(preChangeSelectedBodyPart.current?.bodyPart.aspectRatio);
 
     // Set body to old body, before the nodes were added, but not working.
@@ -375,13 +399,8 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   
       if (monster.Body.bodyparts[bodyPartName] === undefined) return;
       
-      if (!justNode) {
-        setTimeout(() => {
-          OverlayRef.current?.setInputState(stateMachineName, "Slide Up", true);
-        }, 200)
-      }
-
       action = {
+        overlayRef: !justNode? OverlayRef : undefined,
         bodyPartToChange: {
           bodyPartName: bodyPartName,
           newValue: justNode ? 
@@ -392,12 +411,8 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
     } else {
       if (!selectedBodyPart) return;
 
-      // console.log('color', color)
-      
-      // setTimeout(() => {
-      // }, 400)
-
       action = {
+        overlayRef: OverlayRef,
         bodyArtboard: {
           newValue: bodySets[selectedBodyPart?.bodySet].body.bodyArtboard,
           transitionInputName: bodySets[selectedBodyPart?.bodySet].body.bodyTransitionInput,
@@ -421,15 +436,18 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
   const isInitialMount = useRef(true);
   
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    } else {
-      OverlayRef.current?.setInputState(stateMachineName, color, true);
-      OverlayRef.current?.setInputState(stateMachineName, "Slide Up", true);
-    }
-  }, [color]);
+    console.log('isHolding', isHolding)
+  }, [isHolding])
 
   const OverlayRef = useRef<RiveRef>(null);
+
+  // const [syncBodyParts, setSyncBodyParts] = useState<(() => void) | undefined>(undefined)
+
+  const syncBodyParts = useRef<((monster: MonsterInfo) => void) | undefined>(undefined)
+
+  useEffect(() => {
+    console.log("syncBodyParts", syncBodyParts)
+  }, [syncBodyParts])
 
   return (
     <GestureHandlerRootView>
@@ -452,14 +470,15 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
                 styles.renderedBodyPartContainer,
                 animatedStyles,
                 {
+                  pointerEvents: "none", // DO NOT REMOVE YOU WILL BE ANNIHILATED
                   opacity:
                     selectedBodyPart && selectedBodyPart.id === bodypart.id
                       ? 1
                       : 0,
-                    transform: [
-                      { translateX: selectedBodyPart?.category === "Body"? -200 : 35 },
-                      { translateY: selectedBodyPart?.category === "Body"? -200 : 35 },                
-                    ]
+                  transform: [
+                    { translateX: selectedBodyPart?.category === "Body"? -200 : 35 },
+                    { translateY: selectedBodyPart?.category === "Body"? -200 : 35 },                
+                  ]
                 },
               ]}
             >
@@ -473,7 +492,11 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
               style={{ backgroundColor: "transparent", padding: 5
               }}
               onPress={() => {
-                forceUpdate()
+                // forceUpdate()
+                setIsHolding(true);
+                setTimeout(() => {
+                  setIsHolding(false);
+                }, 500)
               }}
             >
               <Text style={[styles.backButton, { color: colorTheme.theme.interactionPrimary
@@ -494,7 +517,10 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
             }}
             >
             {monster ? (
-              <Monster scaleFactor={.2}/>
+              <Monster scaleFactor={.2} setSyncBodyParts={(fn) => {
+                console.log(fn)
+                syncBodyParts.current = fn
+              }}/>
             ) : null}
           </View>
         </View>
@@ -528,6 +554,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
           <FlatList
             style={styles.bodyPartList}
             data={displayBodyParts}
+            // pointerEvents={isHolding ? "none" : "auto"}
             horizontal={true}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ alignItems: "flex-end" }}
@@ -569,6 +596,7 @@ const LockerRoom = ({ navigation }: { navigation: any }) => {
               } else {
                 return ListBodyPartInstance
               }
+              // return ListBodyPartInstance
             }}
           />
         </View>

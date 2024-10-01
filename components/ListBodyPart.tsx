@@ -80,8 +80,7 @@ const ListBodyPart = ({ bodypart, OnPressIn, panGesture }: Props) => {
           }
           ref={ref}
           fit={Fit.Contain}
-          resourceName="monster_test"
-          // resourceName="monster"
+          resourceName="monster"
           artboardName={bodypart.artboardName}
           onStateChanged={(name: string) => {
             if (ref.current && bodypart.colorInputs.includes(color)) {

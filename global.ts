@@ -119,7 +119,7 @@ export class Body {
     this.bodyTransitionInput = bodyTransitionInput;
   }
   
-  bodyPartOnBody(bodypart: BodyPart): boolean {
+  isBodyPartOnBody(bodypart: BodyPart): boolean {
     if (bodypart.category === "Body") {
       return this.bodyArtboard === bodySets[bodypart?.bodySet].body.bodyArtboard
     } else {

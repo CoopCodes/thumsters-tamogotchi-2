@@ -36,8 +36,6 @@ import Rive, { Fit, RiveRef } from "rive-react-native";
 import { ColorContext } from "../Contexts/ColorContext";
 import {
   MonsterContext,
-  updatingRiveAnimation,
-  setUpdatingAnimation,
   MonsterInfo,
 } from "../Contexts/MonsterContext";
 import {
@@ -58,18 +56,20 @@ interface Props {
   scaleFactor: number; // Changes in LockerRoom
   state?: string;
   perk?: IPerk;
+  setSyncBodyParts: (fn: (monster: MonsterInfo) => void) => void;
 }
 
 const Monster = ({
   scaleFactor = 0.3,
   state = "",
+  setSyncBodyParts,
   perk = undefined,
 }: Props) => {
   const { color, setColor } = useContext(ColorContext);
 
   const { mood, setMood } = useContext(MoodContext);
 
-  const { monster, monsterDispatch, monsterUpdated, setMonsterUpdated } =
+  const { monster, monsterDispatch} =
     useContext(MonsterContext);
 
   // useEffect(() => {
@@ -111,88 +111,50 @@ const Monster = ({
 
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  const toggle = useRef(true);
+  function syncBodyParts(currMonster: MonsterInfo)  {
+    console.log('\x1b[41m\x1b[30m', "Syncing..." +"\x1b[1m", currMonster.RiveRef, "\x1b[0m");
 
-  function syncBodyParts() {
-    if (!toggle.current) {
-      toggle.current = true;
+    if (
+      (currMonster.RiveRef as RefObject<RiveRef>) === undefined ||
+      (currMonster.RiveRef as RefObject<RiveRef>).current === null
+    )
       return;
+
+    Object.values(currMonster.Body.bodyparts).map((bodypart: BodyPart) => {
+      
+      if (bodypart === undefined) return;
+      
+      if (
+        bodypart.transitionInputName !== undefined &&
+        bodypart.transitionInputName !== ""
+      ) {
+        const inputName = bodypart.transitionInputName;
+        
+        (currMonster.RiveRef as RefObject<RiveRef>).current!.setInputState(
+          stateMachineName,
+          inputName,
+          true
+        ); // For bodyparts
+      }
+    });
+
+
+    if (
+      currMonster.Body.bodyTransitionInput !== undefined &&
+      currMonster.Body.bodyTransitionInput !== ""
+    ) {
+      console.log("Monster Body Sync", currMonster.Body.bodyTransitionInput);
+        (currMonster.RiveRef as RefObject<RiveRef>).current!.setInputState(
+        stateMachineName,
+        currMonster.Body.bodyTransitionInput,
+        true
+      ); // For the body
     }
-
-    console.log("penis");
-    let i = 0;
-
-    let intervalId = setInterval(() => {
-      // console.log("117 HELP", updatingRiveAnimation)
-
-      if (i === 5) clearInterval(intervalId);
-
-      i++;
-
-      if (updatingRiveAnimation) return;
-
-      setUpdatingAnimation(true);
-
-      new Promise((resolve) => {
-        if (
-          (monster.RiveRef as RefObject<RiveRef>) === undefined ||
-          (monster.RiveRef as RefObject<RiveRef>).current === null
-        )
-          return;
-  
-        Object.values(monster.Body.bodyparts).map((bodypart: BodyPart, j: number) => {
-          if (bodypart === undefined) return;
-          
-          if (
-            bodypart.transitionInputName !== undefined &&
-            bodypart.transitionInputName !== ""
-          ) {
-            const inputName = bodypart.transitionInputName;
-            
-            setTimeout(() => {
-              (monster.RiveRef as RefObject<RiveRef>).current!.setInputState(
-                stateMachineName,
-                inputName,
-                true
-              ); // For bodyparts
-            }, 20*j);
-          }
-        });
-
-        setTimeout(() => {
-          resolve(null);
-        }, 22 * Object.values(emptyBody.Body.bodyparts).length);
-      }).then(() => {
-        setTimeout(() => {
-          if (
-            monster.Body.bodyTransitionInput !== undefined &&
-            monster.Body.bodyTransitionInput !== ""
-          ) {
-            console.log("Monster Body Sync", monster.Body.bodyTransitionInput);
-    
-            setTimeout(() => {
-              (monster.RiveRef as RefObject<RiveRef>).current!.setInputState(
-                stateMachineName,
-                monster.Body.bodyTransitionInput,
-                true
-              ); // For the body
-            }, 300); // Fucking needs to be after the bodyparts
-          }
-        }, 50) // padding
-      }).then(() => {
-        clearInterval(intervalId);
-        setTimeout(() => {
-          setUpdatingAnimation(false);
-        }, 500)
-      });
-
-
-    }, intervalDuration);
-
-    toggle.current = false;
   }
 
-  // console.log("Monster Rendering...")
+  useEffect(() => {
+    setSyncBodyParts(syncBodyParts);
+  }, []);
 
   // * End Section * //
 
@@ -203,12 +165,12 @@ const Monster = ({
   if (monsterDispatch) monsterDispatch({ ref: MonsterRef });
 
   useEffect(() => {
-    console.log("Changed Page", isFocused);
+    console.log("isFocused", isFocused);
 
     if (isFocused) if (monsterDispatch) monsterDispatch({ ref: MonsterRef });
 
     if (monster !== undefined) {
-      requestAnimationFrame(syncBodyParts);
+      requestAnimationFrame(() => syncBodyParts(monster));
     }
   }, [isFocused]);
 
@@ -227,19 +189,11 @@ const Monster = ({
             colorInput !== undefined)
           ) {
             if (bodypart.category !== undefined) {
-              let intervalId0 = setInterval(() => {
-                if (updatingRiveAnimation) return;
-
-                setUpdatingAnimation(true);
-                MonsterRef?.current?.setInputStateAtPath(
-                  colorInput, // "Blue" for example
-                  true,
-                  bodypart.artboardName // The path to the nested artboard
-                );
-
-                setUpdatingAnimation(false);
-                clearInterval(intervalId0);
-              }, intervalDuration);
+              MonsterRef?.current?.setInputStateAtPath(
+                colorInput, // "Blue" for example
+                true,
+                bodypart.artboardName // The path to the nested artboard
+              );
             }
           }
         }
@@ -254,33 +208,15 @@ const Monster = ({
     if (mood !== undefined) {
       mood.split(" ").map((m: string) => {
         if (moodInputs.includes(m)) {
-          let intervalId1 = setInterval(() => {
-            if (updatingRiveAnimation) return;
-
-            setUpdatingAnimation(true);
-            
-            MonsterRef.current?.setInputState(stateMachineName, m, true);
-
-            setUpdatingAnimation(false);
-            clearInterval(intervalId1);
-          }, intervalDuration);
+          console.log("Set mood", m);
+          MonsterRef.current?.setInputState(stateMachineName, m, true);
         }
       });
     }
     if (prevMood !== undefined && mood !== prevMood) {
       prevMood.split(" ").map((m: string) => {
         if (moodInputs.includes(m)) {
-          let intervalId2 = setInterval(() => {
-            if (updatingRiveAnimation) return;
-
-            setUpdatingAnimation(true);
-
             MonsterRef.current?.setInputState(stateMachineName, m, false);
-            setMonsterUpdated(true);
-
-            setUpdatingAnimation(false);
-            clearInterval(intervalId2);
-          }, intervalDuration);
         }
       });
     }
@@ -315,10 +251,8 @@ const Monster = ({
       )}
       <Rive
         style={styles.body}
-        // artboardName="Monster"
-        artboardName="Layer Test"
-        resourceName="monster_test"
-        // resourceName="monster"
+        artboardName="Monster"
+        resourceName="monster"
         stateMachineName={stateMachineName}
         autoplay={true}
         animationName="Idle"
